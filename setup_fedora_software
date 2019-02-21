@@ -3,6 +3,8 @@
 # Description: Sets up Fedora Linux with the software I use, and 
 #              configures various aspects of the system to my liking.
 #
+# Many of these tweaks are from https://eklitzke.org/lobotomizing-gnome
+#
 # Homepage: https://gitlab.com/krathalan
 #
 # Copyright (C) 2019 krathalan
@@ -81,15 +83,15 @@ echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\\n"
 
 echo -e "Removing unused software..."
-dnf remove cheese gnome-calendar gnome-contacts gnome-documents gnome-maps gnome-weather evolution simple-scan gnome-photos gnome-boxes gnome-software evince totem totem-plugins gedit
+dnf remove cheese gnome-calendar gnome-contacts gnome-documents gnome-maps gnome-weather evolution evolution-ews evolution-help gfbgraph gnome-getting-started-docs gnome-initial-setup gnome-online-miners gnome-user-docs gnome-user-share gnome-video-effects tracker-miners yelp gnome-dictionary simple-scan gnome-photos gnome-boxes gnome-software evince totem totem-plugins gedit
 print_done
 
-echo -e "Removing GNOME tracker..."
 # From https://ask.fedoraproject.org/en/question/9822/how-do-i-disable-tracker-in-gnome/
-gsettings set org.freedesktop.Tracker.Miner.Files enable-monitors false
-gsettings set org.freedesktop.Tracker.Miner.Files crawling-interval -2
 # From https://gist.github.com/vancluever/d34b41eb77e6d077887c#non-invasive-disable-cheat-sheet
 # Edited with ShellCheck (and tested!)
+echo -e "Removing GNOME tracker..."
+gsettings set org.freedesktop.Tracker.Miner.Files enable-monitors false
+gsettings set org.freedesktop.Tracker.Miner.Files crawling-interval -2
 tracker daemon -k
 cd "$USER_HOME/.config/autostart"
 cp -v /etc/xdg/autostart/tracker-* ./
@@ -97,26 +99,26 @@ for FILE in *.desktop; do echo Hidden=true >> "$FILE"; done
 rm -rf "$USER_HOME/.cache/tracker" "$USER_HOME/.local/share/tracker"
 print_done
 
-echo -e "Adding .gif thumbnails to GNOME Files (Nautilus)..."
 # From https://bbs.archlinux.org/viewtopic.php?id=173653
+echo -e "Adding .gif thumbnails to GNOME Files (Nautilus)..."
 dnf install -y ffmpegthumbnailer
 sed -i "s#MimeType=#MimeType=image/gif;#" "/usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer"
 rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y adapta-gtk-theme bleachbit comix deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool rhythmbox seahorse ShellCheck syncthing thunderbird unrar vlc youtube-dl zim # unrar needed for comix
+dnf install -y bleachbit comix deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool rhythmbox seahorse ShellCheck syncthing thunderbird unrar vlc youtube-dl zim # unrar needed for comix
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install flathub com.discordapp.Discord
 flatpak install flathub org.signal.Signal
-flatpak update -y # Needed to force flatpak to install video and audio drivers
+flatpak update -y # Needed to force flatpak to install video and audio drivers (and themes!)
 print_done
 
-echo -e "Installing Balena Etcher..."
 # From https://github.com/balena-io/etcher#redhat-rhel-and-fedora-based-package-repository-gnulinux-x86x64
+echo -e "Installing Balena Etcher..."
 cd /tmp
 wget https://balena.io/etcher/static/etcher-rpm.repo -O /etc/yum.repos.d/etcher-rpm.repo
 dnf install -y balena-etcher-electron
@@ -129,18 +131,33 @@ git config --global user.signingkey 546BFAE445159FFC
 git config --global commit.gpgsign true
 print_done
 
-echo -e "Installing VSCodium..."
 # From https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo#how-to-install-for-other-distros
+echo -e "Installing VSCodium..."
 rpm --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
 dnf config-manager --add-repo https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/
 dnf install -y vscodium
 print_done
 
-echo -e "Installing Papirus icons..."
+# From https://github.com/nana-4/materia-theme#installation
+# https://copr.fedorainfracloud.org/coprs/tcg/themes/
+echo -e "Installing Materia theme..."
+dnf copr enable tcg/themes
+dnf install install materia-theme
+print_done
+
 # From https://github.com/PapirusDevelopmentTeam/papirus-icon-theme#papirus-installer
 # https://copr.fedorainfracloud.org/coprs/dirkdavidis/papirus-icon-theme/
+echo -e "Installing Papirus icons..."
 dnf copr enable dirkdavidis/papirus-icon-theme
 dnf install papirus-icon-theme
+print_done
+
+# From https://copr.fedorainfracloud.org/coprs/dirkdavidis/papirus-libreoffice-theme/
+# The package is misnamed in the "Installation Instructions". If you open the Packages
+# tab, the only package available is libreoffice-style-papirus
+echo -e "Installing Papirus LibreOffice theme..."
+dnf copr enable dirkdavidis/papirus-libreoffice-theme
+dnf install libreoffice-style-papirus
 print_done
 
 if [ "$installGamingSoftware" = true ]; then
@@ -160,3 +177,10 @@ if [ "$installGamingSoftware" = true ]; then
 fi
 
 echo -e "Reboot your computer now!"
+
+echo -e "You still need to:"
+echo -e "- VSCodium"
+echo -e "  - Install ShellCheck, Material Basic, and Material Icon Theme extensions"
+echo -e "  - Copy settings"
+echo -e "- Read README.txt in this directory"
+echo -e "- Run bash configure_services (not as sudo!)"
