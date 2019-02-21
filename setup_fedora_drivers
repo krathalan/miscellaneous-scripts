@@ -1,0 +1,51 @@
+#!/bin/bash
+# Copyright (C) 2018 krathalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Be safe
+set -Eeuo pipefail
+
+# Functions
+
+#######################################
+# Prints " done."
+# Globals:
+#   none
+# Arguments:
+#   none
+# Returns:
+#   none
+#######################################
+print_done() {
+  echo -e " done."
+}
+
+# Print intro
+readonly scriptName=$(basename "$0")
+echo -e "Starting $scriptName BASH script; Copyright (C) 2019 krathalan"
+echo -e "This is free software: you are free to change and redistribute it."
+echo -e "There is NO WARRANTY, to the extent permitted by law.\\n"
+
+# Set up RPM Fusion
+echo -n "Setting up RPM Fusion..."
+dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+print_done
+
+# Install Wifi Drivers
+echo -n "Installing Broadcom Wifi Drivers... "
+dnf install broadcom-wl
+print_done
+
+echo -e "BASH script complete. You may need to reboot your system."

@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# Description: Performs regular system maintenance procedures.
+#
+# Homepage: https://gitlab.com/krathalan/
+#
+# Copyright (C) 2019 krathalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# ------------------
+# --- Guidelines ---
+# ------------------
+
+# This script follows the Google Shell Style Guide: 
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Prints " done."
+# Globals:
+#   none
+# Arguments:
+#   none
+# Returns:
+#   none
+#######################################
+print_done()
+{
+  echo -e "Done."
+}
+
+# --------------------------------------
+# --------------- Script ---------------
+# --------------------------------------
+
+echo -e "1. Removing old DNF files (dbcache, expire-cache, metadata, old packages, plugins)..."
+dnf clean all
+print_done
+
+echo -e "\\n2. Removing unused Flatpaks..."
+flatpak uninstall --unused
+print_done
+
+echo -e "\\n3. Updating Flatpaks..."
+flatpak update -y
+print_done
+
+# --------------------------------------
+# ---------- Useful Commands -----------
+# --------------------------------------
+
+# View all system services
+# systemctl | grep running
+
+# View all user services
+# systemctl --user | grep running
+
+# View GNOME tracker status
+# tracker status
+
+# Remove EXIF data from all images in working directory and all sub directories
+# exiftool -all= *
