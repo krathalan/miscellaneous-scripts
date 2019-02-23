@@ -59,8 +59,8 @@ print_done()
 # --------------- Script ---------------
 # --------------------------------------
 
-echo -e "1. Removing old DNF files (dbcache, expire-cache, metadata, old packages, plugins)..."
-dnf clean all
+echo -e "1. Removing old cached dnf packages..."
+dnf clean packages
 print_done
 
 echo -e "\\n2. Removing unused Flatpaks..."

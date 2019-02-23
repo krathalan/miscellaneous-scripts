@@ -110,7 +110,7 @@ rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y bleachbit comix deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool rhythmbox seahorse ShellCheck syncthing thunderbird unrar vlc youtube-dl Zim # unrar needed for comix
+dnf install -y nano bleachbit comix deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool rhythmbox seahorse ShellCheck syncthing thunderbird unrar vlc youtube-dl Zim # unrar needed for comix
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
