@@ -38,6 +38,9 @@ echo -e "Starting $scriptName BASH script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\\n"
 
+echo -e "This script should be run AS ROOT (or sudo)!"
+read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
+
 # Set up RPM Fusion
 echo -n "Setting up RPM Fusion..."
 dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
