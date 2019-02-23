@@ -31,6 +31,12 @@
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -Eeuo pipefail
 
+# -----------------------------
+# ----- Program variables -----
+# -----------------------------
+
+readonly USER_HOME=$(eval echo ~"${SUDO_USER}")
+
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
@@ -63,6 +69,12 @@ print_done
 
 echo -e "\\n3. Updating Flatpaks..."
 flatpak update -y
+print_done
+
+echo -e "\\n4. Emptying trash..."
+rm -rf "$USER_HOME"/.local/share/Trash/files/*
+rm -rf "$USER_HOME"/.local/share/Trash/info/*
+rm -rf "$USER_HOME"/.local/share/Trash/expunged/*
 print_done
 
 # --------------------------------------

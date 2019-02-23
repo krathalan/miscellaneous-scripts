@@ -3,7 +3,7 @@ BEFORE INSTALLATION
 ----- Back up files -----
 -------------------------
 
-cd ~/GitLab/bash-backup-script && bash backup -g krath -t "/media/veracrypt1/Personal Data" -n
+backup -g krath -t /media/veracrypt1/Personal_Data -n
 
 AFTER INSTALLATION
 ---------------------------
@@ -15,23 +15,22 @@ Install Wifi and graphics drivers
     - Enable in Software & Updates --> Additional Drivers
     - Reboot
 - Fedora
-    - Install RPM fusion https://rpmfusion.org/Configuration
-    - https://rpmfusion.org/Howto/NVIDIA#Installing_the_drivers
-    - sudo dnf install -y broadcom-wl
+    - sudo bash setup_fedora_drivers
     - Reboot
 
 ----------------------------------------------------
 ----- Perform terminal-available configuration -----
 ----------------------------------------------------
 
-sudo bash setup_fedora
+sudo bash setup_fedora_software
+bash configure_services
 sudo reboot
 
 -----------------------------
 ----- Install VeraCrypt -----
 -----------------------------
 
-bash install_veracrypt.sh
+bash install_veracrypt
 
 ------------------------------------
 ----- Restoration instructions -----
@@ -42,13 +41,13 @@ GPG:
 - (Kleopatra) Self-sign keys as yours
 
 Data:
-- Copy archive_MM-DD-YYYY.tar.gpg from Backup/Personal Data to ~/Downloads
+- Copy archive_MM-DD-YYYY.tar.gpg from Backup/Personal_Data to ~/Downloads
 
 Discord:
 - Login
 
 Firefox:
-- Edit user.js file in ~/Downloads and copy to ~/.mozilla/firefox/profile.default
+- Edit user.js file from archive in ~/Downloads and copy to ~/.mozilla/firefox/profile.default
 - Install add-ons (CanvasBlocker, Decentraleyes, HTTPS Everywhere, Privacy Possum, Redirect AMP to HTML, Request Control, uBO, uMatrix)
     - Add uBO lists from firefox-tweaks
     - Import Request Control rules
@@ -93,5 +92,7 @@ VS Codium settings:
     "workbench.colorTheme": "Material Basic - Materia Contrast",
     "workbench.iconTheme": "material-icon-theme",
 }
+
+Ensure $PATH and secure_path are configured correctly.
 
 Reboot.
