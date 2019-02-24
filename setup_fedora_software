@@ -21,6 +21,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# sed usage from https://bbs.archlinux.org/viewtopic.php?id=173653
 
 # ------------------
 # --- Guidelines ---
@@ -85,8 +87,13 @@ echo -e "There is NO WARRANTY, to the extent permitted by law.\\n"
 echo -e "This script should be run AS ROOT (or sudo)!"
 read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
 
+echo -e "Removing Fedora Modular repos..."
+sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-modular.repo
+sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.repo
+print_done
+
 echo -e "Removing unused software..."
-dnf remove -y cheese gnome-calendar gnome-contacts gnome-documents gnome-maps gnome-weather evolution evolution-ews evolution-help gfbgraph gnome-getting-started-docs gnome-initial-setup gnome-online-miners gnome-user-docs gnome-user-share gnome-video-effects tracker-miners yelp gnome-dictionary simple-scan gnome-photos gnome-boxes gnome-software evince totem totem-plugins gedit
+dnf remove -y cheese gnome-calendar gnome-contacts gnome-documents gnome-maps gnome-weather evolution evolution-ews evolution-help gfbgraph gnome-getting-started-docs gnome-initial-setup gnome-online-miners gnome-user-docs gnome-user-share gnome-video-effects tracker-miners yelp gnome-dictionary simple-scan gnome-photos gnome-boxes gnome-software totem totem-plugins gedit
 print_done
 
 # From https://ask.fedoraproject.org/en/question/9822/how-do-i-disable-tracker-in-gnome/
@@ -105,12 +112,25 @@ print_done
 # From https://bbs.archlinux.org/viewtopic.php?id=173653
 echo -e "Adding .gif thumbnails to GNOME Files (Nautilus)..."
 dnf install -y ffmpegthumbnailer
-sed -i "s#MimeType=#MimeType=image/gif;#" "/usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer"
+sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer
 rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
+echo -e "Setting up \$PATH and secure_path..."
+echo -e "\nexport PATH=\"$PATH:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script\"" >> "$USER_HOME/.bashrc"
+export PATH="/home/anders/Documents/Scripts:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script:$PATH"
+sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/anders/Documents/Scripts#" /etc/sudoers
+print_done
+
+echo -e "Setting up Git global variables..."
+git config --global user.name "Hunter Peavey"
+git config --global user.email "vrywjvgviuotxeioqipx@disroot.org"
+git config --global user.signingkey 546BFAE445159FFC
+git config --global commit.gpgsign true
+print_done
+
 echo -e "Installing packages from RPM..."
-dnf install -y nano bleachbit comix deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool rhythmbox seahorse ShellCheck syncthing thunderbird unrar vlc youtube-dl Zim # unrar needed for comix
+dnf install -y nano bleachbit deluge dnf-automatic epiphany evince ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool rhythmbox seahorse ShellCheck syncthing thunderbird vlc youtube-dl Zim
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
@@ -126,19 +146,6 @@ echo -e "Installing Balena Etcher..."
 cd /tmp
 wget https://balena.io/etcher/static/etcher-rpm.repo -O /etc/yum.repos.d/etcher-rpm.repo
 dnf install -y balena-etcher-electron
-print_done
-
-echo -e "Setting up Git global variables..."
-git config --global user.name "Hunter Peavey"
-git config --global user.email "vrywjvgviuotxeioqipx@disroot.org"
-git config --global user.signingkey 546BFAE445159FFC
-git config --global commit.gpgsign true
-print_done
-
-echo -e "Setting up \$PATH and secure_path..."
-echo -e "\nexport PATH=\"$PATH:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script\"" >> "$USER_HOME/.bashrc"
-export PATH="/home/anders/Documents/Scripts:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script:$PATH"
-sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/anders/Documents/Scripts#" /etc/sudoers
 print_done
 
 # From https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo#how-to-install-for-other-distros
