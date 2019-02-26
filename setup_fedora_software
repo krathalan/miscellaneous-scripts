@@ -93,24 +93,12 @@ sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.repo
 print_done
 
 echo -e "Removing unused software..."
-dnf remove -y rhythmbox cheese gnome-calendar gnome-contacts gnome-clocks evince gnome-calculator \
-gnome-documents gnome-maps gnome-weather evolution evolution-ews evolution-help gfbgraph gnome-getting-started-docs \
-gnome-initial-setup gnome-online-miners gnome-user-docs gnome-user-share gnome-video-effects yelp gnome-dictionary \
-simple-scan gnome-photos gnome-boxes gnome-software totem totem-plugins gedit
+dnf remove -y cheese gedit gnome-boxes gnome-documents gnome-getting-started-docs gnome-initial-setup \
+gnome-maps gnome-software gnome-user-docs gnome-weather rhythmbox simple-scan totem totem-plugins yelp
 print_done
 
-# DO NOT REMOVE tracker -- YOU WILL BREAK NAUTILUS
-# From https://ask.fedoraproject.org/en/question/9822/how-do-i-disable-tracker-in-gnome/
-# From https://gist.github.com/vancluever/d34b41eb77e6d077887c#non-invasive-disable-cheat-sheet
-# Edited with ShellCheck (and tested!)
-echo -e "Removing GNOME tracker..."
-gsettings set org.freedesktop.Tracker.Miner.Files enable-monitors false
-gsettings set org.freedesktop.Tracker.Miner.Files crawling-interval -2
-tracker daemon -k
-cd "$USER_HOME/.config/autostart"
-cp -v /etc/xdg/autostart/tracker-* ./
-for FILE in *.desktop; do echo Hidden=true >> "$FILE"; done
-rm -rf "$USER_HOME/.cache/tracker" "$USER_HOME/.local/share/tracker"
+echo -e "Making sure certain software is installed..."
+dnf install -y evince gnome-calculator gnome-calendar gnome-clocks gnome-photos
 print_done
 
 # From https://bbs.archlinux.org/viewtopic.php?id=173653
@@ -134,21 +122,20 @@ git config --global commit.gpgsign true
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y nano bleachbit deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool seahorse ShellCheck syncthing thunderbird vlc youtube-dl Zim
+dnf install -y bleachbit deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
+google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts nano neofetch perl-Image-ExifTool \
+seahorse ShellCheck syncthing vlc youtube-dl Zim
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.discordapp.Discord
 flatpak install -y flathub org.freac.freac
-flatpak install -y flathub org.gnome.Calculator
-flatpak install -y flathub org.gnome.clocks
-flatpak install -y flathub org.gnome.Evince
 flatpak install -y flathub org.gnome.Lollypop
 flatpak install -y flathub org.gnome.Podcasts
 flatpak install -y flathub org.gtk.Gtk3theme.Materia-dark
 flatpak install -y flathub org.signal.Signal
-flatpak update -y # Needed to force flatpak to install video and audio drivers (and themes!)
+flatpak update -y # Needed to force flatpak to install drivers and themes
 print_done
 
 # From https://github.com/balena-io/etcher#redhat-rhel-and-fedora-based-package-repository-gnulinux-x86x64
@@ -168,23 +155,23 @@ print_done
 # From https://github.com/nana-4/materia-theme#installation
 # https://copr.fedorainfracloud.org/coprs/tcg/themes/
 echo -e "Installing Materia theme..."
-dnf copr enable tcg/themes
-dnf install install materia-theme
+dnf copr enable -y tcg/themes
+dnf install -y install materia-theme
 print_done
 
 # From https://github.com/PapirusDevelopmentTeam/papirus-icon-theme#papirus-installer
 # https://copr.fedorainfracloud.org/coprs/dirkdavidis/papirus-icon-theme/
 echo -e "Installing Papirus icons..."
-dnf copr enable dirkdavidis/papirus-icon-theme
-dnf install papirus-icon-theme
+dnf copr enable -y dirkdavidis/papirus-icon-theme
+dnf install -y papirus-icon-theme
 print_done
 
 # From https://copr.fedorainfracloud.org/coprs/dirkdavidis/papirus-libreoffice-theme/
 # The package is misnamed in the "Installation Instructions". If you open the Packages
 # tab, the only package available is libreoffice-style-papirus
 echo -e "Installing Papirus LibreOffice theme..."
-dnf copr enable dirkdavidis/papirus-libreoffice-theme
-dnf install libreoffice-style-papirus
+dnf copr enable -y dirkdavidis/papirus-libreoffice-theme
+dnf install -y libreoffice-style-papirus
 print_done
 
 if [ "$installGamingSoftware" = true ]; then
@@ -193,8 +180,14 @@ if [ "$installGamingSoftware" = true ]; then
 
   echo -e "Setting up Lutris gaming environment..."
   dnf install -y gnome-desktop3 lutris vulkan-tools
-  dnf install -y http://download.opensuse.org/repositories/home:/gasinvein:/fedora/Fedora_29/x86_64/dxvk-0.94-2.fc29.1.x86_64.rpm # Install DXVK
   dnf install -y gnutls gnutls-devel openldap openldap-devel libgpg-error sqlite2.i686 sqlite2.x86_64 # Install Battle.net dependencies https://github.com/lutris/lutris/wiki/Game:-Blizzard-App
+
+  # Get latest DXVK release
+  cd /opt
+  wget https://github.com/doitsujin/dxvk/releases/download/v1.0/dxvk-1.0.tar.gz --directory-prefix="/opt" -q --show-progress
+  tar -xf dxvk-1.0.tar.gz
+  rm -f dxvk-1.0.tar.gz
+
   print_done
 
   echo -e "Installing WINE..."
@@ -210,4 +203,3 @@ echo -e "- VSCodium"
 echo -e "  - Install ShellCheck, Material Basic, and Material Icon Theme extensions"
 echo -e "  - Copy settings"
 echo -e "- Read README.txt in this directory"
-echo -e "- Run bash configure_services (not as sudo!)"
