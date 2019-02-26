@@ -93,7 +93,10 @@ sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.repo
 print_done
 
 echo -e "Removing unused software..."
-dnf remove -y cheese gnome-calendar gnome-contacts gnome-documents gnome-maps gnome-weather evolution evolution-ews evolution-help gfbgraph gnome-getting-started-docs gnome-initial-setup gnome-online-miners gnome-user-docs gnome-user-share gnome-video-effects yelp gnome-dictionary simple-scan gnome-photos gnome-boxes gnome-software totem totem-plugins gedit
+dnf remove -y rhythmbox cheese gnome-calendar gnome-contacts gnome-clocks evince gnome-calculator \
+gnome-documents gnome-maps gnome-weather evolution evolution-ews evolution-help gfbgraph gnome-getting-started-docs \
+gnome-initial-setup gnome-online-miners gnome-user-docs gnome-user-share gnome-video-effects yelp gnome-dictionary \
+simple-scan gnome-photos gnome-boxes gnome-software totem totem-plugins gedit
 print_done
 
 # DO NOT REMOVE tracker -- YOU WILL BREAK NAUTILUS
@@ -131,17 +134,20 @@ git config --global commit.gpgsign true
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y nano bleachbit deluge dnf-automatic epiphany evince ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool seahorse ShellCheck syncthing thunderbird vlc youtube-dl Zim
+dnf install -y nano bleachbit deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts neofetch perl-Image-ExifTool seahorse ShellCheck syncthing thunderbird vlc youtube-dl Zim
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install flathub com.discordapp.Discord
-flatpak install flathub org.freac.freac
-flatpak install flathub org.gnome.Lollypop
-flatpak install flathub org.gnome.Podcasts
-flatpak install flathub org.gtk.Gtk3theme.Materia-dark
-flatpak install flathub org.signal.Signal
+flatpak install -y flathub com.discordapp.Discord
+flatpak install -y flathub org.freac.freac
+flatpak install -y flathub org.gnome.Calculator
+flatpak install -y flathub org.gnome.clocks
+flatpak install -y flathub org.gnome.Evince
+flatpak install -y flathub org.gnome.Lollypop
+flatpak install -y flathub org.gnome.Podcasts
+flatpak install -y flathub org.gtk.Gtk3theme.Materia-dark
+flatpak install -y flathub org.signal.Signal
 flatpak update -y # Needed to force flatpak to install video and audio drivers (and themes!)
 print_done
 
