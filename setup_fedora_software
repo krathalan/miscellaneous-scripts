@@ -3,8 +3,6 @@
 # Description: Sets up Fedora Linux with the software I use, and 
 #              configures various aspects of the system to my liking.
 #
-# A few of these tweaks are from https://eklitzke.org/lobotomizing-gnome
-#
 # Homepage: https://gitlab.com/krathalan
 #
 # Copyright (C) 2019 krathalan
@@ -71,6 +69,7 @@ while test $# -gt 0; do
   case "$1" in
     -g)
       installGamingSoftware=true;
+      break
       ;;
     *)
       break
@@ -141,7 +140,7 @@ print_done
 # From https://github.com/balena-io/etcher#redhat-rhel-and-fedora-based-package-repository-gnulinux-x86x64
 echo -e "Installing Balena Etcher..."
 cd /tmp
-wget https://balena.io/etcher/static/etcher-rpm.repo -O /etc/yum.repos.d/etcher-rpm.repo
+wget https://balena.io/etcher/static/etcher-rpm.repo -O /etc/yum.repos.d/etcher-rpm.repo -q --show-progress
 dnf install -y balena-etcher-electron
 print_done
 
@@ -156,7 +155,7 @@ print_done
 # https://copr.fedorainfracloud.org/coprs/tcg/themes/
 echo -e "Installing Materia theme..."
 dnf copr enable -y tcg/themes
-dnf install -y install materia-theme
+dnf install -y materia-theme
 print_done
 
 # From https://github.com/PapirusDevelopmentTeam/papirus-icon-theme#papirus-installer
@@ -179,7 +178,7 @@ if [ "$installGamingSoftware" = true ]; then
   dnf install -y xorg-x11-drv-nvidia akmod-nvidia
 
   echo -e "Setting up Lutris gaming environment..."
-  dnf install -y gnome-desktop3 lutris vulkan-tools
+  dnf install -y lutris
   dnf install -y gnutls gnutls-devel openldap openldap-devel libgpg-error sqlite2.i686 sqlite2.x86_64 # Install Battle.net dependencies https://github.com/lutris/lutris/wiki/Game:-Blizzard-App
 
   # Get latest DXVK release
