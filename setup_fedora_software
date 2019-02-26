@@ -93,37 +93,13 @@ print_done
 
 echo -e "Removing unused software..."
 dnf remove -y cheese gedit gnome-boxes gnome-documents gnome-getting-started-docs gnome-initial-setup \
-gnome-maps gnome-software gnome-user-docs gnome-weather rhythmbox simple-scan totem totem-plugins yelp
-print_done
-
-echo -e "Making sure certain software is installed..."
-dnf install -y evince gnome-calculator gnome-calendar gnome-clocks gnome-photos
-print_done
-
-# From https://bbs.archlinux.org/viewtopic.php?id=173653
-echo -e "Adding .gif thumbnails to GNOME Files (Nautilus)..."
-dnf install -y ffmpegthumbnailer
-sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer
-rm -rf "$USER_HOME/.cache/thumbnails"
-print_done
-
-echo -e "Setting up \$PATH and secure_path..."
-echo -e "\nexport PATH=\"$PATH:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script\"" >> "$USER_HOME/.bashrc"
-export PATH="/home/anders/Documents/Scripts:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script:$PATH"
-sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/anders/Documents/Scripts#" /etc/sudoers
-print_done
-
-echo -e "Setting up Git global variables..."
-git config --global user.name "Hunter Peavey"
-git config --global user.email "vrywjvgviuotxeioqipx@disroot.org"
-git config --global user.signingkey 546BFAE445159FFC
-git config --global commit.gpgsign true
+gnome-maps gnome-photos gnome-software gnome-user-docs gnome-weather rhythmbox simple-scan totem totem-plugins yelp
 print_done
 
 echo -e "Installing packages from RPM..."
 dnf install -y bleachbit deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
 google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts nano neofetch perl-Image-ExifTool \
-seahorse ShellCheck syncthing vlc youtube-dl Zim
+seahorse ShellCheck streamlink syncthing vlc youtube-dl Zim
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
@@ -194,6 +170,23 @@ if [ "$installGamingSoftware" = true ]; then
   dnf install -y winehq-staging
   print_done
 fi
+
+echo -e "Making sure certain software is installed..."
+dnf install -y evince gnome-calculator gnome-calendar gnome-clocks
+print_done
+
+# From https://bbs.archlinux.org/viewtopic.php?id=173653
+echo -e "Adding .gif thumbnails to GNOME Files (Nautilus)..."
+dnf install -y ffmpegthumbnailer
+sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer
+rm -rf "$USER_HOME/.cache/thumbnails"
+print_done
+
+echo -e "Setting up \$PATH and secure_path..."
+echo -e "\nexport PATH=\"$PATH:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script\"" >> "$USER_HOME/.bashrc"
+export PATH="/home/anders/Documents/Scripts:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script:$PATH"
+sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/anders/Documents/Scripts#" /etc/sudoers
+print_done
 
 echo -e "Reboot your computer now!"
 
