@@ -34,8 +34,7 @@ set -Eeuo pipefail
 # -----------------------------
 # ----- Program variables -----
 # -----------------------------
-
-readonly USER_HOME=$(eval echo ~"${SUDO_USER}")
+readonly USER_HOME=$(eval echo ~"${HOME}")
 
 # -----------------------------------------
 # --------------- Functions ---------------

@@ -102,8 +102,8 @@ print_done
 
 echo -e "Installing packages from RPM..."
 dnf install -y bleachbit deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
-google-roboto-mono-fonts keepassxc kleopatra libreoffice linux-libertine-fonts nano neofetch perl-Image-ExifTool \
-seahorse ShellCheck streamlink syncthing vlc youtube-dl Zim
+google-robot-fonts google-roboto-mono-fonts gthumb keepassxc kleopatra libreoffice linux-libertine-fonts \
+nano neofetch perl-Image-ExifTool seahorse ShellCheck streamlink syncthing terminator vlc youtube-dl Zim
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
