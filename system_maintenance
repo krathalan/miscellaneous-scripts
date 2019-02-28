@@ -63,7 +63,7 @@ dnf clean packages
 print_done
 
 echo -e "\\n2. Removing unused Flatpaks..."
-flatpak uninstall --unused
+flatpak uninstall -y --unused
 print_done
 
 echo -e "\\n3. Updating Flatpaks..."
