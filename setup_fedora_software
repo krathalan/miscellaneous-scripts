@@ -103,8 +103,8 @@ print_done
 echo -e "Installing packages from RPM..."
 dnf install -y bleachbit deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
 google-robot-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra libreoffice \
-linux-libertine-fonts nano neofetch okular perl-Image-ExifTool pv qt5-qtstyleplugins seahorse ShellCheck \
-streamlink syncthing terminator vlc youtube-dl Zim
+linux-libertine-fonts mosh nano neofetch okular perl-Image-ExifTool pv qt5-qtstyleplugins seahorse \
+ShellCheck streamlink syncthing terminator vlc youtube-dl Zim
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
@@ -129,6 +129,7 @@ echo -e "Installing VSCodium..."
 rpm --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
 dnf config-manager --add-repo https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/
 dnf install -y vscodium
+# echo -e "\ngpgcheck=1" >> "/etc/yum.repos.d/gitlab.com_paulcarroty_vscodium-deb-rpm-repo_raw_repos_rpms_.repo"
 print_done
 
 # From https://github.com/nana-4/materia-theme#installation
