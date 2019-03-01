@@ -102,8 +102,9 @@ print_done
 
 echo -e "Installing packages from RPM..."
 dnf install -y bleachbit deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
-google-robot-fonts google-roboto-mono-fonts gthumb keepassxc kleopatra libreoffice linux-libertine-fonts \
-nano neofetch perl-Image-ExifTool seahorse ShellCheck streamlink syncthing terminator vlc youtube-dl Zim
+google-robot-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra libreoffice \
+linux-libertine-fonts nano neofetch okular perl-Image-ExifTool pv qt5-qtstyleplugins seahorse ShellCheck \
+streamlink syncthing terminator vlc youtube-dl Zim
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
@@ -188,6 +189,11 @@ echo -e "Setting up \$PATH and secure_path..."
 echo -e "\nexport PATH=\"$PATH:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script\"" >> "$USER_HOME/.bashrc"
 export PATH="/home/anders/Documents/Scripts:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script:$PATH"
 sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/anders/Documents/Scripts#" /etc/sudoers
+print_done
+
+echo -e "Making Qt apps look like your GTK+ theme..."
+dnf install -y qt5-qtstyleplugins
+echo -e "\\nQT_QPA_PLATFORMTHEME=gtk2" >> /etc/environment
 print_done
 
 echo -e "Reboot your computer now!"

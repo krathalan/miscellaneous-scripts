@@ -36,6 +36,12 @@ bash install_veracrypt
 ----- Restoration instructions -----
 ------------------------------------
 
+Syncthing:
+- Set up syncthing as a systemd service
+
+Java:
+- Run "sudo alternatives --config java and select the highest version
+
 GPG: 
 - Import keys from Keepass database
 - (Kleopatra) Self-sign keys as yours
@@ -56,7 +62,7 @@ Firefox:
 - Set DDG as default search engine and remove others
 
 LibreOffice:
-- Set default text to Linux Libertine
+- Set default text to Linux Libertine O
 - Change icon pack to Papirus-dark
 
 OpenVPN
@@ -68,8 +74,8 @@ Syncthing:
 - Copy /home/anders/.config/syncthing from extracted archive in ~/Downloads to /home/anders/.config
 - Setup autostart: https://docs.syncthing.net/users/autostart.html
 
-Thunderbird:
-- Copy /home/anders/.thunderbird from extracted archive in ~/Downloads to /home/anders
+Evolution:
+- Restore backup
 
 VS Codium settings:
 {
