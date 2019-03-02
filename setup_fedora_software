@@ -122,8 +122,7 @@ dnf install -y openssl-devel
 print_done
 
 echo -e "Installing Rust cargo crates..."
-cargo install cargo-update
-cargo install tealdeer
+cargo install cargo-update tealdeer
 print_done
 
 # From https://github.com/balena-io/etcher#redhat-rhel-and-fedora-based-package-repository-gnulinux-x86x64
