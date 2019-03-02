@@ -56,7 +56,7 @@ installGamingSoftware=false
 #   none
 #######################################
 print_done() {
-  echo -e "Done.\\n"
+  echo -e "Done.\n"
 }
 
 # --------------------------------------
@@ -81,7 +81,7 @@ done
 readonly scriptName=$(basename "$0")
 echo -e "Starting $scriptName BASH script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
-echo -e "There is NO WARRANTY, to the extent permitted by law.\\n"
+echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
 echo -e "This script should be run AS ROOT (or sudo)!"
 read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
@@ -101,9 +101,9 @@ dnf remove -y abrt*
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y bleachbit deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
+dnf install -y bleachbit cargo deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
 google-robot-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra libreoffice \
-linux-libertine-fonts mosh nano neofetch okular perl-Image-ExifTool pv qt5-qtstyleplugins seahorse \
+linux-libertine-fonts mosh nano neofetch okular perl-Image-ExifTool pv qt5-qtstyleplugins rust seahorse \
 ShellCheck streamlink syncthing terminator vlc youtube-dl Zim
 print_done
 
@@ -115,6 +115,15 @@ flatpak install -y flathub org.gnome.Lollypop
 flatpak install -y flathub org.gtk.Gtk3theme.Materia-dark
 flatpak install -y flathub org.signal.Signal
 flatpak update -y # Needed to force flatpak to install drivers and themes
+print_done
+
+echo -e "Installing Rust cargo crate dependencies..."
+dnf install -y openssl-devel
+print_done
+
+echo -e "Installing Rust cargo crates..."
+cargo install cargo-update
+cargo install tealdeer
 print_done
 
 # From https://github.com/balena-io/etcher#redhat-rhel-and-fedora-based-package-repository-gnulinux-x86x64
@@ -129,6 +138,7 @@ echo -e "Installing VSCodium..."
 rpm --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
 dnf config-manager --add-repo https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/
 dnf install -y vscodium
+# Enable gpgcheck for this repo
 # echo -e "\ngpgcheck=1" >> "/etc/yum.repos.d/gitlab.com_paulcarroty_vscodium-deb-rpm-repo_raw_repos_rpms_.repo"
 print_done
 
@@ -186,15 +196,17 @@ sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnai
 rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
-echo -e "Setting up \$PATH and secure_path..."
-echo -e "\nexport PATH=\"$PATH:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script\"" >> "$USER_HOME/.bashrc"
-export PATH="/home/anders/Documents/Scripts:/home/anders/GitLab/bash-backup-script:/home/anders/GitLab/bash-veracrypt-installer-script:$PATH"
-sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/anders/Documents/Scripts#" /etc/sudoers
+echo -e "Setting up secure_path in /etc/sudoers..."
+sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$USER_HOME/.local/bin#" /etc/sudoers
 print_done
 
 echo -e "Making Qt apps look like your GTK+ theme..."
 dnf install -y qt5-qtstyleplugins
-echo -e "\\nQT_QPA_PLATFORMTHEME=gtk2" >> /etc/environment
+echo -e "\nQT_QPA_PLATFORMTHEME=gtk2" >> /etc/environment
+print_done
+
+echo -e "Making Java 11 OpenJDK your default Java environment..."
+alternatives --set java java-11-openjdk.x86_64
 print_done
 
 echo -e "Reboot your computer now!"

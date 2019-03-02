@@ -62,18 +62,26 @@ echo -e "1. Removing old cached dnf packages..."
 dnf clean packages
 print_done
 
-echo -e "\\n2. Removing unused Flatpaks..."
+echo -e "\n2. Removing unused Flatpaks..."
 flatpak uninstall -y --unused
 print_done
 
-echo -e "\\n3. Updating Flatpaks..."
+echo -e "\n3. Updating Flatpaks..."
 flatpak update -y
 print_done
 
-echo -e "\\n4. Emptying trash..."
+echo -e "\n4. Emptying trash..."
 rm -rf "$USER_HOME"/.local/share/Trash/files/*
 rm -rf "$USER_HOME"/.local/share/Trash/info/*
 rm -rf "$USER_HOME"/.local/share/Trash/expunged/*
+print_done
+
+echo -e "\n5. Updating Rust cargo crates..."
+cargo install-update -a
+print_done
+
+echo -e "\n6. Updating Rust cargo crate tldr cache..."
+tldr --update
 print_done
 
 # --------------------------------------
@@ -85,9 +93,6 @@ print_done
 
 # View all user services
 # systemctl --user | grep running
-
-# View GNOME tracker status
-# tracker status
 
 # Remove EXIF data from all images in working directory and all sub directories
 # exiftool -all= *

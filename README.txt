@@ -10,21 +10,23 @@ AFTER INSTALLATION
 ----- Install drivers -----
 ---------------------------
 
-Install Wifi and graphics drivers
 - Ubuntu
     - Enable in Software & Updates --> Additional Drivers
     - Reboot
 - Fedora
-    - sudo bash setup_fedora_drivers
+    - RPMFusion
+        - Enable: sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+        - Broadcom Wireless: sudo dnf install broadcom-wl
+        - Nvidia Graphics: sudo dnf install xorg-x11-drv-nvidia akmod-nvidia
+        - Then update: sudo dnf upgrade --refresh
     - Reboot
 
 ----------------------------------------------------
 ----- Perform terminal-available configuration -----
 ----------------------------------------------------
 
-sudo bash setup_fedora_software
-bash configure_services
-sudo reboot
+- sudo bash setup_fedora_software
+- Reboot
 
 -----------------------------
 ----- Install VeraCrypt -----
@@ -36,18 +38,13 @@ bash install_veracrypt
 ----- Restoration instructions -----
 ------------------------------------
 
-Syncthing:
-- Set up syncthing as a systemd service
-
-Java:
-- Run "sudo alternatives --config java and select the highest version
-
 GPG: 
 - Import keys from Keepass database
 - (Kleopatra) Self-sign keys as yours
 
 Data:
 - Copy archive_MM-DD-YYYY.tar.gpg from Backup/Personal_Data to ~/Downloads
+- Restore .gitconfig, .bashrc, and ~/.config/syncthing files
 
 Discord:
 - Login
@@ -71,8 +68,7 @@ OpenVPN
 - Verify it's working by visiting https://dnsleaktest.com/ and clicking on extended test
 
 Syncthing:
-- Copy /home/anders/.config/syncthing from extracted archive in ~/Downloads to /home/anders/.config
-- Setup autostart: https://docs.syncthing.net/users/autostart.html
+- Set up syncthing as a systemd service: https://docs.syncthing.net/users/autostart.html
 
 Evolution:
 - Restore backup
@@ -84,19 +80,19 @@ VS Codium settings:
     "editor.fontSize": 14,
     "editor.smoothScrolling": true,
     "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 750,
     "telemetry.enableCrashReporter": false,
     "telemetry.enableTelemetry": false,
     "update.channel": "none",
     "update.enableWindowsBackgroundUpdates": false,
     "update.showReleaseNotes": false,
-    "window.titleBarStyle": "custom",
     "window.restoreWindows": "none",
+    "window.titleBarStyle": "custom",
+    "workbench.colorTheme": "Material Basic - Materia Contrast",
     "workbench.enableExperiments": false,
+    "workbench.iconTheme": "material-icon-theme",
     "workbench.settings.enableNaturalLanguageSearch": false,
     "workbench.startupEditor": "none",
-    "files.autoSaveDelay": 750,
-    "workbench.colorTheme": "Material Basic - Materia Contrast",
-    "workbench.iconTheme": "material-icon-theme",
 }
 
 Ensure $PATH and secure_path are configured correctly.
