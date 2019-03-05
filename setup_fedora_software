@@ -101,7 +101,7 @@ dnf remove -y abrt*
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y bleachbit cargo deluge dnf-automatic epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
+dnf install -y bleachbit cargo deluge easytag epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
 google-robot-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra libreoffice \
 linux-libertine-fonts mosh nano neofetch okular perl-Image-ExifTool pv qt5-qtstyleplugins rust seahorse \
 ShellCheck streamlink syncthing terminator vlc youtube-dl Zim
