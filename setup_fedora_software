@@ -93,7 +93,7 @@ print_done
 
 echo -e "Removing unused software..."
 dnf remove -y cheese gedit gnome-boxes gnome-documents gnome-getting-started-docs gnome-initial-setup \
-gnome-maps gnome-photos gnome-software gnome-user-docs gnome-weather rhythmbox simple-scan totem totem-plugins yelp
+gnome-maps gnome-photos gnome-software gnome-user-docs gnome-weather simple-scan totem totem-plugins yelp
 print_done
 
 echo -e "Removing ABRT..."
@@ -101,9 +101,9 @@ dnf remove -y abrt*
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y bleachbit cargo deluge easytag epiphany ffmpeg firefox flatpak gimp git gnome-music \
-gnome-tweaks google-roboto-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra \
-libreoffice linux-libertine-fonts mosh nano neofetch perl-Image-ExifTool pv rust seahorse ShellCheck \
+dnf install -y bleachbit cargo deluge easytag epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
+google-roboto-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra libreoffice \
+linux-libertine-fonts mosh nano neofetch perl-Image-ExifTool pv rhythmbox rust seahorse ShellCheck \
 streamlink syncthing terminator vlc youtube-dl Zim zstd
 print_done
 
