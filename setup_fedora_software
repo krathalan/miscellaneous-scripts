@@ -101,17 +101,16 @@ dnf remove -y abrt*
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y bleachbit cargo deluge easytag epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
-google-roboto-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra libreoffice \
-linux-libertine-fonts mosh nano neofetch perl-Image-ExifTool pv qt5-qtstyleplugins rust seahorse \
-ShellCheck streamlink syncthing terminator vlc youtube-dl Zim zstd
+dnf install -y bleachbit cargo deluge easytag epiphany ffmpeg firefox flatpak gimp git gnome-music \
+gnome-tweaks google-roboto-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra \
+libreoffice linux-libertine-fonts mosh nano neofetch perl-Image-ExifTool pv rust seahorse ShellCheck \
+streamlink syncthing terminator vlc youtube-dl Zim zstd
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.discordapp.Discord
 flatpak install -y flathub org.freac.freac
-flatpak install -y flathub org.gnome.Lollypop
 flatpak install -y flathub org.gtk.Gtk3theme.Materia-dark
 flatpak install -y flathub org.signal.Signal
 flatpak update -y # Needed to force flatpak to install drivers and themes
