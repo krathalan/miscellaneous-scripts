@@ -104,7 +104,7 @@ echo -e "Installing packages from RPM..."
 dnf install -y bleachbit cargo deluge easytag epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
 google-roboto-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra libreoffice \
 linux-libertine-fonts mosh nano neofetch perl-Image-ExifTool pv qt5-qtstyleplugins rust seahorse \
-ShellCheck streamlink syncthing terminator vlc youtube-dl Zim
+ShellCheck streamlink syncthing terminator vlc youtube-dl Zim zstd
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."

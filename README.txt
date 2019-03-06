@@ -3,7 +3,7 @@ BEFORE INSTALLATION
 ----- Back up files -----
 -------------------------
 
-backup -g krath -t /media/veracrypt1/Personal_Data -n
+backup -g krath -t /media/veracrypt2 -n
 
 AFTER INSTALLATION
 ---------------------------
@@ -68,32 +68,14 @@ OpenVPN
 - Verify it's working by visiting https://dnsleaktest.com/ and clicking on extended test
 
 Syncthing:
+- Restore ~/.config/syncthing from backup
 - Set up syncthing as a systemd service: https://docs.syncthing.net/users/autostart.html
 
 Evolution:
 - Restore backup
 
 VS Codium settings:
-{
-    "editor.cursorSmoothCaretAnimation": true,
-    "editor.fontFamily": "'Roboto Mono'",
-    "editor.fontSize": 14,
-    "editor.smoothScrolling": true,
-    "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 750,
-    "telemetry.enableCrashReporter": false,
-    "telemetry.enableTelemetry": false,
-    "update.channel": "none",
-    "update.enableWindowsBackgroundUpdates": false,
-    "update.showReleaseNotes": false,
-    "window.restoreWindows": "none",
-    "window.titleBarStyle": "custom",
-    "workbench.colorTheme": "Material Basic - Materia Contrast",
-    "workbench.enableExperiments": false,
-    "workbench.iconTheme": "material-icon-theme",
-    "workbench.settings.enableNaturalLanguageSearch": false,
-    "workbench.startupEditor": "none",
-}
+- Restore ~/.config/VSCodium from backup
 
 Ensure $PATH and secure_path are configured correctly.
 
