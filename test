@@ -1,3 +1,4 @@
 #!/bin/bash
+set -Eeuo pipefail
 
 echo -e "Running test BASH script."

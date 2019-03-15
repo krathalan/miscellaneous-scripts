@@ -34,6 +34,28 @@
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -Eeuo pipefail
 
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Gets the current branch a git repository is on.
+# Globals:
+#   none
+# Arguments:
+#   none
+# Returns:
+#   current branch of git repository
+#######################################
+get_current_branch()
+{
+  local branch
+  branch=$(git status | grep -i "on" | awk '{printf $3}')
+
+  # Return 
+  echo "$branch"
+}
+
 # --------------------------------------
 # --------------- Script ---------------
 # --------------------------------------
@@ -47,12 +69,15 @@ echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 echo -e "This script should NOT be run as root (or sudo)!\n"
 
 echo -e "Updating git repos..."
-readonly basedir="/home/anders/GitLab"
 
-for dir in "$basedir"/*; do
+readonly baseDir="/home/anders/GitLab"
+currentBranch=""
+
+for dir in "$baseDir"/*; do
   (
   cd "$dir" || exit
-  git pull origin master 
+  currentBranch=$(get_current_branch)
+  git pull origin "$currentBranch" 
   echo ""
   )
 done
