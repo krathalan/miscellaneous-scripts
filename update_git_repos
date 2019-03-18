@@ -50,7 +50,7 @@ set -Eeuo pipefail
 get_current_branch()
 {
   local branch
-  branch=$(git status | grep -i "on" | awk '{printf $3}')
+  branch=$(git status | grep -i "on branch" | awk '{printf $3}')
 
   # Return 
   echo "$branch"
