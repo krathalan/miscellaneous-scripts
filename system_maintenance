@@ -35,6 +35,7 @@ set -Eeuo pipefail
 # ----- Program variables -----
 # -----------------------------
 readonly USER_HOME=$(eval echo ~"${HOME}")
+step=1
 
 # -----------------------------------------
 # --------------- Functions ---------------
@@ -51,6 +52,7 @@ readonly USER_HOME=$(eval echo ~"${HOME}")
 #######################################
 print_done()
 {
+  step=$(( step + 1 ))
   echo -e "Done."
 }
 
@@ -58,41 +60,32 @@ print_done()
 # --------------- Script ---------------
 # --------------------------------------
 
-echo -e "1. Removing old cached dnf packages..."
+echo -e "${step}. Updating dnf packages..."
+dnf upgrade --refresh
+print_done
+
+echo -e "\n${step}. Removing old cached dnf packages..."
 dnf clean packages
 print_done
 
-echo -e "\n2. Removing unused Flatpaks..."
+echo -e "\n${step}. Removing unused Flatpaks..."
 flatpak uninstall -y --unused
 print_done
 
-echo -e "\n3. Updating Flatpaks..."
+echo -e "\n${step}. Updating Flatpaks..."
 flatpak update -y
 print_done
 
-echo -e "\n4. Emptying trash..."
+echo -e "\n${step}. Emptying trash..."
 rm -rf "$USER_HOME"/.local/share/Trash/files/*
 rm -rf "$USER_HOME"/.local/share/Trash/info/*
 rm -rf "$USER_HOME"/.local/share/Trash/expunged/*
 print_done
 
-echo -e "\n5. Updating Rust cargo crates..."
+echo -e "\n${step}. Updating Rust cargo crates..."
 cargo install-update -a
 print_done
 
-echo -e "\n6. Updating Rust cargo crate tldr cache..."
+echo -e "\n${step}. Updating Rust cargo crate tldr cache..."
 tldr --update
 print_done
-
-# --------------------------------------
-# ---------- Useful Commands -----------
-# --------------------------------------
-
-# View all system services
-# systemctl | grep running
-
-# View all user services
-# systemctl --user | grep running
-
-# Remove EXIF data from all images in working directory and all sub directories
-# exiftool -all= *
