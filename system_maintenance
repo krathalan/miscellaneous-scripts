@@ -81,11 +81,3 @@ rm -rf "$USER_HOME"/.local/share/Trash/files/*
 rm -rf "$USER_HOME"/.local/share/Trash/info/*
 rm -rf "$USER_HOME"/.local/share/Trash/expunged/*
 print_done
-
-echo -e "\n${step}. Updating Rust cargo crates..."
-cargo install-update -a
-print_done
-
-echo -e "\n${step}. Updating Rust cargo crate tldr cache..."
-tldr --update
-print_done

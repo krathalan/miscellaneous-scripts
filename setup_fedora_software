@@ -93,7 +93,7 @@ print_done
 
 echo -e "Removing unused software..."
 dnf remove -y cheese gedit gnome-boxes gnome-documents gnome-getting-started-docs gnome-initial-setup \
-gnome-maps gnome-photos gnome-software gnome-user-docs gnome-weather simple-scan totem totem-plugins yelp
+gnome-maps gnome-photos gnome-software gnome-user-docs gnome-weather rhythmbox simple-scan totem totem-plugins yelp
 print_done
 
 echo -e "Removing ABRT..."
@@ -101,10 +101,11 @@ dnf remove -y abrt*
 print_done
 
 echo -e "Installing packages from RPM..."
-dnf install -y bleachbit cargo deluge easytag epiphany ffmpeg firefox flatpak gimp git gnome-tweaks \
-google-roboto-fonts google-roboto-mono-fonts gthumb java-11-openjdk keepassxc kleopatra libreoffice \
-linux-libertine-fonts mosh nano neofetch perl-Image-ExifTool pv rhythmbox rust seahorse ShellCheck \
-streamlink syncthing terminator vlc youtube-dl Zim zstd
+dnf install -y bleachbit deluge easytag epiphany ffmpeg firefox flatpak gimp \
+git glmark2 gnome-tweaks google-roboto-fonts google-roboto-mono-fonts gthumb \
+keepassxc kleopatra libreoffice linux-libertine-fonts lm_sensors mosh nano \
+neofetch perl-Image-ExifTool pv rhythmbox seahorse ShellCheck streamlink \
+stress syncthing terminator vlc youtube-dl Zim zstd
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
@@ -116,18 +117,11 @@ flatpak install -y flathub org.signal.Signal
 flatpak update -y # Needed to force flatpak to install drivers and themes
 print_done
 
-echo -e "Installing Rust cargo crate dependencies..."
-dnf install -y openssl-devel
-print_done
-
-echo -e "Installing Rust cargo crates..."
-cargo install cargo-update tealdeer
-print_done
-
 # From https://github.com/balena-io/etcher#redhat-rhel-and-fedora-based-package-repository-gnulinux-x86x64
 echo -e "Installing Balena Etcher..."
 cd /tmp
 wget https://balena.io/etcher/static/etcher-rpm.repo -O /etc/yum.repos.d/etcher-rpm.repo -q --show-progress
+dnf update
 dnf install -y balena-etcher-electron
 print_done
 
@@ -138,6 +132,11 @@ dnf config-manager --add-repo https://gitlab.com/paulcarroty/vscodium-deb-rpm-re
 dnf install -y vscodium
 # Enable gpgcheck for this repo
 echo -e "\ngpgcheck=1" >> "/etc/yum.repos.d/gitlab.com_paulcarroty_vscodium-deb-rpm-repo_raw_repos_rpms_.repo"
+print_done
+
+echo -e "Installing Lollypop..."
+dnf copr enable -y gnumdk/lollypop
+dnf install lollypop
 print_done
 
 # From https://github.com/nana-4/materia-theme#installation
@@ -170,14 +169,6 @@ if [ "$installGamingSoftware" = true ]; then
   dnf install -y lutris
   dnf install -y gnutls gnutls-devel openldap openldap-devel libgpg-error sqlite2.i686 sqlite2.x86_64 # Install Battle.net dependencies https://github.com/lutris/lutris/wiki/Game:-Blizzard-App
 
-  # Get latest DXVK release
-  cd /opt
-  wget https://github.com/doitsujin/dxvk/releases/download/v1.0/dxvk-1.0.tar.gz --directory-prefix="/opt" -q --show-progress
-  tar -xf dxvk-1.0.tar.gz
-  rm -f dxvk-1.0.tar.gz
-
-  print_done
-
   echo -e "Installing WINE..."
   dnf install -y wine
   print_done
@@ -195,16 +186,12 @@ rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
 echo -e "Setting up secure_path in /etc/sudoers..."
-sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$USER_HOME/.local/bin#" /etc/sudoers
+sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$USER_HOME/.local/bin:$USER_HOME/.cargo/bin#" /etc/sudoers
 print_done
 
 echo -e "Making Qt apps look like your GTK+ theme..."
 dnf install -y qt5-qtstyleplugins
 echo -e "\nQT_QPA_PLATFORMTHEME=gtk2" >> /etc/environment
-print_done
-
-echo -e "Making Java 11 OpenJDK your default Java environment..."
-alternatives --set java java-11-openjdk.x86_64
 print_done
 
 echo -e "Reboot your computer now!"
