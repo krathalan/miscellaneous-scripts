@@ -107,8 +107,8 @@ dnf install -y bleachbit deluge easytag epiphany evince ffmpeg firefox \
 flatpak gimp git glmark2 gnome-calculator gnome-calendar gnome-clocks \
 gnome-tweaks google-roboto-fonts google-roboto-mono-fonts gthumb keepassxc \
 kleopatra libreoffice linux-libertine-fonts lm_sensors mosh nano neofetch \
-perl-Image-ExifTool pv rhythmbox seahorse ShellCheck streamlink stress \
-syncthing terminator vlc youtube-dl Zim zstd
+perl-Image-ExifTool pv seahorse ShellCheck streamlink stress syncthing \
+terminator vlc youtube-dl Zim zstd
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
@@ -142,7 +142,7 @@ print_done
 # https://copr.fedorainfracloud.org/coprs/gnumdk/lollypop/
 echo -e "Installing Lollypop..."
 dnf copr enable -y gnumdk/lollypop
-dnf install lollypop
+dnf install -y lollypop
 print_done
 
 # From https://github.com/nana-4/materia-theme#installation
