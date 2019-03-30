@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-# Description: Sets up Fedora Linux with the software I use, and 
-#              configures various aspects of the system to my liking.
+# Description: Updates git repos in the user's ~/GitLab directory.
 #
 # Homepage: https://gitlab.com/krathalan
 #
