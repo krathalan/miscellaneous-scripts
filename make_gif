@@ -37,13 +37,15 @@ set -Eeuo pipefail
 readonly WORKING_DIRECTORY="${PWD}"
 readonly TEMP_DIRECTORY="/tmp/.make_gif"
 
-# -----------------------------------------
-# --------------- Functions ---------------
-# -----------------------------------------
-
 # --------------------------------------
 # --------------- Script ---------------
 # --------------------------------------
+
+# Print intro
+readonly scriptName=$(basename "$0")
+echo -e "Starting $scriptName BASH script; Copyright (C) 2019 krathalan"
+echo -e "This is free software: you are free to change and redistribute it."
+echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
 rm -rf "${TEMP_DIRECTORY}"
 mkdir "${TEMP_DIRECTORY}"
@@ -56,12 +58,9 @@ done
 
 echo -e " done."
 
-cd "${TEMP_DIRECTORY}"
-
 echo -en "Making gif..."
 
-convert -delay 13 -loop 0 ./*.jpg result.gif
-mv result.gif "${WORKING_DIRECTORY}"
+convert -delay 13 -loop 0 "${TEMP_DIRECTORY}"/*.jpg "${WORKING_DIRECTORY}/result.gif"
 
 echo -e " done."
 

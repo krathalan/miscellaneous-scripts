@@ -86,7 +86,7 @@ echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 echo -e "This script should be run AS ROOT (or sudo)!"
 read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
 
-echo -e "Removing Fedora Modular repos..."
+echo -e "Disabling Fedora Modular repos..."
 sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-modular.repo
 sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.repo
 print_done
@@ -189,6 +189,7 @@ sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnai
 rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
+# Add $USER_HOME/.local/bin to secure path
 echo -e "Setting up secure_path in /etc/sudoers..."
 sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$USER_HOME/.local/bin#" /etc/sudoers
 print_done
@@ -199,9 +200,3 @@ echo -e "\nQT_QPA_PLATFORMTHEME=gtk2" >> /etc/environment
 print_done
 
 echo -e "Reboot your computer now!"
-
-echo -e "You still need to:"
-echo -e "- VSCodium"
-echo -e "  - Install ShellCheck, Material Basic, and Material Icon Theme extensions"
-echo -e "  - Copy settings"
-echo -e "- Read README.txt in this directory"

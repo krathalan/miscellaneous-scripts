@@ -66,8 +66,6 @@ echo -e "Starting $scriptName BASH script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
-echo -e "This script should NOT be run as root (or sudo)!\n"
-
 echo -e "Updating git repos..."
 
 readonly baseDir="/home/anders/GitLab"

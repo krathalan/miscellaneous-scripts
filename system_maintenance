@@ -60,7 +60,10 @@ print_done()
 # --------------- Script ---------------
 # --------------------------------------
 
-echo -e "${step}. Updating dnf packages..."
+echo -e "This script should be run AS ROOT (or sudo)!"
+read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
+
+echo -e "\n${step}. Updating dnf packages..."
 dnf upgrade --refresh
 print_done
 

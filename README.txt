@@ -3,8 +3,6 @@ BEFORE INSTALLATION
 ----- Back up files -----
 -------------------------
 
-backup -g krath -t /media/veracrypt2 -n
-
 AFTER INSTALLATION
 ---------------------------
 ----- Install drivers -----
@@ -44,39 +42,25 @@ GPG:
 
 Data:
 - Copy archive_MM-DD-YYYY.tar.gpg from Backup/Personal_Data to ~/Downloads
-- Restore .gitconfig, .bashrc, and ~/.config/syncthing files
-
-Discord:
-- Login
+- Restore (at least) .gitconfig, .bashrc, ~/.config/VSCodium, and ~/.config/syncthing files
 
 Firefox:
-- Edit user.js file from archive in ~/Downloads and copy to ~/.mozilla/firefox/profile.default
-- Install add-ons (CanvasBlocker, Decentraleyes, HTTPS Everywhere, Privacy Possum, Redirect AMP to HTML, Request Control, uBO, uMatrix)
-    - Add uBO lists from firefox-tweaks
-    - Import Request Control rules
-    - Import uMatrix rules
-- Sign in to Firefox sync
-- Set DDG as default search engine and remove others
+- https://gitlab.com/krathalan/firefox-tweaks
 
 LibreOffice:
 - Set default text to Linux Libertine O
 - Change icon pack to Papirus-dark
 
 OpenVPN
-- Go to https://nordvpn.com/servers and download the recommended server OpenVPN UDP configuration file
-- Open system settings, import file, login, and enable VPN connection
-- Verify it's working by visiting https://dnsleaktest.com/ and clicking on extended test
+- Setup fastest NordVPN server 
+- https://nordvpn.com/servers/tools/
 
 Syncthing:
 - Restore ~/.config/syncthing from backup
-- Set up syncthing as a systemd service: https://docs.syncthing.net/users/autostart.html
+- Set up syncthing as a systemd service
+- https://docs.syncthing.net/users/autostart.html#how-to-set-up-a-user-service
 
 Evolution:
 - Restore backup
-
-VS Codium settings:
-- Restore ~/.config/VSCodium from backup
-
-Ensure $PATH and secure_path are configured correctly.
 
 Reboot.
