@@ -79,7 +79,7 @@ done
 
 # Print intro
 readonly scriptName=$(basename "$0")
-echo -e "Starting $scriptName BASH script; Copyright (C) 2019 krathalan"
+echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 

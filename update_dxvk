@@ -29,6 +29,12 @@ releaseNumber="$1"
 # --------------- Script ---------------
 # --------------------------------------
 
+# Print intro
+readonly scriptName=$(basename "$0")
+echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
+echo -e "This is free software: you are free to change and redistribute it."
+echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
+
 echo -e "This script should be run AS ROOT (or sudo)!"
 read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
 echo -e ""
