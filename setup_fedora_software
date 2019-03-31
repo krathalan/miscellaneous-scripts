@@ -108,7 +108,7 @@ flatpak gimp git glmark2 gnome-calculator gnome-calendar gnome-clocks \
 gnome-tweaks google-roboto-fonts google-roboto-mono-fonts gthumb keepassxc \
 kleopatra libreoffice linux-libertine-fonts lm_sensors mosh nano neofetch \
 perl-Image-ExifTool pv seahorse ShellCheck streamlink stress syncthing \
-terminator vlc youtube-dl Zim zstd
+tilix vlc youtube-dl Zim zstd
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
