@@ -52,7 +52,7 @@ get_current_branch()
   branch=$(git status | grep "On branch" | awk '{printf $3}')
 
   # Return 
-  echo "$branch"
+  echo "${branch}"
 }
 
 # --------------------------------------
@@ -70,11 +70,13 @@ echo -e "Updating git repos..."
 readonly baseDir="/home/anders/GitLab"
 currentBranch=""
 
-for dir in "$baseDir"/*; do
+for dir in "${baseDir}"/*; do
   (
-  cd "$dir" || exit
+  cd "${dir}" || exit
+  
   currentBranch=$(get_current_branch)
-  git pull origin "$currentBranch" 
+  git pull origin "${currentBranch}" 
+
   echo ""
   )
 done
