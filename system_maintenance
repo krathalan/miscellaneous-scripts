@@ -86,7 +86,7 @@ flatpak update -y
 print_done
 
 echo -e "\n${step}. Emptying trash..."
-rm -rf "$USER_HOME"/.local/share/Trash/files/*
-rm -rf "$USER_HOME"/.local/share/Trash/info/*
-rm -rf "$USER_HOME"/.local/share/Trash/expunged/*
+rm -rf "${USER_HOME}"/.local/share/Trash/files/*
+rm -rf "${USER_HOME}"/.local/share/Trash/info/*
+rm -rf "${USER_HOME}"/.local/share/Trash/expunged/*
 print_done
