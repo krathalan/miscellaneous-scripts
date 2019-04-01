@@ -133,9 +133,9 @@ echo -e "Installing VSCodium..."
 rpm --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
 dnf config-manager --add-repo https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/
 dnf update
-dnf install -y vscodium
 # Enable gpgcheck for this repo
 echo -e "\ngpgcheck=1" >> "/etc/yum.repos.d/gitlab.com_paulcarroty_vscodium-deb-rpm-repo_raw_repos_rpms_.repo"
+dnf install -y vscodium
 print_done
 
 # From https://wiki.gnome.org/Apps/Lollypop
