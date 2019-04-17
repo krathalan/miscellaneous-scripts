@@ -36,13 +36,16 @@ bash install_veracrypt
 ----- Restoration instructions -----
 ------------------------------------
 
+VPN:
+- https://www.mullvad.net/en/guides/easy-wireguard-mullvad-setup-linux/
+- https://mullvad.net/en/download/wireguard-config/
+
 GPG: 
 - Import keys from Keepass database
 - (Kleopatra) Self-sign keys as yours
 
 Data:
-- Copy archive_MM-DD-YYYY.tar.gpg from Backup/Personal_Data to ~/Downloads
-- Restore (at least) .gitconfig, .bashrc, ~/.config/VSCodium, and ~/.config/syncthing files
+- Restore borg backup
 
 Firefox:
 - https://gitlab.com/krathalan/firefox-tweaks
@@ -51,14 +54,10 @@ LibreOffice:
 - Set default text to Linux Libertine O
 - Change icon pack to Papirus-dark
 
-OpenVPN
-- Setup fastest NordVPN server 
-- https://nordvpn.com/servers/tools/
-
 Syncthing:
-- Restore ~/.config/syncthing from backup
+- Restore ~/.config/syncthing from bog backup
 - Set up syncthing as a systemd service
-- https://docs.syncthing.net/users/autostart.html#how-to-set-up-a-user-service
+    - https://docs.syncthing.net/users/autostart.html#how-to-set-up-a-user-service
 
 Evolution:
 - Restore backup

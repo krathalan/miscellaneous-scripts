@@ -67,7 +67,7 @@ echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
 echo -e "Updating git repos..."
 
-readonly baseDir="/home/anders/GitLab"
+readonly baseDir="${HOME}/GitLab"
 currentBranch=""
 
 for dir in "${baseDir}"/*; do

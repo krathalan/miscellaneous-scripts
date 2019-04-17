@@ -105,7 +105,7 @@ print_done
 echo -e "Installing packages from RPM..."
 sudo dnf install -y bleachbit deluge easytag epiphany evince ffmpeg firefox \
 flatpak gimp git glmark2 gnome-calculator gnome-calendar gnome-clocks \
-gnome-tweaks google-roboto-fonts google-roboto-mono-fonts gthumb keepassxc \
+gnome-tweaks google-roboto-fonts google-roboto-mono-fonts gthumb jq keepassxc \
 kleopatra libreoffice linux-libertine-fonts lm_sensors mediawriter mosh nano \
 neofetch perl-Image-ExifTool pv seahorse ShellCheck streamlink stress \
 syncthing tilix vlc youtube-dl Zim zstd

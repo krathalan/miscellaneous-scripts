@@ -35,16 +35,15 @@ echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
-echo -e "This script should be run AS ROOT (or sudo)!"
-read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
+echo -e "This script should not be run as root (or sudo)!"
 echo -e ""
 
 (
-cd /opt || exit
+cd "${HOME}/.local/bin" || exit
 rm -rf dxvk*
-wget "https://github.com/doitsujin/dxvk/releases/download/v${releaseNumber}/dxvk-${releaseNumber}.tar.gz" --directory-prefix="/opt" -q --show-progress
+wget "https://github.com/doitsujin/dxvk/releases/download/v${releaseNumber}/dxvk-${releaseNumber}.tar.gz" --directory-prefix="${HOME}/.local/bin" -q --show-progress
 tar -xf "dxvk-${releaseNumber}".tar.gz
 rm -f "dxvk-${releaseNumber}".tar.gz
 )
 
-echo -e "Done."
+echo -e "\nDone."
