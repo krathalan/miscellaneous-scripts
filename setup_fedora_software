@@ -155,8 +155,8 @@ print_done
 
 # From https://www.wireguard.com/install/
 echo -e "Installing Wireguard..."
-sudo dnf copr enable jdoss/wireguard
-sudo dnf install wireguard-dkms wireguard-tools
+sudo dnf copr enable -y jdoss/wireguard
+sudo dnf install -y wireguard-dkms wireguard-tools
 print_done
 
 if [ "$installGamingSoftware" = true ]; then
@@ -176,7 +176,7 @@ fi
 echo -e "Adding .gif thumbnails to GNOME Files (Nautilus)..."
 sudo dnf install -y ffmpegthumbnailer
 sudo sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer
-sudo rm -rf "$USER_HOME/.cache/thumbnails"
+rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
 # Add $USER_HOME/.local/bin to secure path
