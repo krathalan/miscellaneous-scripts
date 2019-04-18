@@ -94,6 +94,9 @@ print_done
 echo -e "Removing unused software..."
 sudo dnf remove -y cheese gedit gnome-boxes gnome-documents \
 gnome-getting-started-docs gnome-initial-setup gnome-maps gnome-photos \
+gnome-shell-extension-alternate-tab gnome-shell-extension-apps-menu \
+gnome-shell-extension-background-logo gnome-shell-extension-launch-new-instance \
+gnome-shell-extension-places-menu gnome-shell-extension-window-list \
 gnome-software gnome-user-docs gnome-weather rhythmbox simple-scan totem \
 totem-plugins yelp
 print_done
@@ -103,11 +106,11 @@ sudo dnf remove -y abrt*
 print_done
 
 echo -e "Installing packages from RPM..."
-sudo dnf install -y bleachbit deluge easytag epiphany evince ffmpeg firefox \
-flatpak gimp git glmark2 gnome-calculator gnome-calendar gnome-clocks \
+sudo dnf install -y bleachbit borgbackup easytag epiphany evince ffmpeg firefox \
+firejail flatpak gimp git glmark2 gnome-calculator gnome-calendar gnome-clocks \
 gnome-tweaks google-roboto-fonts google-roboto-mono-fonts gthumb jq keepassxc \
-kleopatra libreoffice linux-libertine-fonts lm_sensors mediawriter mosh nano \
-neofetch perl-Image-ExifTool pv seahorse ShellCheck streamlink stress \
+kleopatra libreoffice linux-libertine-fonts lm_sensors lz4 mediawriter mosh nano \
+neofetch perl-Image-ExifTool pv qbittorrent seahorse ShellCheck streamlink stress \
 syncthing tilix vlc youtube-dl Zim zstd
 print_done
 
