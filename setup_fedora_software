@@ -182,10 +182,16 @@ sudo sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthu
 rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
-# Add $USER_HOME/.local/bin to secure path
+# Make sudo show password typing feedback with asterisks
 echo -e "Setting up pwfeedback in /etc/sudoers..."
 sudo sed -i "s#env_reset#env_reset, pwfeedback#" /etc/sudoers
 print_done
+
+# Make Firefox use Wayland if the user is running Wayland
+displayServer=$(env | grep -i XDG_SESSION_TYPE)
+if [[ "${displayServer}" == *"wayland" ]]; then
+  sudo /bin/sh -c 'echo -e "\nMOZ_ENABLE_WAYLAND=1" >> /etc/environment'
+fi
 
 echo -e "Making Qt apps look like your GTK+ theme..."
 sudo dnf install -y qt5-qtstyleplugins
