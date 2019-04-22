@@ -131,7 +131,7 @@ sudo rpm --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/maste
 sudo dnf config-manager --add-repo https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/
 sudo dnf update
 # Enable gpgcheck for this repo
-echo -e "\ngpgcheck=1" >> sudo tee -a "/etc/yum.repos.d/gitlab.com_paulcarroty_vscodium-deb-rpm-repo_raw_repos_rpms_.repo" > /dev/null
+sudo /bin/sh -c 'echo -e "\ngpgcheck=1" >> /etc/yum.repos.d/gitlab.com_paulcarroty_vscodium-deb-rpm-repo_raw_repos_rpms_.repo'
 sudo dnf install -y vscodium
 print_done
 
@@ -189,7 +189,7 @@ print_done
 
 echo -e "Making Qt apps look like your GTK+ theme..."
 sudo dnf install -y qt5-qtstyleplugins
-echo -e "\nQT_QPA_PLATFORMTHEME=gtk2" >> sudo tee -a /etc/environment > /dev/null
+sudo /bin/sh -c 'echo -e "\nQT_QPA_PLATFORMTHEME=gtk2" >> /etc/environment'
 print_done
 
 echo -e "Reboot your computer now!"
