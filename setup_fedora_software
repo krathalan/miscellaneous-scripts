@@ -183,8 +183,8 @@ rm -rf "$USER_HOME/.cache/thumbnails"
 print_done
 
 # Add $USER_HOME/.local/bin to secure path
-echo -e "Setting up secure_path in /etc/sudoers..."
-sudo sed -i "s#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin#/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$USER_HOME/.local/bin#" /etc/sudoers
+echo -e "Setting up pwfeedback in /etc/sudoers..."
+sudo sed -i "s#env_reset#env_reset, pwfeedback#" /etc/sudoers
 print_done
 
 echo -e "Making Qt apps look like your GTK+ theme..."
