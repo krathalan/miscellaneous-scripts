@@ -106,7 +106,7 @@ sudo dnf remove -y abrt*
 print_done
 
 echo -e "Installing packages from RPM..."
-sudo dnf install -y borgbackup easytag epiphany evince ffmpeg firefox \
+sudo dnf install -y android-tools borgbackup easytag epiphany evince ffmpeg firefox \
 firejail flatpak gimp git glmark2 gnome-calculator gnome-calendar gnome-clocks \
 gnome-menus gnome-mpv gnome-tweaks google-roboto-fonts google-roboto-mono-fonts \
 gthumb jq keepassxc kleopatra libreoffice linux-libertine-fonts lm_sensors lz4 \
