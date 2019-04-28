@@ -110,8 +110,8 @@ sudo dnf install -y android-tools borgbackup easytag epiphany evince ffmpeg fire
 firejail flatpak gimp git glmark2 gnome-calculator gnome-calendar gnome-clocks \
 gnome-menus gnome-mpv gnome-tweaks google-roboto-fonts google-roboto-mono-fonts \
 gthumb jq keepassxc kleopatra libreoffice linux-libertine-fonts lm_sensors lz4 \
-mediawriter mosh nano neofetch perl-Image-ExifTool pv qbittorrent seahorse \
-ShellCheck streamlink stress syncthing tilix youtube-dl Zim zstd
+mediawriter mosh nano neofetch perl-Image-ExifTool pv python3-streamlink \
+qbittorrent seahorse ShellCheck stress syncthing tilix youtube-dl Zim zstd
 print_done
 
 echo -e "Installing Flatpaks from Flathub..."
