@@ -97,9 +97,9 @@ sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.re
 print_done
 
 echo -e "Removing unused software..."
-sudo dnf autoremove -y abrt* cheese evince gedit gnome-boxes gnome-calculator \
-gnome-calendar gnome-clocks gnome-documents gnome-software gnome-weather \
-java* libreoffice* rhythmbox simple-scan totem totem-plugins
+sudo dnf autoremove -y abrt* cheese eog evince gedit gnome-boxes gnome-calculator \
+gnome-calendar gnome-clocks gnome-documents gnome-software gnome-weather java* \
+libreoffice* rhythmbox simple-scan totem totem-plugins
 
 # Long names
 sudo dnf autoremove gnome-getting-started-docs gnome-initial-setup \
@@ -123,8 +123,8 @@ sudo dnf install -y google-roboto-fonts google-roboto-mono-fonts linux-libertine
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.discordapp.Discord org.fedoraproject.MediaWriter \
-org.freac.freac org.gimp.GIMP org.gnome.Calculator org.gnome.Calendar \
-org.gnome.clocks org.gnome.Evince org.gnome.Fractal org.gnome.Logs org.gnome.Lollypop \
+org.freac.freac org.gimp.GIMP org.gnome.Calculator org.gnome.Calendar org.gnome.clocks \
+org.gnome.eog org.gnome.Evince org.gnome.Fractal org.gnome.Logs org.gnome.Lollypop \
 org.gtk.Gtk3theme.Materia-dark org.keepassxc.KeePassXC org.libreoffice.LibreOffice \
 org.qbittorrent.qBittorrent org.signal.Signal org.zim_wiki.Zim
 flatpak update -y # Needed to force flatpak to install drivers and themes
