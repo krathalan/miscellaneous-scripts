@@ -109,7 +109,7 @@ print_done
 echo -e "Installing packages with DNF..."
 sudo dnf install -y android-tools borgbackup easytag epiphany ffmpeg firefox \
 flatpak git gnome-menus gnome-mpv gnome-tweaks gthumb jq keepassxc \
-kleopatra lm_sensors lz4 mediawriter mosh nano neofetch perl-Image-ExifTool \
+kleopatra lm_sensors lz4 mosh nano neofetch perl-Image-ExifTool \
 python3-streamlink qbittorrent seahorse ShellCheck stress syncthing tilix \
 youtube-dl zstd
 print_done
@@ -119,11 +119,11 @@ sudo dnf install -y google-roboto-fonts google-roboto-mono-fonts linux-libertine
 
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y flathub com.discordapp.Discord \
+flatpak install -y flathub com.discordapp.Discord org.fedoraproject.MediaWriter \
 org.freac.freac org.gimp.GIMP org.gnome.Calculator org.gnome.Calendar \
 org.gnome.clocks org.gnome.Evince org.gnome.Fractal org.gnome.Lollypop \
-org.gtk.Gtk3theme.Materia-dark org.libreoffice.LibreOffice org.signal.Signal \
-org.zim_wiki.Zim
+org.gtk.Gtk3theme.Materia-dark org.keepassxc.KeePassXC org.libreoffice.LibreOffice \
+org.qbittorrent.qBittorrent org.signal.Signal org.zim_wiki.Zim
 flatpak update -y # Needed to force flatpak to install drivers and themes
 print_done
 
