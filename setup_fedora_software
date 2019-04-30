@@ -113,7 +113,7 @@ echo -e "Installing packages with DNF..."
 sudo dnf install -y android-tools borgbackup easytag epiphany ffmpeg firefox \
 flatpak git gnome-menus gnome-mpv gnome-tweaks gthumb jq keepassxc \
 kleopatra lm_sensors lz4 mosh nano neofetch perl-Image-ExifTool \
-python3-streamlink qbittorrent seahorse ShellCheck stress syncthing tilix \
+python3-streamlink seahorse ShellCheck stress syncthing tilix \
 youtube-dl zstd
 print_done
 
