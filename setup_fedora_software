@@ -86,42 +86,44 @@ echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 echo -e "This script should NOT be run as root (or sudo)!"
 read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
 
+echo -e "Configuring DNF..."
+sudo /bin/sh -c 'echo -e "\nmax_parallel_downloads=10" >> /etc/dnf/dnf.conf'
+sudo /bin/sh -c 'echo -e "\ndeltarpm_percentage=90" >> /etc/dnf/dnf.conf'
+print_done
+
 echo -e "Disabling Fedora Modular repos..."
 sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-modular.repo
 sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.repo
 print_done
 
 echo -e "Removing unused software..."
-sudo dnf remove -y cheese gedit gnome-boxes gnome-documents \
-gnome-getting-started-docs gnome-initial-setup gnome-maps gnome-photos \
-gnome-shell-extension-alternate-tab gnome-shell-extension-apps-menu \
-gnome-shell-extension-background-logo gnome-shell-extension-launch-new-instance \
-gnome-shell-extension-places-menu gnome-shell-extension-window-list \
-gnome-software gnome-user-docs gnome-weather rhythmbox simple-scan totem \
-totem-plugins yelp
+sudo dnf autoremove -y abrt* cheese evince gedit gnome-boxes gnome-calculator \
+gnome-calendar gnome-clocks gnome-documents gnome-getting-started-docs \
+gnome-initial-setup gnome-maps gnome-photos gnome-shell-extension-alternate-tab \
+gnome-shell-extension-apps-menu gnome-shell-extension-background-logo \
+gnome-shell-extension-launch-new-instance gnome-shell-extension-places-menu \
+gnome-shell-extension-window-list gnome-software gnome-user-docs gnome-weather \
+libreoffice* rhythmbox simple-scan totem totem-plugins
 print_done
 
-echo -e "Removing ABRT..."
-sudo dnf remove -y abrt*
+echo -e "Installing packages with DNF..."
+sudo dnf install -y android-tools borgbackup easytag epiphany ffmpeg firefox \
+flatpak git gnome-menus gnome-mpv gnome-tweaks gthumb jq keepassxc \
+kleopatra lm_sensors lz4 mediawriter mosh nano neofetch perl-Image-ExifTool \
+python3-streamlink qbittorrent seahorse ShellCheck stress syncthing tilix \
+youtube-dl zstd
 print_done
 
-echo -e "Installing packages from RPM..."
-sudo dnf install -y android-tools borgbackup easytag epiphany evince ffmpeg firefox \
-firejail flatpak gimp git glmark2 gnome-calculator gnome-calendar gnome-clocks \
-gnome-menus gnome-mpv gnome-tweaks google-roboto-fonts google-roboto-mono-fonts \
-gthumb jq keepassxc kleopatra libreoffice linux-libertine-fonts lm_sensors lz4 \
-mediawriter mosh nano neofetch perl-Image-ExifTool pv python3-streamlink \
-qbittorrent seahorse ShellCheck stress syncthing tilix youtube-dl Zim zstd
-print_done
+echo -e "Installing fonts with DNF..."
+sudo dnf install -y google-roboto-fonts google-roboto-mono-fonts linux-libertine-fonts
 
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y flathub com.discordapp.Discord
-flatpak install -y flathub org.freac.freac
-flatpak install -y flathub org.gtk.Gtk3theme.Materia-dark
-flatpak install -y flathub org.signal.Signal
-flatpak install -y flathub org.gnome.Lollypop
-flatpak install -y flathub org.gnome.Fractal
+flatpak install -y flathub com.discordapp.Discord \
+org.freac.freac org.gimp.GIMP org.gnome.Calculator org.gnome.Calendar \
+org.gnome.clocks org.gnome.Evince org.gnome.Fractal org.gnome.Lollypop \
+org.gtk.Gtk3theme.Materia-dark org.libreoffice.LibreOffice org.signal.Signal \
+org.zim_wiki.Zim
 flatpak update -y # Needed to force flatpak to install drivers and themes
 print_done
 
@@ -146,14 +148,6 @@ print_done
 echo -e "Installing Papirus icons..."
 sudo dnf copr enable -y dirkdavidis/papirus-icon-theme
 sudo dnf install -y papirus-icon-theme
-print_done
-
-# From https://copr.fedorainfracloud.org/coprs/dirkdavidis/papirus-libreoffice-theme/
-# The package is misnamed in the "Installation Instructions". If you open the Packages
-# tab, the only package available is libreoffice-style-papirus
-echo -e "Installing Papirus LibreOffice theme..."
-sudo dnf copr enable -y dirkdavidis/papirus-libreoffice-theme
-sudo dnf install -y libreoffice-style-papirus
 print_done
 
 # From https://www.wireguard.com/install/
