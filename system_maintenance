@@ -34,8 +34,14 @@ set -Eeuo pipefail
 # -----------------------------
 # ----- Program variables -----
 # -----------------------------
+
+# Colors
+readonly TURQOISE=$(tput bold && tput setaf 6)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
 readonly USER_HOME=$(eval echo ~"${HOME}")
-step=1
+stepCounter=1
+stepWithColor="${TURQOISE}${stepCounter}${NC}"
 
 # -----------------------------------------
 # --------------- Functions ---------------
@@ -52,7 +58,8 @@ step=1
 #######################################
 print_done()
 {
-  step=$(( step + 1 ))
+  stepCounter=$(( stepCounter + 1 ))
+  stepWithColor="${TURQOISE}${stepCounter}${NC}"
   echo -e "Done."
 }
 
@@ -68,27 +75,27 @@ echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
 echo -e "This script should NOT be run as root (or sudo)!"
 
-echo -e "\n${step}. Updating dnf packages..."
+echo -e "\n${stepWithColor}. Updating dnf packages..."
 sudo dnf upgrade --refresh
 print_done
 
-echo -e "\n${step}. Removing old cached dnf packages..."
+echo -e "\n${stepWithColor}. Removing old cached dnf packages..."
 sudo dnf clean packages
 print_done
 
-echo -e "\n${step}. Removing unused dnf packages..."
+echo -e "\n${stepWithColor}. Removing unused dnf packages..."
 sudo dnf autoremove
 print_done
 
-echo -e "\n${step}. Removing unused Flatpaks..."
+echo -e "\n${stepWithColor}. Removing unused Flatpaks..."
 flatpak uninstall -y --unused
 print_done
 
-echo -e "\n${step}. Updating Flatpaks..."
+echo -e "\n${stepWithColor}. Updating Flatpaks..."
 flatpak update -y
 print_done
 
-echo -e "\n${step}. Emptying trash..."
+echo -e "\n${stepWithColor}. Emptying trash..."
 rm -rf "${USER_HOME}"/.local/share/Trash/files/*
 rm -rf "${USER_HOME}"/.local/share/Trash/info/*
 rm -rf "${USER_HOME}"/.local/share/Trash/expunged/*
