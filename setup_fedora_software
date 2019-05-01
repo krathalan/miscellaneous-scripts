@@ -98,8 +98,9 @@ print_done
 
 echo -e "Removing unused software..."
 sudo dnf autoremove -y abrt* cheese eog evince evolution gedit gnome-boxes \
-gnome-calculator gnome-calendar gnome-clocks gnome-documents gnome-software \
-gnome-weather java* libreoffice* qt5-qt* rhythmbox simple-scan totem totem-plugins
+gnome-calculator gnome-calendar gnome-contacts gnome-clocks gnome-documents \
+gnome-software gnome-weather java* libreoffice* qt5-qt* rhythmbox simple-scan \
+totem totem-plugins
 
 # Long names
 sudo dnf autoremove -y gnome-getting-started-docs gnome-initial-setup \
