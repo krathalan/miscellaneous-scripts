@@ -112,35 +112,47 @@ sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-modular.repo
 sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.repo
 print_done
 
-echo -e "${stepWithColor}. Removing unused software..."
-sudo dnf autoremove -y abrt* cheese gedit gnome-boxes gnome-documents \
-gnome-software gnome-weather java* qt5-qt* rhythmbox simple-scan sssd* totem \
-totem-plugins
-
-# To replace with flatpak
-sudo dnf autoremove -y eog evince evince-djvu evolution gnome-calculator \
-gnome-calendar gnome-contacts gnome-clocks libreoffice*
+echo -e "${stepWithColor}. Removing unused DNF packages..."
+sudo dnf autoremove -y abrt* cheese gedit gnome-boxes gnome-calendar 
+gnome-documents gnome-maps gnome-photos gnome-software gnome-weather java* \
+qt5-qt* rhythmbox simple-scan sssd* totem totem-plugins
 
 # Long names
 sudo dnf autoremove -y gnome-getting-started-docs gnome-initial-setup \
-gnome-logs gnome-maps gnome-photos gnome-shell-extension-background-logo \
 gnome-shell-extension-alternate-tab gnome-shell-extension-apps-menu \
-gnome-shell-extension-launch-new-instance gnome-shell-extension-places-menu \
-gnome-shell-extension-window-list gnome-terminal-nautilus gnome-user-docs
-
+gnome-shell-extension-background-logo gnome-shell-extension-launch-new-instance \
+gnome-shell-extension-places-menu gnome-shell-extension-window-list \
+gnome-terminal-nautilus gnome-user-docs
 print_done
 
-echo -e "${stepWithColor}. Installing packages with DNF..."
-sudo dnf install -y android-tools borgbackup easytag epiphany ffmpeg firefox \
-flatpak git gnome-menus gnome-mpv gnome-tweaks gthumb jq \
-lm_sensors lz4 mosh nano neofetch perl-Image-ExifTool \
-python3-streamlink seahorse ShellCheck stress syncthing tilix \
-youtube-dl zstd
+echo -e "${stepWithColor}. Installing GUI packages with DNF..."
+sudo dnf install -y easytag epiphany firefox gnome-menus gnome-mpv \
+gnome-tweaks gthumb seahorse syncthing tilix
+print_done
 
+echo -e "${stepWithColor}. Installing CLI packages with DNF..."
+sudo dnf install -y android-tools borgbackup ffmpeg flatpak git jq lm_sensors \
+lz4 mosh nano neofetch perl-Image-ExifTool python3-streamlink ShellCheck \
+stress youtube-dl zstd
 print_done
 
 echo -e "${stepWithColor}. Installing fonts with DNF..."
 sudo dnf install -y google-roboto-fonts google-roboto-mono-fonts linux-libertine-fonts
+print_done
+
+echo -e "${stepWithColor}. Replacing some DNF packages with Flatpaks..."
+sudo dnf autoremove -y eog evince evince-djvu evolution gnome-calculator \
+gnome-contacts gnome-clocks gnome-logs libreoffice*
+
+flatpak install -y flathub org.gnome.Calculator
+flatpak install -y flathub org.gnome.clocks
+flatpak install -y flathub org.gnome.Contacts
+flatpak install -y flathub org.gnome.eog
+flatpak install -y flathub org.gnome.Evince
+flatpak install -y flathub org.gnome.Evolution
+flatpak install -y flathub org.gnome.Logs
+flatpak install -y flathub org.libreoffice.LibreOffice
+
 print_done
 
 echo -e "\n${stepWithColor}. Installing Flatpaks from Flathub..."
@@ -149,19 +161,12 @@ flatpak install -y flathub com.discordapp.Discord
 flatpak install -y flathub com.github.babluboy.bookworm
 flatpak install -y flathub io.freetubeapp.FreeTube
 flatpak install -y flathub org.fedoraproject.MediaWriter
-flatpak install -y flathub org.freac.freac org.gimp.GIMP
-flatpak install -y flathub org.gnome.Calculator
-flatpak install -y flathub org.gnome.clocks
-flatpak install -y flathub org.gnome.Contacts
-flatpak install -y flathub org.gnome.eog
-flatpak install -y flathub org.gnome.Evince
-flatpak install -y flathub org.gnome.Evolution
+flatpak install -y flathub org.freac.freac
+flatpak install -y flathub org.gimp.GIMP
 flatpak install -y flathub org.gnome.Fractal
-flatpak install -y flathub org.gnome.Logs
 flatpak install -y flathub org.gnome.Lollypop
 flatpak install -y flathub org.gtk.Gtk3theme.Materia-dark
 flatpak install -y flathub org.keepassxc.KeePassXC
-flatpak install -y flathub org.libreoffice.LibreOffice
 flatpak install -y flathub org.qbittorrent.qBittorrent
 flatpak install -y flathub org.signal.Signal
 flatpak install -y flathub org.zim_wiki.Zim
