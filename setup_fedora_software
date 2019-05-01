@@ -38,7 +38,14 @@ set -Eeuo pipefail
 # ----- Program variables -----
 # -----------------------------
 
-readonly USER_HOME=$(eval echo ~"${SUDO_USER}")
+# Colors
+readonly TURQOISE=$(tput bold && tput setaf 6)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+readonly DNF_CONFIG_FILE="/etc/dnf/dnf.conf"
+readonly VSCODIUM_REPO_FILE="/etc/yum.repos.d/gitlab.com_paulcarroty_vscodium-deb-rpm-repo_raw_repos_rpms_.repo"
+stepCounter=1
+stepWithColor="${TURQOISE}${stepCounter}${NC}"
 
 installGamingSoftware=false
 
@@ -56,6 +63,8 @@ installGamingSoftware=false
 #   none
 #######################################
 print_done() {
+  stepCounter=$(( stepCounter + 1 ))
+  stepWithColor="${TURQOISE}${stepCounter}${NC}"
   echo -e "Done.\n"
 }
 
@@ -86,21 +95,31 @@ echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 echo -e "This script should NOT be run as root (or sudo)!"
 read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
 
-echo -e "Configuring DNF..."
-sudo /bin/sh -c 'echo -e "\nmax_parallel_downloads=10" >> /etc/dnf/dnf.conf'
-sudo /bin/sh -c 'echo -e "\ndeltarpm_percentage=90" >> /etc/dnf/dnf.conf'
+echo -e "${stepWithColor}. Configuring DNF..."
+
+if ! grep -q -i "max_parallel_downloads" ${DNF_CONFIG_FILE}; then
+  echo -e "\nmax_parallel_downloads=10" | sudo tee -a "${DNF_CONFIG_FILE}" > /dev/null
+fi
+
+if ! grep -q -i "deltarpm_percentage" ${DNF_CONFIG_FILE}; then
+  echo -e "\ndeltarpm_percentage=90" | sudo tee -a "${DNF_CONFIG_FILE}" > /dev/null
+fi
+
 print_done
 
-echo -e "Disabling Fedora Modular repos..."
+echo -e "${stepWithColor}. Disabling Fedora Modular repos..."
 sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-modular.repo
 sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.repo
 print_done
 
-echo -e "Removing unused software..."
-sudo dnf autoremove -y abrt* cheese eog evince evolution gedit gnome-boxes \
-gnome-calculator gnome-calendar gnome-contacts gnome-clocks gnome-documents \
-gnome-software gnome-weather java* libreoffice* qt5-qt* rhythmbox simple-scan \
-totem totem-plugins
+echo -e "${stepWithColor}. Removing unused software..."
+sudo dnf autoremove -y abrt* cheese gedit gnome-boxes gnome-documents \
+gnome-software gnome-weather java* qt5-qt* rhythmbox simple-scan totem \
+totem-plugins
+
+# To replace with flatpak
+sudo dnf autoremove -y eog evince evolution gnome-calculator gnome-calendar \
+gnome-contacts gnome-clocks libreoffice*
 
 # Long names
 sudo dnf autoremove -y gnome-getting-started-docs gnome-initial-setup \
@@ -108,72 +127,94 @@ gnome-logs gnome-maps gnome-photos gnome-shell-extension-background-logo \
 gnome-shell-extension-alternate-tab gnome-shell-extension-apps-menu \
 gnome-shell-extension-launch-new-instance gnome-shell-extension-places-menu \
 gnome-shell-extension-window-list gnome-terminal-nautilus gnome-user-docs
+
 print_done
 
-echo -e "Installing packages with DNF..."
+echo -e "${stepWithColor}. Installing packages with DNF..."
 sudo dnf install -y android-tools borgbackup easytag epiphany ffmpeg firefox \
 flatpak git gnome-menus gnome-mpv gnome-tweaks gthumb jq \
-kleopatra lm_sensors lz4 mosh nano neofetch perl-Image-ExifTool \
+lm_sensors lz4 mosh nano neofetch perl-Image-ExifTool \
 python3-streamlink seahorse ShellCheck stress syncthing tilix \
 youtube-dl zstd
+
 print_done
 
-echo -e "Installing fonts with DNF..."
+echo -e "${stepWithColor}. Installing fonts with DNF..."
 sudo dnf install -y google-roboto-fonts google-roboto-mono-fonts linux-libertine-fonts
+print_done
 
-echo -e "Installing Flatpaks from Flathub..."
+echo -e "\n${stepWithColor}. Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y flathub com.discordapp.Discord io.freetubeapp.FreeTube \
-org.fedoraproject.MediaWriter org.freac.freac org.gimp.GIMP org.gnome.Calculator \
-org.gnome.clocks org.gnome.Contacts org.gnome.eog \
-org.gnome.Evince org.gnome.Fractal org.gnome.Logs org.gnome.Lollypop \
-org.gtk.Gtk3theme.Materia-dark org.keepassxc.KeePassXC org.libreoffice.LibreOffice \
-org.qbittorrent.qBittorrent org.signal.Signal org.zim_wiki.Zim org.gnome.Evolution
+flatpak install -y flathub com.discordapp.Discord
+flatpak install -y flathub com.github.babluboy.bookworm
+flatpak install -y flathub io.freetubeapp.FreeTube
+flatpak install -y flathub org.fedoraproject.MediaWriter
+flatpak install -y flathub org.freac.freac org.gimp.GIMP
+flatpak install -y flathub org.gnome.Calculator
+flatpak install -y flathub org.gnome.clocks
+flatpak install -y flathub org.gnome.Contacts
+flatpak install -y flathub org.gnome.eog
+flatpak install -y flathub org.gnome.Evince
+flatpak install -y flathub org.gnome.Evolution
+flatpak install -y flathub org.gnome.Fractal
+flatpak install -y flathub org.gnome.Logs
+flatpak install -y flathub org.gnome.Lollypop
+flatpak install -y flathub org.gtk.Gtk3theme.Materia-dark
+flatpak install -y flathub org.keepassxc.KeePassXC
+flatpak install -y flathub org.libreoffice.LibreOffice
+flatpak install -y flathub org.qbittorrent.qBittorrent
+flatpak install -y flathub org.signal.Signal
+flatpak install -y flathub org.zim_wiki.Zim
 flatpak update -y # Needed to force flatpak to install drivers and themes
 print_done
 
 # From https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo#how-to-install-for-other-distros
-echo -e "Installing VSCodium..."
+echo -e "${stepWithColor}. Installing VSCodium..."
 sudo rpm --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
 sudo dnf config-manager --add-repo https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/
 sudo dnf update
+
 # Enable gpgcheck for this repo
-sudo /bin/sh -c 'echo -e "\ngpgcheck=1" >> /etc/yum.repos.d/gitlab.com_paulcarroty_vscodium-deb-rpm-repo_raw_repos_rpms_.repo'
+if ! grep -q -i "ngpgcheck" ${VSCODIUM_REPO_FILE}; then
+  echo -e "\ngpgcheck=1" | sudo tee -a "${VSCODIUM_REPO_FILE}" > /dev/null
+fi
+
+# Rename repo so output from DNF is pretty
+sudo sed -i "s#name=created by dnf config-manager from https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/#name=VSCodium GitLab repo#g" "${VSCODIUM_REPO_FILE}"
+
 sudo dnf install -y vscodium
 print_done
 
 # From https://github.com/nana-4/materia-theme#installation
 # https://copr.fedorainfracloud.org/coprs/tcg/themes/
-echo -e "Installing Materia theme..."
+echo -e "${stepWithColor}. Installing Materia theme..."
 sudo dnf copr enable -y tcg/themes
 sudo dnf install -y materia-theme
 print_done
 
 # From https://github.com/PapirusDevelopmentTeam/papirus-icon-theme#papirus-installer
-echo -e "Installing Papirus icons..."
+echo -e "${stepWithColor}. Installing Papirus icons..."
 sudo dnf copr enable -y dirkdavidis/papirus-icon-theme
 sudo dnf install -y papirus-icon-theme
 print_done
 
 # From https://www.wireguard.com/install/
-echo -e "Installing Wireguard..."
+echo -e "${stepWithColor}. Installing Wireguard..."
 sudo dnf copr enable -y jdoss/wireguard
 sudo dnf install -y wireguard-dkms wireguard-tools
 print_done
 
 if [ "$installGamingSoftware" = true ]; then
-  echo -e "Setting up Lutris gaming environment..."
-  sudo dnf install -y lutris
-
-  # Install Battle.net dependencies https://github.com/lutris/lutris/wiki/Game:-Blizzard-App
+  echo -e "${stepWithColor}. Installing Lutris and WINE..."
+  sudo dnf install -y lutris wine
+  print_done
+  
+  # https://github.com/lutris/lutris/wiki/Game:-Blizzard-App
+  echo -e "${stepWithColor}. Installing Battle.net dependencies..."
   sudo dnf install -y gnutls gnutls-devel openldap openldap-devel libgpg-error sqlite2.i686 sqlite2.x86_64 
   print_done
 
-  echo -e "Installing WINE..."
-  sudo dnf install -y wine
-  print_done
-
-  echo -e "Hiding WINE desktop entries..."
+  echo -e "${stepWithColor}. Hiding WINE desktop entries..."
 
   cp /usr/share/applications/wine* "${HOME}/.local/share/applications/"
 
@@ -185,21 +226,32 @@ if [ "$installGamingSoftware" = true ]; then
 fi
 
 # From https://bbs.archlinux.org/viewtopic.php?id=173653
-echo -e "Adding .gif thumbnails to GNOME Files (Nautilus)..."
+echo -e "${stepWithColor}. Adding .gif thumbnails to GNOME Files (Nautilus)..."
 sudo dnf install -y ffmpegthumbnailer
-sudo sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer
-rm -rf "$USER_HOME/.cache/thumbnails"
+
+if ! grep -q -i "MimeType=image/gif" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer; then
+  sudo sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer
+fi
+
+rm -rf "${HOME}/.cache/thumbnails"
 print_done
 
 # Make sudo show password typing feedback with asterisks
-echo -e "Setting up pwfeedback in /etc/sudoers..."
-sudo sed -i "s#env_reset#env_reset, pwfeedback#" /etc/sudoers
+echo -e "${stepWithColor}. Setting up pwfeedback in /etc/sudoers..."
+
+if ! sudo grep -q -i "pwfeedback" /etc/sudoers; then
+  sudo sed -i "s#env_reset#env_reset, pwfeedback#" /etc/sudoers
+fi
+
 print_done
 
 # Make Firefox use Wayland if the user is running Wayland
-displayServer=$(env | grep -i XDG_SESSION_TYPE)
-if [[ "${displayServer}" == *"wayland" ]]; then
-  sudo /bin/sh -c 'echo -e "\nMOZ_ENABLE_WAYLAND=1" >> /etc/environment'
+if ! sudo grep -q -i "MOZ_ENABLE_WAYLAND=1" /etc/environment; then
+  if [[ $(env | grep -i XDG_SESSION_TYPE) == *"wayland" ]]; then
+    echo -e "${stepWithColor}. Making Firefox use Wayland..."
+    echo -e "\nMOZ_ENABLE_WAYLAND=1" | sudo tee -a /etc/environment > /dev/null
+    print_done
+  fi
 fi
 
 echo -e "Reboot your computer now!"
