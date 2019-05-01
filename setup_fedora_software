@@ -122,7 +122,7 @@ sudo dnf install -y google-roboto-fonts google-roboto-mono-fonts linux-libertine
 
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y flathub com.discordapp.Discord io.freetubeapp.FreeTube
+flatpak install -y flathub com.discordapp.Discord io.freetubeapp.FreeTube \
 org.fedoraproject.MediaWriter org.freac.freac org.gimp.GIMP org.gnome.Calculator \
 org.gnome.Calendar org.gnome.clocks org.gnome.Contacts org.gnome.eog \
 org.gnome.Evince org.gnome.Fractal org.gnome.Logs org.gnome.Lollypop \
