@@ -201,9 +201,4 @@ if [[ "${displayServer}" == *"wayland" ]]; then
   sudo /bin/sh -c 'echo -e "\nMOZ_ENABLE_WAYLAND=1" >> /etc/environment'
 fi
 
-echo -e "Making Qt apps look like your GTK+ theme..."
-sudo dnf install -y qt5-qtstyleplugins
-sudo /bin/sh -c 'echo -e "\nQT_QPA_PLATFORMTHEME=gtk2" >> /etc/environment'
-print_done
-
 echo -e "Reboot your computer now!"
