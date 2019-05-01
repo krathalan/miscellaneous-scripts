@@ -122,9 +122,10 @@ sudo dnf install -y google-roboto-fonts google-roboto-mono-fonts linux-libertine
 
 echo -e "Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y flathub com.discordapp.Discord org.fedoraproject.MediaWriter \
-org.freac.freac org.gimp.GIMP org.gnome.Calculator org.gnome.Calendar org.gnome.clocks \
-org.gnome.eog org.gnome.Evince org.gnome.Fractal org.gnome.Logs org.gnome.Lollypop \
+flatpak install -y flathub com.discordapp.Discord io.freetubeapp.FreeTube
+org.fedoraproject.MediaWriter org.freac.freac org.gimp.GIMP org.gnome.Calculator \
+org.gnome.Calendar org.gnome.clocks org.gnome.Contacts org.gnome.eog \
+org.gnome.Evince org.gnome.Fractal org.gnome.Logs org.gnome.Lollypop \
 org.gtk.Gtk3theme.Materia-dark org.keepassxc.KeePassXC org.libreoffice.LibreOffice \
 org.qbittorrent.qBittorrent org.signal.Signal org.zim_wiki.Zim
 flatpak update -y # Needed to force flatpak to install drivers and themes
@@ -169,6 +170,16 @@ if [ "$installGamingSoftware" = true ]; then
 
   echo -e "Installing WINE..."
   sudo dnf install -y wine
+  print_done
+
+  echo -e "Hiding WINE desktop entries..."
+
+  cp /usr/share/applications/wine* "${HOME}/.local/share/applications/"
+
+  for file in "${HOME}/.local/share/applications/wine"*; do
+    echo "Hidden=true" >> "${file}"
+  done
+
   print_done
 fi
 

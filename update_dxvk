@@ -23,7 +23,8 @@
 # ----- Program variables -----
 # -----------------------------
 
-releaseNumber="$1"
+readonly DXVK_FILE_PATH="${HOME}/.local/bin"
+readonly RELEASE_NUMBER="$1"
 
 # --------------------------------------
 # --------------- Script ---------------
@@ -39,11 +40,12 @@ echo -e "This script should not be run as root (or sudo)!"
 echo -e ""
 
 (
-cd "${HOME}/.local/bin" || exit
-rm -rf dxvk*
-wget "https://github.com/doitsujin/dxvk/releases/download/v${releaseNumber}/dxvk-${releaseNumber}.tar.gz" --directory-prefix="${HOME}/.local/bin" -q --show-progress
-tar -xf "dxvk-${releaseNumber}".tar.gz
-rm -f "dxvk-${releaseNumber}".tar.gz
+  mkdir -p "${DXVK_FILE_PATH}"
+  cd "${DXVK_FILE_PATH}" || exit
+  rm -rf dxvk*
+  wget "https://github.com/doitsujin/dxvk/releases/download/v${RELEASE_NUMBER}/dxvk-${RELEASE_NUMBER}.tar.gz" --directory-prefix="${DXVK_FILE_PATH}" -q --show-progress
+  tar -xf "dxvk-${RELEASE_NUMBER}".tar.gz
+  rm -f "dxvk-${RELEASE_NUMBER}".tar.gz
 )
 
 echo -e "\nDone."

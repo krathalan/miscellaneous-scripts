@@ -76,6 +76,10 @@ echo -e "\n${step}. Removing old cached dnf packages..."
 sudo dnf clean packages
 print_done
 
+echo -e "\n${step}. Removing unused dnf packages..."
+sudo dnf autoremove
+print_done
+
 echo -e "\n${step}. Removing unused Flatpaks..."
 flatpak uninstall -y --unused
 print_done
