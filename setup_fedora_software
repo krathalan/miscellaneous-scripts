@@ -102,7 +102,7 @@ gnome-calendar gnome-clocks gnome-documents gnome-software gnome-weather java* \
 libreoffice* rhythmbox simple-scan totem totem-plugins
 
 # Long names
-sudo dnf autoremove gnome-getting-started-docs gnome-initial-setup \
+sudo dnf autoremove -y gnome-getting-started-docs gnome-initial-setup \
 gnome-logs gnome-maps gnome-photos gnome-shell-extension-background-logo \
 gnome-shell-extension-alternate-tab gnome-shell-extension-apps-menu \
 gnome-shell-extension-launch-new-instance gnome-shell-extension-places-menu \
