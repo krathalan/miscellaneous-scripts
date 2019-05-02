@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Updates DXVK in /opt.
+# Description: Updates DXVK in ~/.local/bin.
 #
 # Homepage: https://gitlab.com/krathalan
 #
@@ -23,21 +23,48 @@
 # ----- Program variables -----
 # -----------------------------
 
+# Colors
+readonly RED=$(tput bold && tput setaf 1)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
 readonly DXVK_FILE_PATH="${HOME}/.local/bin"
 readonly RELEASE_NUMBER="$1"
+readonly SCRIPT_NAME=$(basename "$0")
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure() {
+  printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
 
 # --------------------------------------
 # --------------- Script ---------------
 # --------------------------------------
 
 # Print intro
-readonly scriptName=$(basename "$0")
-echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
+echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
-echo -e "This script should not be run as root (or sudo)!"
-echo -e ""
+if [[ $(whoami) == "root" ]]; then
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+fi
 
 (
   mkdir -p "${DXVK_FILE_PATH}"

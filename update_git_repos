@@ -34,49 +34,27 @@
 set -Eeuo pipefail
 
 # -----------------------------------------
-# --------------- Functions ---------------
+# ----------- Program variables -----------
 # -----------------------------------------
 
-#######################################
-# Gets the current branch a git repository is on.
-# Globals:
-#   none
-# Arguments:
-#   none
-# Returns:
-#   current branch of git repository
-#######################################
-get_current_branch()
-{
-  local branch
-  branch=$(git status | grep "On branch" | awk '{printf $3}')
-
-  # Return 
-  echo "${branch}"
-}
+readonly BASE_DIR="${HOME}/GitLab"
+readonly SCRIPT_NAME=$(basename "$0")
 
 # --------------------------------------
 # --------------- Script ---------------
 # --------------------------------------
 
 # Print intro
-readonly scriptName=$(basename "$0")
-echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
+echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
 echo -e "Updating git repos..."
 
-readonly baseDir="${HOME}/GitLab"
-currentBranch=""
-
-for dir in "${baseDir}"/*; do
+for dir in "${BASE_DIR}"/*; do
   (
   cd "${dir}" || exit
-  
-  currentBranch=$(get_current_branch)
-  git pull origin "${currentBranch}" 
-
+  git pull origin "$(git status | grep "On branch" | awk '{printf $3}')" 
   echo ""
   )
 done

@@ -34,18 +34,45 @@ set -Eeuo pipefail
 # -----------------------------
 # ----- Program variables -----
 # -----------------------------
-readonly WORKING_DIRECTORY="${PWD}"
+
+readonly SCRIPT_NAME=$(basename "$0")
 readonly TEMP_DIRECTORY="/tmp/.make_gif"
+readonly WORKING_DIRECTORY="${PWD}"
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure() {
+  printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
 
 # --------------------------------------
 # --------------- Script ---------------
 # --------------------------------------
 
 # Print intro
-readonly scriptName=$(basename "$0")
-echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
+echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
+
+if [[ $(whoami) == "root" ]]; then
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+fi
 
 rm -rf "${TEMP_DIRECTORY}"
 mkdir "${TEMP_DIRECTORY}"

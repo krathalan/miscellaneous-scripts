@@ -54,6 +54,24 @@ installGamingSoftware=false
 # -----------------------------------------
 
 #######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure() {
+  printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
+
+#######################################
 # Prints "Done."
 # Globals:
 #   none
@@ -92,8 +110,9 @@ echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
 echo -e "This is free software: you are free to change and redistribute it."
 echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
 
-echo -e "This script should NOT be run as root (or sudo)!"
-read -r -p "Press enter when you are ready to continue, or <CTRL+C> to exit: "
+if [[ $(whoami) == "root" ]]; then
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+fi
 
 echo -e "${stepWithColor}. Configuring DNF..."
 
@@ -113,7 +132,7 @@ sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.re
 print_done
 
 echo -e "${stepWithColor}. Removing unused DNF packages..."
-sudo dnf autoremove -y abrt* cheese gedit gnome-boxes gnome-calendar 
+sudo dnf autoremove -y abrt* cheese gedit gnome-boxes gnome-calendar \
 gnome-documents gnome-maps gnome-photos gnome-software gnome-weather java* \
 qt5-qt* rhythmbox simple-scan sssd* totem totem-plugins
 
@@ -259,4 +278,4 @@ if ! sudo grep -q -i "MOZ_ENABLE_WAYLAND=1" /etc/environment; then
   fi
 fi
 
-echo -e "Reboot your computer now!"
+echo -e "You will need to reboot your computer for some configuration changes to take effect."
