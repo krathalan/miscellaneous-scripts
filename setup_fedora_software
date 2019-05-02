@@ -178,6 +178,7 @@ echo -e "\n${stepWithColor}. Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.discordapp.Discord
 flatpak install -y flathub com.github.babluboy.bookworm
+flatpak install -y flathub com.visualstudio.code.oss
 flatpak install -y flathub io.freetubeapp.FreeTube
 flatpak install -y flathub org.fedoraproject.MediaWriter
 flatpak install -y flathub org.freac.freac
@@ -190,23 +191,6 @@ flatpak install -y flathub org.qbittorrent.qBittorrent
 flatpak install -y flathub org.signal.Signal
 flatpak install -y flathub org.zim_wiki.Zim
 flatpak update -y # Needed to force flatpak to install drivers and themes
-print_done
-
-# From https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo#how-to-install-for-other-distros
-echo -e "${stepWithColor}. Installing VSCodium..."
-sudo rpm --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
-sudo dnf config-manager --add-repo https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/
-sudo dnf update
-
-# Enable gpgcheck for this repo
-if ! grep -q -i "ngpgcheck" ${VSCODIUM_REPO_FILE}; then
-  echo -e "\ngpgcheck=1" | sudo tee -a "${VSCODIUM_REPO_FILE}" > /dev/null
-fi
-
-# Rename repo so output from DNF is pretty
-sudo sed -i "s#name=created by dnf config-manager from https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/#name=VSCodium GitLab repo#g" "${VSCODIUM_REPO_FILE}"
-
-sudo dnf install -y vscodium
 print_done
 
 # From https://github.com/nana-4/materia-theme#installation
