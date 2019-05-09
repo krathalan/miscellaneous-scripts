@@ -1,0 +1,296 @@
+#!/bin/bash
+#
+# Description: Sets up Fedora Linux with the software I use, and 
+#              configures various aspects of the system to my liking.
+#
+# Homepage: https://gitlab.com/krathalan
+#
+# Copyright (C) 2019 krathalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# sed usage from https://bbs.archlinux.org/viewtopic.php?id=173653
+
+# ------------------
+# --- Guidelines ---
+# ------------------
+
+# This script follows the Google Shell Style Guide: 
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------
+# ----- Program variables -----
+# -----------------------------
+
+# Colors
+readonly RED=$(tput bold && tput setaf 1)
+readonly TURQOISE=$(tput bold && tput setaf 6)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+readonly DNF_CONFIG_FILE="/etc/dnf/dnf.conf"
+stepCounter=1
+stepWithColor="${TURQOISE}${stepCounter}${NC}"
+
+installGamingSoftware=false
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure() {
+  printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
+
+#######################################
+# Prints "Done."
+# Globals:
+#   none
+# Arguments:
+#   none
+# Returns:
+#   none
+#######################################
+print_done() {
+  stepCounter=$(( stepCounter + 1 ))
+  stepWithColor="${TURQOISE}${stepCounter}${NC}"
+  echo -e "Done.\n"
+}
+
+# --------------------------------------
+# --------------- Script ---------------
+# --------------------------------------
+
+# Parse flags. From:
+# https://stackoverflow.com/questions/7069682/how-to-get-arguments-with-flags-in-bash/7069755#7069755
+while test $# -gt 0; do
+  case "$1" in
+    -g)
+      installGamingSoftware=true;
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+# Print intro
+readonly scriptName=$(basename "$0")
+echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
+echo -e "This is free software: you are free to change and redistribute it."
+echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
+
+if [[ $(whoami) == "root" ]]; then
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+fi
+
+if cat /etc/*-release | grep -qi fedora; then
+  echo -e "${stepWithColor}. Configuring DNF..."
+
+  if ! grep -q -i "max_parallel_downloads" ${DNF_CONFIG_FILE}; then
+    echo -e "\nmax_parallel_downloads=10" | sudo tee -a "${DNF_CONFIG_FILE}" > /dev/null
+  fi
+
+  if ! grep -q -i "deltarpm_percentage" ${DNF_CONFIG_FILE}; then
+    echo -e "\ndeltarpm_percentage=90" | sudo tee -a "${DNF_CONFIG_FILE}" > /dev/null
+  fi
+
+  print_done
+
+  echo -e "${stepWithColor}. Disabling Fedora Modular repos..."
+  sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-modular.repo
+  sudo sed -i "s#enabled=1#enabled=0#g" /etc/yum.repos.d/fedora-updates-modular.repo
+  print_done
+
+  echo -e "${stepWithColor}. Removing some DNF packages..."
+  # To replace with flatpaks 
+  sudo dnf autoremove -y eog evince evince-djvu evolution gnome-calculator gnome-contacts gnome-clocks libreoffice*
+
+  # Unused
+  sudo dnf autoremove -y abrt* b43* cheese gedit gnome-boxes gnome-calendar gnome-documents gnome-logs gnome-maps gnome-photos gnome-software gnome-weather java* NetworkManager-iodine NetworkManager-l2tp NetworkManager-libreswan NetworkManager-openconnect NetworkManager-openvpn NetworkManager-ppp NetworkManager-pptp NetworkManager-team NetworkManager-vpnc PackageKit* qt5-qt* quota* reiserfs-utils rhythmbox setroubleshoot simple-scan sos squashfs-tools sssd* telnet totem totem-plugins virtualbox* *vmware yelp
+
+  # Proprietary blobs
+  sudo dnf autoremove -y atmel-firmware ipw* libertas-usb8388-firmware linux-firmware zd1211-firmware
+
+  print_done
+
+  echo -e "${stepWithColor}. Installing GUI packages with DNF..."
+  sudo dnf install -y easytag epiphany firefox gnome-mpv seahorse syncthing tilix
+  print_done
+
+  echo -e "${stepWithColor}. Installing CLI packages with DNF..."
+  sudo dnf install -y android-tools borgbackup drpm ffmpeg flatpak git jq lm_sensors lz4 mosh nano neofetch perl-Image-ExifTool python3-streamlink ShellCheck stress youtube-dl zstd
+  print_done
+
+  echo -e "${stepWithColor}. Installing fonts with DNF..."
+  sudo dnf install -y google-roboto-fonts linux-libertine-fonts
+  print_done
+
+  # From https://github.com/PapirusDevelopmentTeam/papirus-icon-theme#papirus-installer
+  echo -e "${stepWithColor}. Installing Papirus icons..."
+  sudo dnf copr enable -y dirkdavidis/papirus-icon-theme
+  sudo dnf install -y papirus-icon-theme
+  print_done
+
+  # From https://www.wireguard.com/install/
+  echo -e "${stepWithColor}. Installing Wireguard..."
+  sudo dnf copr enable -y jdoss/wireguard
+  sudo dnf install -y wireguard-dkms wireguard-tools
+  print_done
+
+  if [ "$installGamingSoftware" = true ]; then
+    echo -e "${stepWithColor}. Installing Lutris and WINE..."
+    sudo dnf install -y lutris wine
+    print_done
+    
+    # https://github.com/lutris/lutris/wiki/Game:-Blizzard-App
+    echo -e "${stepWithColor}. Installing Battle.net dependencies..."
+    sudo dnf install -y gnutls gnutls-devel openldap openldap-devel libgpg-error sqlite2.i686 sqlite2.x86_64 
+    print_done
+
+    echo -e "${stepWithColor}. Hiding WINE desktop entries..."
+
+    cp /usr/share/applications/wine* "${HOME}/.local/share/applications/"
+
+    for file in "${HOME}/.local/share/applications/wine"*; do
+      echo "Hidden=true" >> "${file}"
+    done
+
+    print_done
+  fi
+
+  # From https://bbs.archlinux.org/viewtopic.php?id=173653
+  echo -e "${stepWithColor}. Adding .gif thumbnails to GNOME Files (Nautilus)..."
+  sudo dnf install -y ffmpegthumbnailer
+
+  if ! grep -q -i "MimeType=image/gif" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer; then
+    sudo sed -i "s#MimeType=#MimeType=image/gif;#" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer
+  fi
+
+  rm -rf "${HOME}/.cache/thumbnails"
+  print_done
+
+  # Make sudo show password typing feedback with asterisks
+  echo -e "${stepWithColor}. Setting up pwfeedback in /etc/sudoers..."
+
+  if ! sudo grep -q -i "pwfeedback" /etc/sudoers; then
+    sudo sed -i "s#env_reset#env_reset, pwfeedback#" /etc/sudoers
+  fi
+
+  print_done
+elif cat /etc/*-release | grep -qi void; then
+  echo -e "${stepWithColor}. Installing system packages with xbps..."
+  sudo xbps-install -Sy ConsoleKit2 NetworkManager alsa-plugins alsa-plugins-ffmpeg alsa-plugins-pulseaudio alsa-utils cups cups-filters cups-pk-helper curl ffmpeg ffmpegthumbnailer flatpak font-libertine-ttf fonts-roboto-ttf gnome-disk-utility gnome-keyring gst-libav gst-plugins-bad1 gst-plugins-base1 gst-plugins-good1 gst-plugins-ugly1 gstreamer1 gstreamer-vaapi hplip nano pavucontrol pinentry-gtk plata-theme polkit polkit-gnome pulseaudio stress system-config-printer unzip xdg-desktop-portal xdg-desktop-portal-gtk xdg-user-dirs xdg-user-dirs-gtk xdg-utils
+  print_done
+
+  echo -e "${stepWithColor}. Installing user packages with xbps..."
+  sudo xbps-install -Sy android-tools bash-completion borg epiphany exiftool git gnome-mpv gnome-screenshot gnome-system-monitor gthumb jq lz4 mediainfo mosh neofetch papirus-icon-theme redshift redshift-gtk seahorse shellcheck streamlink syncthing wireguard wireguard-tools youtube-dl zstd
+  print_done
+
+  echo -e "${stepWithColor}. Removing 4 of 6 default TTY services..."
+  sudo rm -f /var/service/agetty-tty{3,4,5,6}
+  print_done
+
+  echo -e "${stepWithColor}. Starting some services..."
+  start_service alsa
+  start_service cgmanager
+  start_service consolekit
+  start_service cupsd
+  start_service dbus
+  start_service polkitd
+  print_done
+
+  echo -e "${stepWithColor}. Setting up lightdm..."
+  sudo xbps-install -Sy lightdm lightdm-gtk3-greeter lightdm-gtk-greeter-settings
+  start_service lightdm
+  print_done
+
+  echo -e "${stepWithColor}. Setting up git..."
+  git config --global gpg.program gpg2
+  echo "pinentry-program /usr/bin/pinentry-gtk-2" > "${HOME}/.gnupg/gpg-agent.conf"
+  gpgconf --kill gpg-agent
+  print_done
+
+  echo -e "${stepWithColor}. Switching default Python to Python3..."
+  sudo xbps-alternatives -g python -s python3
+  print_done
+
+  echo -e "${stepWithColor}. Usage reports"
+  echo -e " PopCorn, the Void Linux usage reporter, reports ONLY:"
+  echo -e "   1. Which packages are installed and which version (e.g. firefox-66.0.3_2)"
+  echo -e "   2. The host CPU architecture (e.g. x86_64)\n"
+  read -rp "Do you wish to enable usage reporting (yes/no)? " userResponse
+
+  # Convert user response to lowercase
+  if [[ "${userResponse,,}" == "yes" ]]; then
+    echo -e "\nInstalling PopCorn..."
+    sudo xbps-install -S PopCorn
+    start_service popcorn
+  fi
+
+  print_done
+
+  echo -e "\nResources:"
+  echo -e " https://docs.voidlinux.org/"
+  echo -e " https://wiki.voidlinux.org/Post_Installation"
+fi
+
+echo -e "\n${stepWithColor}. Installing Flatpaks from Flathub..."
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install -y flathub com.discordapp.Discord
+flatpak install -y flathub com.github.babluboy.bookworm
+flatpak install -y flathub com.visualstudio.code.oss
+flatpak install -y flathub io.freetubeapp.FreeTube
+flatpak install -y flathub org.fedoraproject.MediaWriter
+flatpak install -y flathub org.freac.freac
+flatpak install -y flathub org.gimp.GIMP
+flatpak install -y flathub org.gnome.Calculator
+flatpak install -y flathub org.gnome.clocks
+flatpak install -y flathub org.gnome.eog
+flatpak install -y flathub org.gnome.Evince
+flatpak install -y flathub org.gnome.Evolution
+flatpak install -y flathub org.gnome.Fractal
+flatpak install -y flathub org.gnome.Rhythmbox3
+flatpak install -y flathub org.keepassxc.KeePassXC
+flatpak install -y flathub org.libreoffice.LibreOffice
+flatpak install -y flathub org.qbittorrent.qBittorrent
+flatpak install -y flathub org.signal.Signal
+flatpak install -y flathub org.zim_wiki.Zim
+flatpak update -y # Needed to force flatpak to install drivers and themes
+print_done
+
+echo -e "${stepWithColor}. Installing Plata-Noir flatpak theme. ${RED}Choose branch 3.22!${NC}"
+flatpak install -y flathub org.gtk.Gtk3theme.Plata-Noir
+print_done
+
+echo -e "You will need to reboot your computer for some configuration changes to take effect."
