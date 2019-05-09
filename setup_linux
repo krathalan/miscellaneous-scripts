@@ -74,7 +74,7 @@ exit_script_on_failure() {
 #######################################
 # Prints "Done."
 # Globals:
-#   none
+#   TURQOISE, stepCounter, NC
 # Arguments:
 #   none
 # Returns:
@@ -84,6 +84,31 @@ print_done() {
   stepCounter=$(( stepCounter + 1 ))
   stepWithColor="${TURQOISE}${stepCounter}${NC}"
   echo -e "Done.\n"
+}
+
+#######################################
+# Starts a runit service.
+# Globals:
+#   none
+# Arguments:
+#   $1: service to start
+# Returns:
+#   none
+#######################################
+start_service()
+{
+  if [[ ! -d /var/service/$1 ]]; then
+    echo -en "\n Starting $1 service in /var/service/..."
+    
+    if [[ -d "/etc/sv/$1" ]]; then
+      sudo ln -s "/etc/sv/$1" /var/service/
+      print_done
+    else
+      exit_script_on_failure "$1 service not installed on this computer."
+    fi
+  else
+    echo -e " $1 service already running."
+  fi
 }
 
 # --------------------------------------
