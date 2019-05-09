@@ -162,10 +162,10 @@ if cat /etc/*-release | grep -qi fedora; then
 
   echo -e "${stepWithColor}. Removing some DNF packages..."
   # To replace with flatpaks 
-  sudo dnf autoremove -y eog evince evince-djvu evolution gnome-calculator gnome-contacts gnome-clocks libreoffice*
+  sudo dnf autoremove -y eog evince evince-djvu evolution gnome-calculator gnome-contacts gnome-clocks libreoffice* rhythmbox
 
   # Unused
-  sudo dnf autoremove -y abrt* b43* cheese gedit gnome-boxes gnome-calendar gnome-documents gnome-logs gnome-maps gnome-photos gnome-software gnome-weather java* NetworkManager-iodine NetworkManager-l2tp NetworkManager-libreswan NetworkManager-openconnect NetworkManager-openvpn NetworkManager-ppp NetworkManager-pptp NetworkManager-team NetworkManager-vpnc PackageKit* qt5-qt* quota* reiserfs-utils rhythmbox setroubleshoot simple-scan sos squashfs-tools sssd* telnet totem totem-plugins virtualbox* *vmware yelp
+  sudo dnf autoremove -y abrt* b43* cheese gedit gnome-boxes gnome-calendar gnome-documents gnome-logs gnome-maps gnome-photos gnome-software gnome-weather java* NetworkManager-iodine NetworkManager-l2tp NetworkManager-libreswan NetworkManager-openconnect NetworkManager-openvpn NetworkManager-ppp NetworkManager-pptp NetworkManager-team NetworkManager-vpnc PackageKit* qt5-qt* quota* reiserfs-utils setroubleshoot simple-scan sos squashfs-tools sssd* telnet totem totem-plugins virtualbox* *vmware yelp
 
   # Proprietary blobs
   sudo dnf autoremove -y atmel-firmware ipw* libertas-usb8388-firmware linux-firmware zd1211-firmware
