@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Description: Sets up Fedora Linux with the software I use, and 
-#              configures various aspects of the system to my liking.
+# Description: Sets up Fedora or Void Linux with the software I use, and 
+#              configures various aspects of each system to my liking.
 #
 # Homepage: https://gitlab.com/krathalan
 #
