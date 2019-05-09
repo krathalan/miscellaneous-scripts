@@ -96,17 +96,33 @@ if [[ $(whoami) == "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
-echo -e "\n${stepWithColor}. Updating dnf packages..."
-sudo dnf upgrade --refresh
-print_done
+if cat /etc/*-release | grep -qi fedora; then
+  echo -e "\n${stepWithColor}. Updating dnf packages..."
+  sudo dnf upgrade --refresh
+  print_done
 
-echo -e "\n${stepWithColor}. Removing old cached dnf packages..."
-sudo dnf clean packages
-print_done
+  echo -e "\n${stepWithColor}. Removing old cached dnf packages..."
+  sudo dnf clean packages
+  print_done
 
-echo -e "\n${stepWithColor}. Removing unused dnf packages..."
-sudo dnf autoremove
-print_done
+  echo -e "\n${stepWithColor}. Removing unused dnf packages..."
+  sudo dnf autoremove
+  print_done
+fi
+
+if cat /etc/*-release | grep -qi void; then
+  echo -e "\n${stepWithColor}. Removing old cached xbps packages..."
+  sudo xbps-remove -O
+  print_done
+
+  echo -e "\n${stepWithColor}. Removing unused xbps packages..."
+  sudo xbps-remove -o
+  print_done
+
+  echo -e "\n${stepWithColor}. Updating xbps packages..."
+  sudo xbps-install -Su
+  print_done
+fi
 
 echo -e "\n${stepWithColor}. Removing unused Flatpaks..."
 flatpak uninstall -y --unused
@@ -120,4 +136,8 @@ echo -e "\n${stepWithColor}. Emptying trash..."
 rm -rf "${USER_HOME}"/.local/share/Trash/files/*
 rm -rf "${USER_HOME}"/.local/share/Trash/info/*
 rm -rf "${USER_HOME}"/.local/share/Trash/expunged/*
+print_done
+
+echo -e "\n${stepWithColor}. Printing disk usage..."
+neofetch disk
 print_done
