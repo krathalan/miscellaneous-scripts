@@ -139,6 +139,16 @@ if [[ $(whoami) == "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
+if cat /etc/*-release | grep -qi arch; then
+  echo -e "${stepWithColor}. Installing packages..."
+  sudo pacman -S android-tools apparmor bash-completion blueberry bluez bluez-tools bluez-utils borg easytag epiphany ffmpeg firefox-developer-edition flatpak git gnome-online-accounts gnome-online-miners gnome-system-monitor gnome-disk-utility gst-libav gst-plugins-bad gst-plugins-base gst-plugins-good gstreamer gstreamer-vaapi gtk2 imagemagick intel-ucode jq libcanberra libcanberra-gstreamer libcanberra-pulse lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings linux-headers lz4 mosh neofetch networkmanager network-manager-applet papirus-icon-theme perl-image-exiftool redshift rhythmbox seahorse streamlink stress sudo syncthing system-config-printer tilix ttf-dejavu ttf-droid ttf-linux-libertine ttf-roboto wireguard-dkms wireguard-tools xdg-user-dirs xdg-user-dirs-gtk youtube-dl
+
+  # From AUR
+  yay plata-theme
+  yay shellcheck-static
+  yay ttf-roboto-mono
+fi
+
 if cat /etc/*-release | grep -qi fedora; then
   # Only Fedora can have -Ee; xbps exits with an error if a package is already installed.
   set -Eeuo pipefail
