@@ -99,11 +99,11 @@ fi
 
 if cat /etc/*-release | grep -qi arch; then
   echo -e "\n${stepWithColor}. Updating packages..."
-  yaourt -Syu --devel --aur
+  yaourt -Syu --aur
   print_done
   
   echo -e "\n${stepWithColor}. Removing unused packages..."
-  sudo pacman -Rns $(pacman -Qtdq) 2> /dev/null || echo -e "No packages to remove"
+  sudo pacman -Rns "$(pacman -Qtdq)" 2> /dev/null || echo -e "No packages to remove"
   print_done
 fi
 
