@@ -96,6 +96,17 @@ if [[ $(whoami) == "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
+
+if cat /etc/*-release | grep -qi arch; then
+  echo -e "\n${stepWithColor}. Updating packages..."
+  yaourt -Syu --devel --aur
+  print_done
+  
+  echo -e "\n${stepWithColor}. Removing unused packages..."
+  sudo pacman -Rns $(pacman -Qtdq) 2> /dev/null || echo -e "No packages to remove"
+  print_done
+fi
+
 if cat /etc/*-release | grep -qi fedora; then
   echo -e "\n${stepWithColor}. Updating dnf packages..."
   sudo dnf upgrade --refresh
