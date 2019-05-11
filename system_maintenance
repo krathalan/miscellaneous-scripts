@@ -99,7 +99,7 @@ fi
 
 if cat /etc/*-release | grep -qi arch; then
   echo -e "\n${stepWithColor}. Updating packages..."
-  yaourt -Syu --aur
+  yay -Syu --devel
   print_done
   
   echo -e "\n${stepWithColor}. Removing unused packages..."
