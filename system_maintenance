@@ -68,19 +68,18 @@ exit_script_on_failure() {
 }
 
 #######################################
-# Prints " done."
+# Properly configures stepWithColor.
 # Globals:
-#   none
+#   stepCounter, stepWithColor, TURQOISE, NC
 # Arguments:
 #   none
 # Returns:
 #   none
 #######################################
-print_done()
+complete_step()
 {
   stepCounter=$(( stepCounter + 1 ))
   stepWithColor="${TURQOISE}${stepCounter}${NC}"
-  echo -e "Done."
 }
 
 # --------------------------------------
@@ -88,9 +87,9 @@ print_done()
 # --------------------------------------
 
 # Print intro
-echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"
-echo -e "This is free software: you are free to change and redistribute it."
-echo -e "There is NO WARRANTY, to the extent permitted by law."
+printf "Starting %s Bash script; Copyright (C) 2019 krathalan\n" "${SCRIPT_NAME}"
+printf "This is free software: you are free to change and redistribute it.\n"
+printf "There is NO WARRANTY, to the extent permitted by law.\n"
 
 if [[ $(whoami) == "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
@@ -98,57 +97,62 @@ fi
 
 
 if cat /etc/*-release | grep -qi arch; then
-  echo -e "\n${stepWithColor}. Updating packages..."
+  printf "\n%s. Updating packages...\n" "${stepWithColor}"
   yay -Syu --devel
-  print_done
+  complete_step
   
-  echo -e "\n${stepWithColor}. Removing unused packages..."
-  sudo pacman -Rns "$(pacman -Qtdq)" 2> /dev/null || echo -e "No packages to remove"
-  print_done
+  printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
+  sudo pacman -Rs "$(pacman -Qtdq)" 2> /dev/null || printf "No packages to remove\n"
+  complete_step
+
+  printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
+  sudo pacman -Dk
+  complete_step
 fi
 
 if cat /etc/*-release | grep -qi fedora; then
-  echo -e "\n${stepWithColor}. Updating dnf packages..."
+  printf "\n%s. Updating dnf packages...\n" "${stepWithColor}"
   sudo dnf upgrade --refresh
-  print_done
+  complete_step
 
-  echo -e "\n${stepWithColor}. Removing old cached dnf packages..."
+  printf "\n%s. Removing old cached dnf packages...\n" "${stepWithColor}"
   sudo dnf clean packages
-  print_done
+  complete_step
 
-  echo -e "\n${stepWithColor}. Removing unused dnf packages..."
+  printf "\n%s. Removing unused dnf packages...\n" "${stepWithColor}"
   sudo dnf autoremove
-  print_done
+  complete_step
 fi
 
 if cat /etc/*-release | grep -qi void; then
-  echo -e "\n${stepWithColor}. Removing old cached xbps packages..."
+  printf "\n%s. Removing old cached xbps packages...\n" "${stepWithColor}"
   sudo xbps-remove -O
-  print_done
+  complete_step
 
-  echo -e "\n${stepWithColor}. Removing unused xbps packages..."
+  printf "\n%s. Removing unused xbps packages...\n" "${stepWithColor}"
   sudo xbps-remove -o
-  print_done
+  complete_step
 
-  echo -e "\n${stepWithColor}. Updating xbps packages..."
+  printf "\n%s. Updating xbps packages...\n" "${stepWithColor}"
   sudo xbps-install -Su
-  print_done
+  complete_step
 fi
 
-echo -e "\n${stepWithColor}. Removing unused Flatpaks..."
+printf "\n%s. Removing unused Flatpaks...\n" "${stepWithColor}"
 flatpak uninstall -y --unused
-print_done
+complete_step
 
-echo -e "\n${stepWithColor}. Updating Flatpaks..."
+printf "\n%s. Updating Flatpaks...\n" "${stepWithColor}"
 flatpak update -y
-print_done
+complete_step
 
-echo -e "\n${stepWithColor}. Emptying trash..."
+printf "\n%s. Emptying trash...\n" "${stepWithColor}"
 rm -rf "${USER_HOME}"/.local/share/Trash/files/*
 rm -rf "${USER_HOME}"/.local/share/Trash/info/*
 rm -rf "${USER_HOME}"/.local/share/Trash/expunged/*
-print_done
+printf "Done.\n"
+complete_step
 
-echo -e "\n${stepWithColor}. Printing disk usage..."
+printf "\n%s. Printing disk usage...\n" "${stepWithColor}"
 neofetch disk
-print_done
+complete_step
