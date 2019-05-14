@@ -97,12 +97,24 @@ fi
 
 
 if cat /etc/*-release | grep -qi arch; then
+  printf "\n%s. Regenerating mirrorlist...\n" "${stepWithColor}"
+  sudo reflector --latest 5 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 
+  complete_step
+  
+  printf "\nNew mirrorlist in /etc/pacman.d/mirrorlist:\n"
+  grep "Server" /etc/pacman.d/mirrorlist
+
   printf "\n%s. Updating packages...\n" "${stepWithColor}"
-  yay -Syu --devel
+  yay -Syyu --devel
   complete_step
   
   printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
+  yay -c
   sudo pacman -Rs "$(pacman -Qtdq)" 2> /dev/null || printf "No packages to remove\n"
+  complete_step
+
+  printf "\n%s. Cleaning pacman and yay caches...\n" "${stepWithColor}"
+  yay -Sc --noconfirm
   complete_step
 
   printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
