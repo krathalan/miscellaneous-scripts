@@ -97,16 +97,33 @@ fi
 
 
 if cat /etc/*-release | grep -qi arch; then
-  printf "\n%s. Regenerating mirrorlist...\n" "${stepWithColor}"
-  sudo reflector --latest 5 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 
-  complete_step
-  
-  printf "\nNew mirrorlist in /etc/pacman.d/mirrorlist:\n"
-  grep "Server" /etc/pacman.d/mirrorlist
+  # Check last mirror list update time
+  mirrorListUpdateTime=$(grep "Last Check" /etc/pacman.d/mirrorlist | awk '{printf $4}')
+  mirrorListUpdateTime=$(date +%s -d "${mirrorListUpdateTime}") # Convert to Unix time
+  readonly currentTime=$(date +%s -d now) # Get current time as Unix time
 
-  printf "\n%s. Updating packages...\n" "${stepWithColor}"
-  yay -Syyu --devel
-  complete_step
+  # 302400 = half the number of seconds in a week
+  if [[ $(( currentTime - mirrorListUpdateTime )) -gt 302400 ]]; then
+    printf "\n%s. Regenerating mirrorlist...\n" "${stepWithColor}"
+    sudo reflector --latest 5 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 
+    complete_step
+  
+    printf "\nNew mirrorlist in /etc/pacman.d/mirrorlist:\n"
+    grep "Server" /etc/pacman.d/mirrorlist
+
+    printf "\n%s. Updating packages...\n" "${stepWithColor}"
+
+    # Two "y"s in -Syyu forces pacman to update the repos even if they appear to be up to date;
+    # this should be used after updating the mirrorlist 
+    # https://wiki.archlinux.org/index.php/Mirrors#Force_pacman_to_refresh_the_package_lists
+    yay -Syyu --devel
+
+    complete_step
+  else
+    printf "\n%s. Updating packages...\n" "${stepWithColor}"
+    yay -Syu --devel
+    complete_step
+  fi
   
   printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
   yay -c
@@ -114,7 +131,8 @@ if cat /etc/*-release | grep -qi arch; then
   complete_step
 
   printf "\n%s. Cleaning pacman and yay caches...\n" "${stepWithColor}"
-  yay -Sc --noconfirm
+  yay -Sc --noconfirm > /dev/null || exit_script_on_failure "Problem cleaning pacman and yay caches with command \"yay -Sc --noconfirm\""
+  printf "Done.\n"
   complete_step
 
   printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
