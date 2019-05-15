@@ -141,14 +141,19 @@ fi
 
 if cat /etc/*-release | grep -qi arch; then
   echo -e "${stepWithColor}. Installing packages with pacman..."
-  sudo pacman -S --needed android-tools apparmor bash-completion blueberry bluez-tools bluez-utils borg cinnamon cowsay dosfstools easytag efibootmgr epiphany ffmpeg firefox-developer-edition flatpak fortune-mod git gnome-characters gnome-disk-utility gnome-keyring gnome-online-accounts gnome-online-miners gnome-screenshot gnome-system-monitor grub gst-libav gst-plugins-bad gst-plugins-good gstreamer-vaapi gtk2 gvfs-goa gvfs-gphoto2 gvfs-mtp imagemagick intel-ucode jq libcanberra-gstreamer libmediainfo libxcursor libxinerama libxrandr libxss libxtst lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings linux-headers mosh mpv mtools neofetch network-manager-applet networkmanager openresolv os-prober papirus-icon-theme perl-image-exiftool pulseaudio-bluetooth python-pip redshift reflector rhythmbox seahorse streamlink stress syncthing system-config-printer tilix unzip wireguard-dkms wireguard-tools xdg-user-dirs xdg-user-dirs-gtk xorg-xinit xorg-xinput xorg-xrandr youtube-dl zip
+  # System packages
+  sudo pacman -S --needed apparmor bash-completion blueberry bluez-tools bluez-utils cups cups-pdf ffmpeg file-roller flatpak gnome-keyring gnome-online-accounts gnome-online-miners gst-libav gst-plugins-bad gst-plugins-good gstreamer-vaapi gtk2 gvfs-goa gvfs-gphoto2 gvfs-mtp hplip intel-ucode iw iwd libcanberra-gstreamer libxcursor libxinerama libxrandr libxss libxtst lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings linux-headers network-manager-applet pulseaudio-bluetooth python-pip system-config-printer unzip wget wireguard-dkms wireguard-tools xdg-user-dirs xdg-user-dirs-gtk xorg-xinit xorg-xinput xorg-xrandr zip
+
+  # User packages
+  sudo pacman -S --needed android-tools borg cowsay easytag epiphany firefox-developer-edition fortune-mod git gnome-characters gnome-disk-utility gnome-screenshot gnome-system-monitor imagemagick jq libmediainfo mosh mpv neofetch papirus-icon-theme perl-image-exiftool redshift reflector rhythmbox seahorse streamlink stress syncthing tilix youtube-dl 
+
+  # Dependency for building yay
+  sudo pacman -S --needed --asexplicit go
   print_done 
+  
 
   echo -e "${stepWithColor}. Installing fonts with pacman..."
   sudo pacman -S --needed noto-fonts noto-fonts-emoji ttf-dejavu ttf-linux-libertine ttf-roboto 
-  print_done
-
-  sudo pacman -S --needed --asexplicit go
   print_done
 
   echo -e "${stepWithColor}. Installing ${TURQOISE}plata-theme${NC} from AUR..."
