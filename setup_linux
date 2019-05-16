@@ -32,7 +32,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -uo pipefail
+set -Eeuo pipefail
 
 # -----------------------------
 # ----- Program variables -----
@@ -142,42 +142,23 @@ fi
 if cat /etc/*-release | grep -qi arch; then
   echo -e "${stepWithColor}. Installing packages with pacman..."
   # System packages
-  sudo pacman -S --needed apparmor bash-completion blueberry bluez-tools bluez-utils cups cups-pdf ffmpeg file-roller flatpak gnome-keyring gnome-online-accounts gnome-online-miners gst-libav gst-plugins-bad gst-plugins-good gstreamer-vaapi gtk2 gvfs-goa gvfs-gphoto2 gvfs-mtp hplip intel-ucode iw iwd libcanberra-gstreamer libxcursor libxinerama libxrandr libxss libxtst lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings linux-headers network-manager-applet pulseaudio-bluetooth python-pip system-config-printer unzip wget wireguard-dkms wireguard-tools xdg-user-dirs xdg-user-dirs-gtk xorg-xinit xorg-xinput xorg-xrandr zip
+  sudo pacman -S --needed apparmor bash-completion blueberry cups cups-pdf ffmpeg file-roller flatpak gnome-keyring gnome-online-accounts gnome-online-miners gst-libav gtk2 gvfs-goa gvfs-gphoto2 gvfs-mtp hplip intel-ucode iw iwd libxcursor libxinerama libxrandr libxss libxtst network-manager-applet pulseaudio-bluetooth python-pip system-config-printer unzip wget wireguard-dkms wireguard-tools xdg-user-dirs xdg-user-dirs-gtk xorg-xinit xorg-xinput xorg-xrandr zip
 
   # User packages
-  sudo pacman -S --needed android-tools borg cowsay easytag epiphany firefox-developer-edition fortune-mod git gnome-characters gnome-disk-utility gnome-screenshot gnome-system-monitor imagemagick jq libmediainfo mosh mpv neofetch papirus-icon-theme perl-image-exiftool redshift reflector rhythmbox seahorse streamlink stress syncthing tilix youtube-dl 
+  sudo pacman -S --needed android-tools bookworm borg cowsay easytag epiphany firefox-developer-edition fortune-mod gimp git gnome-characters gnome-disk-utility gnome-screenshot gnome-system-monitor imagemagick jq libmediainfo mosh mpv neofetch papirus-icon-theme perl-image-exiftool redshift reflector rhythmbox seahorse streamlink stress syncthing tilix youtube-dl 
 
   # Dependency for building yay
   sudo pacman -S --needed --asexplicit go
   print_done 
-  
 
   echo -e "${stepWithColor}. Installing fonts with pacman..."
   sudo pacman -S --needed noto-fonts noto-fonts-emoji ttf-dejavu ttf-linux-libertine ttf-roboto 
   print_done
 
-  echo -e "${stepWithColor}. Installing ${TURQOISE}plata-theme${NC} from AUR..."
-  yay plata-theme
+  echo -e "${stepWithColor}. Installing packages from AUR..."
+  yay -S plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
   print_done
-
-  echo -e "${stepWithColor}. Installing ${TURQOISE}shellcheck-static${NC} from AUR..."
-  yay shellcheck-static
-  print_done
-
-  echo -e "${stepWithColor}. Installing ${TURQOISE}ttf-roboto-mono${NC} from AUR..."
-  yay ttf-roboto-mono
-  print_done
-
-
-  echo -e "${stepWithColor}. Installing ${TURQOISE}vscodium-bin${NC} from AUR..."
-  yay vscodium-bin
-  print_done
-fi
-
-if cat /etc/*-release | grep -qi fedora; then
-  # Only Fedora can have -Ee; xbps exits with an error if a package is already installed.
-  set -Eeuo pipefail
-
+elif cat /etc/*-release | grep -qi fedora; then
   echo -e "${stepWithColor}. Configuring DNF..."
 
   if ! grep -q -i "max_parallel_downloads" ${DNF_CONFIG_FILE}; then
@@ -271,71 +252,14 @@ if cat /etc/*-release | grep -qi fedora; then
   fi
 
   print_done
-elif cat /etc/*-release | grep -qi void; then
-  echo -e "${stepWithColor}. Installing system packages with xbps..."
-  sudo xbps-install -Sy ConsoleKit2 NetworkManager alsa-plugins alsa-plugins-ffmpeg alsa-plugins-pulseaudio alsa-utils cups cups-filters cups-pk-helper curl ffmpeg ffmpegthumbnailer flatpak font-libertine-ttf fonts-roboto-ttf gnome-disk-utility gnome-keyring gst-libav gst-plugins-bad1 gst-plugins-base1 gst-plugins-good1 gst-plugins-ugly1 gstreamer1 gstreamer-vaapi hplip nano pavucontrol pinentry-gtk plata-theme polkit polkit-gnome pulseaudio stress system-config-printer unzip xdg-desktop-portal xdg-desktop-portal-gtk xdg-user-dirs xdg-user-dirs-gtk xdg-utils
-  print_done
-
-  echo -e "${stepWithColor}. Installing user packages with xbps..."
-  sudo xbps-install -Sy android-tools bash-completion borg epiphany exiftool git gnome-mpv gnome-screenshot gnome-system-monitor gthumb jq lz4 mediainfo mosh neofetch papirus-icon-theme redshift redshift-gtk seahorse shellcheck streamlink syncthing wireguard wireguard-tools youtube-dl zstd
-  print_done
-
-  echo -e "${stepWithColor}. Removing 4 of 6 default TTY services..."
-  sudo rm -f /var/service/agetty-tty{3,4,5,6}
-  print_done
-
-  echo -e "${stepWithColor}. Starting some services..."
-  start_service alsa
-  start_service cgmanager
-  start_service consolekit
-  start_service cupsd
-  start_service dbus
-  start_service polkitd
-  print_done
-
-  echo -e "${stepWithColor}. Setting up lightdm..."
-  sudo xbps-install -Sy lightdm lightdm-gtk3-greeter lightdm-gtk-greeter-settings
-  start_service lightdm
-  print_done
-
-  echo -e "${stepWithColor}. Setting up git..."
-  git config --global gpg.program gpg2
-  echo "pinentry-program /usr/bin/pinentry-gtk-2" > "${HOME}/.gnupg/gpg-agent.conf"
-  gpgconf --kill gpg-agent
-  print_done
-
-  echo -e "${stepWithColor}. Switching default Python to Python3..."
-  sudo xbps-alternatives -g python -s python3
-  print_done
-
-  echo -e "${stepWithColor}. Usage reports"
-  echo -e " PopCorn, the Void Linux usage reporter, reports ONLY:"
-  echo -e "   1. Which packages are installed and which version (e.g. firefox-66.0.3_2)"
-  echo -e "   2. The host CPU architecture (e.g. x86_64)\n"
-  read -rp "Do you wish to enable usage reporting (yes/no)? " userResponse
-
-  # Convert user response to lowercase
-  if [[ "${userResponse,,}" == "yes" ]]; then
-    echo -e "\nInstalling PopCorn..."
-    sudo xbps-install -S PopCorn
-    start_service popcorn
-  fi
-
-  print_done
-
-  echo -e "\nResources:"
-  echo -e " https://docs.voidlinux.org/"
-  echo -e " https://wiki.voidlinux.org/Post_Installation"
 fi
 
 echo -e "\n${stepWithColor}. Installing Flatpaks from Flathub..."
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.discordapp.Discord
-flatpak install -y flathub com.github.babluboy.bookworm
 flatpak install -y flathub io.freetubeapp.FreeTube
 flatpak install -y flathub org.fedoraproject.MediaWriter
 flatpak install -y flathub org.freac.freac
-flatpak install -y flathub org.gimp.GIMP
 flatpak install -y flathub org.gnome.Calculator
 flatpak install -y flathub org.gnome.clocks
 flatpak install -y flathub org.gnome.eog

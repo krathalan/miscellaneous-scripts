@@ -41,7 +41,6 @@ readonly TURQOISE=$(tput bold && tput setaf 6)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 readonly SCRIPT_NAME=$(basename "$0")
-readonly USER_HOME=$(eval echo ~"${HOME}")
 stepCounter=1
 stepWithColor="${TURQOISE}${stepCounter}${NC}"
 
@@ -177,9 +176,7 @@ flatpak update -y
 complete_step
 
 printf "\n%s. Emptying trash...\n" "${stepWithColor}"
-rm -rf "${USER_HOME}"/.local/share/Trash/files/*
-rm -rf "${USER_HOME}"/.local/share/Trash/info/*
-rm -rf "${USER_HOME}"/.local/share/Trash/expunged/*
+rm -rf "${HOME}/.local/share/Trash"
 printf "Done.\n"
 complete_step
 
