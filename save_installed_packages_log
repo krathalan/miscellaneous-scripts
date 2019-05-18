@@ -79,10 +79,7 @@ fi
 
 # Create file
 if [[ -f "${LOG_PATH}" ]]; then
-  if [[ -f "${LOG_PATH}.old" ]]; then
-    rm -f "${LOG_PATH}.old"
-  fi
-
+  rm -f "${LOG_PATH}.old"
   mv "${LOG_PATH}" "${LOG_PATH}.old"
 fi
 
