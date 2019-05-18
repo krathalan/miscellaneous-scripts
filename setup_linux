@@ -117,6 +117,11 @@ if [[ $(whoami) == "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
+flatpakNeedsRestart="false"
+if [[ ! -x "$(command -v "flatpak")" ]]; then
+  flatpakNeedsRestart="true"
+fi
+
 printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 # Kernel packages
 sudo pacman -S --needed linux-headers linux-lts linux-lts-headers
@@ -137,15 +142,15 @@ print_done
 
 if [[ -x "$(command -v "yay")" ]]; then
   printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-  yay -S plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
+  #yay -S plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
   print_done
 fi
 
-update_Qt_Gtk_theme="false"
+qtThemesNeedRestart="false"
 if ! grep -qi "QT_QPA_PLATFORMTHEME" /etc/environment; then
   printf "%s. Making Qt apps use your GTK theme...\n" "${stepWithColor}"
   echo "QT_QPA_PLATFORMTHEME=gtk2" | sudo tee -a /etc/environment > /dev/null
-  update_Qt_Gtk_theme="true"
+  qtThemesNeedRestart="true"
   print_done
 fi
 
@@ -175,8 +180,12 @@ if [[ "${installGamingSoftware}" == "true" ]]; then
   fi
 fi
 
-if [[ "${update_Qt_Gtk_theme}" == "true" ]]; then
+if [[ "${qtThemesNeedRestart}" == "true" ]]; then
   printf "[%s!%s] You will need to reboot your computer for Qt applications to start using your Gtk theme.\n" "${ORANGE}" "${NC}"
+fi
+
+if [[ "${flatpakNeedsRestart}" == "true" ]]; then
+  printf "[%s!%s] You will need to reboot your computer for Flatpak applications to show up in your application menu.\n" "${ORANGE}" "${NC}"
 fi
 
 printf "[%s✔%s] Bash script %s complete.\n" "${GREEN}" "${NC}" "${SCRIPT_NAME}"
