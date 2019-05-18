@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Sets up Fedora or Void Linux with the software I use, and 
+# Description: Sets up Arch Linux with the software I use, and 
 #              configures various aspects of each system to my liking.
 #
 # Homepage: https://gitlab.com/krathalan
