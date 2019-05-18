@@ -39,11 +39,14 @@ set -Eeuo pipefail
 # -----------------------------
 
 # Colors
+readonly GREEN=$(tput bold && tput setaf 2)
 readonly RED=$(tput bold && tput setaf 1)
 readonly TURQOISE=$(tput bold && tput setaf 6)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 readonly DNF_CONFIG_FILE="/etc/dnf/dnf.conf"
+readonly SCRIPT_NAME=$(basename "$0")
+
 stepCounter=1
 stepWithColor="${TURQOISE}${stepCounter}${NC}"
 
@@ -83,7 +86,7 @@ exit_script_on_failure() {
 print_done() {
   stepCounter=$(( stepCounter + 1 ))
   stepWithColor="${TURQOISE}${stepCounter}${NC}"
-  printf "\nDone.\n"
+  printf "Done.\n\n"
 }
 
 # --------------------------------------
@@ -105,16 +108,18 @@ while test $# -gt 0; do
 done
 
 # Print intro
-readonly scriptName=$(basename "$0")
-echo -e "Starting ${scriptName} BASH script; Copyright (C) 2019 krathalan"
-echo -e "This is free software: you are free to change and redistribute it."
-echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
+printf "Starting %s BASH script; Copyright (C) 2019 krathalan\n" "${SCRIPT_NAME}"
+printf "This is free software: you are free to change and redistribute it.\n"
+printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 
 if [[ $(whoami) == "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
-echo -e "${stepWithColor}. Installing packages with pacman..."
+printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
+# Kernel packages
+sudo pacman -S --needed linux-headers linux-lts linux-lts-headers
+
 # System packages
 sudo pacman -S --needed apparmor bash-completion blueberry cups cups-pdf ffmpeg file-roller flatpak gnome-keyring gnome-online-accounts gnome-online-miners gst-libav gtk2 gvfs-goa gvfs-gphoto2 gvfs-mtp hplip intel-ucode iw iwd libxcursor libxinerama libxrandr libxss libxtst network-manager-applet pulseaudio-bluetooth python-pip system-config-printer unzip wget wireguard-dkms wireguard-tools xdg-user-dirs xdg-user-dirs-gtk xorg-xinit xorg-xinput xorg-xrandr zip
 
@@ -125,21 +130,23 @@ sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog epiphany 
 sudo pacman -S --needed --asexplicit go
 print_done 
 
-echo -e "${stepWithColor}. Installing fonts with pacman..."
+printf "%s. Installing fonts with pacman...\n" "${stepWithColor}"
 sudo pacman -S --needed noto-fonts noto-fonts-emoji ttf-dejavu ttf-linux-libertine ttf-roboto 
 print_done
 
-echo -e "${stepWithColor}. Installing packages from AUR..."
-#yay -S plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
+printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
+yay -S plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
 print_done
 
+update_Qt_Gtk_theme="false"
 if ! grep -qi "QT_QPA_PLATFORMTHEME" /etc/environment; then
   printf "\n%s. Making Qt apps use your GTK theme...\n" "${stepWithColor}"
   echo "QT_QPA_PLATFORMTHEME=gtk2" | sudo tee -a /etc/environment > /dev/null
+  update_Qt_Gtk_theme="true"
   print_done
 fi
 
-echo -e "\n${stepWithColor}. Installing Flatpaks from Flathub..."
+printf "%s. Installing Flatpaks from Flathub...\n" "${stepWithColor}"
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.discordapp.Discord
 flatpak install -y flathub io.freetubeapp.FreeTube
@@ -148,14 +155,25 @@ flatpak install -y flathub org.signal.Signal
 flatpak update -y # Needed to force flatpak to install drivers and themes
 print_done
 
-# WIP
 if [[ "${installGamingSoftware}" == "true" ]]; then
-  printf "\n%s Enabling multilib repositories...\n" "${stepWithColor}"
-  print_done
+  printf "%s Installing gaming software...\n" "${stepWithColor}"
 
-  printf "\n%s Installing gaming software...\n" "${stepWithColor}"
-  sudo pacman -S lib32-gnutls lib32-libldap lib32-libgpg-error lib32-sqlite lib32-libpulse
-  print_done
+  if ! grep -q "#\[multilib\]" /etc/pacman.conf; then
+    sudo pacman -S wine lutris
+
+    # NVIDIA drivers
+    sudo pacman -S nvidia nvidia-lts lib32-nvidia-utils
+
+    # Battle.net dependencies
+    sudo pacman -S lib32-gnutls lib32-libldap lib32-libgpg-error lib32-sqlite lib32-libpulse 
+    print_done
+  else
+    exit_script_on_failure "You must enable the multilib repositories in /etc/pacman.conf to install gaming software."
+  fi
 fi
 
-echo -e "You will need to reboot your computer for some configuration changes to take effect."
+if [[ "${update_Qt_Gtk_theme}" == "true" ]]; then
+  printf "You will need to reboot your computer for Qt applications to start using your Gtk theme.\n"
+fi
+
+printf "[%s✔%s] Bash script %s complete.\n" "${GREEN}" "${NC}" "${SCRIPT_NAME}"
