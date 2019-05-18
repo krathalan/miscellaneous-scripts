@@ -6,7 +6,7 @@ Please don't run these scripts without reading them first. Always read a script 
 ## make_gif
 I made this script after the camera app I use on my phone lost it's auto-gif-making functionality whenever I would take burst photos. To use it, put only the photos you want in the gif into a directory, and then run the script in that directory.
 
-Here's an example gif I made with make_gif:
+Here's an example gif of my cat I made with make_gif:
 
 ![Example gif](Images/example.gif)
 
