@@ -25,7 +25,7 @@ Target=*
 Description=Saving list of installed packages to /var/log/installed_packages.log...
 When=PostTransaction
 NeedsTargets
-Exec=/path/to/where/you/put/this/script
+Exec=/path/to/where/you/put/this/script/save_installed_packages_log
 ```
 
 ## setup_linux
