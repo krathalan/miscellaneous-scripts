@@ -1,0 +1,99 @@
+#!/bin/bash
+#
+# Description: Creates a list of explicitly installed system packages.
+#
+# This script is intended to be used in a pacman hook in /etc/pacman.d/hooks.
+#
+# Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
+#
+# Edited from an anonymous gist on Github
+# https://gist.github.com/anonymous/a588e2ca9160d5fb142b
+# https://web.archive.org/web/20190511164651/https://gist.github.com/anonymous/a588e2ca9160d5fb142b
+
+# ------------------
+# --- Guidelines ---
+# ------------------
+
+# This script follows the Google Shell Style Guide: 
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------
+# ----- Program variables -----
+# -----------------------------
+
+# Colors
+readonly RED=$(tput bold && tput setaf 1)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+# Packages -- filter out packages from base, base-devel, and xorg-apps
+# groups from final list
+readonly ALL=$(pacman --query --quiet --explicit)
+readonly BASE=$(pacman --query --quiet --groups  base)
+readonly BASE_DEVEL=$(pacman --query --quiet --groups base-devel)
+readonly XORG_APPS=$(pacman --query --quiet --groups xorg-apps)
+
+# Other
+readonly DATE=$(date)
+readonly LOG_PATH="/var/log/installed_packages.log"
+readonly SCRIPT_NAME=$(basename "$0")
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+append_to_log()
+{
+  printf "%s\n" "$1" | tee -a "${LOG_PATH}" > /dev/null
+}
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure() {
+  printf "\n[%s✖%s] Error: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
+
+# --------------------------------------
+# --------------- Script ---------------
+# --------------------------------------
+
+if [[ $(whoami) != "root" ]]; then
+  exit_script_on_failure "This script must be run AS ROOT!"
+fi
+
+# Create file
+if [[ -f "${LOG_PATH}" ]]; then
+  if [[ -f "${LOG_PATH}.old" ]]; then
+    rm -f "${LOG_PATH}.old"
+  fi
+
+  mv "${LOG_PATH}" "${LOG_PATH}.old"
+fi
+
+touch "${LOG_PATH}"
+
+append_to_log "################################################################################"
+append_to_log "###################### Arch Linux installed packages list ######################"
+append_to_log "################################################################################"
+append_to_log ""
+append_to_log "# When: ${DATE}"
+append_to_log "# With: ${SCRIPT_NAME} from https://gitlab.com/krathalan/miscellaneous-scripts"
+append_to_log ""
+append_to_log "# Installed packages:"
+append_to_log "$(printf "%s\n%s\n%s\n%s\n%s\n%s\n%s" "$ALL" "$BASE" "$BASE" "$BASE_DEVEL" "$BASE_DEVEL" "$XORG_APPS" "$XORG_APPS" | sort | uniq -u)"
