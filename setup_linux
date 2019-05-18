@@ -41,7 +41,7 @@ set -Eeuo pipefail
 # Colors
 readonly GREEN=$(tput bold && tput setaf 2)
 readonly RED=$(tput bold && tput setaf 1)
-readonly ORANGE=$(tput sgr0 && tput setaf 3)
+readonly ORANGE=$(tput bold && tput setaf 3)
 readonly TURQOISE=$(tput bold && tput setaf 6)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
