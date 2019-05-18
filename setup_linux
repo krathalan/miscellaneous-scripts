@@ -135,9 +135,11 @@ printf "%s. Installing fonts with pacman...\n" "${stepWithColor}"
 sudo pacman -S --needed noto-fonts noto-fonts-emoji ttf-dejavu ttf-linux-libertine ttf-roboto 
 print_done
 
-printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-yay -S plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
-print_done
+if [[ -x "$(command -v "yay")" ]]; then
+  printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
+  yay -S plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
+  print_done
+fi
 
 update_Qt_Gtk_theme="false"
 if ! grep -qi "QT_QPA_PLATFORMTHEME" /etc/environment; then
@@ -160,13 +162,13 @@ if [[ "${installGamingSoftware}" == "true" ]]; then
   printf "%s Installing gaming software...\n" "${stepWithColor}"
 
   if ! grep -q "#\[multilib\]" /etc/pacman.conf; then
-    sudo pacman -S wine lutris
+    sudo pacman -S --needed wine lutris
 
     # NVIDIA drivers
-    sudo pacman -S nvidia nvidia-lts lib32-nvidia-utils
+    sudo pacman -S --needed nvidia nvidia-lts lib32-nvidia-utils
 
     # Battle.net dependencies
-    sudo pacman -S lib32-gnutls lib32-libldap lib32-libgpg-error lib32-sqlite lib32-libpulse 
+    sudo pacman -S --needed lib32-gnutls lib32-libldap lib32-libgpg-error lib32-sqlite lib32-libpulse 
     print_done
   else
     exit_script_on_failure "You must enable the multilib repositories in /etc/pacman.conf to install gaming software."
