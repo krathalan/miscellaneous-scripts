@@ -33,6 +33,7 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 # Packages -- filter out packages from base, base-devel, and xorg-apps
 # groups from final list
 readonly ALL=$(pacman --query --quiet --explicit)
+readonly AUR=$(pacman --query --quiet --foreign)
 readonly BASE=$(pacman --query --quiet --groups  base)
 readonly BASE_DEVEL=$(pacman --query --quiet --groups base-devel)
 readonly XORG_APPS=$(pacman --query --quiet --groups xorg-apps)
@@ -92,5 +93,8 @@ append_to_log ""
 append_to_log "# When: ${DATE}"
 append_to_log "# With: ${SCRIPT_NAME} from https://gitlab.com/krathalan/miscellaneous-scripts"
 append_to_log ""
-append_to_log "# Installed packages:"
-append_to_log "$(printf "%s\n%s\n%s\n%s\n%s\n%s\n%s" "$ALL" "$BASE" "$BASE" "$BASE_DEVEL" "$BASE_DEVEL" "$XORG_APPS" "$XORG_APPS" | sort | uniq -u)"
+append_to_log "# Packages installed from AUR:"
+append_to_log "$(printf "%s" "${AUR}" | sort)"
+append_to_log ""
+append_to_log "# Packages installed from repos:"
+append_to_log "$(printf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s" "${ALL}" "${AUR}" "${AUR}" "${BASE}" "${BASE}" "${BASE_DEVEL}" "${BASE_DEVEL}" "${XORG_APPS}" "${XORG_APPS}" | sort | uniq -u)"

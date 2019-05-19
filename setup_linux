@@ -146,7 +146,7 @@ print_done
 
 if [[ -x "$(command -v "yay")" ]]; then
   printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-  yay -S plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
+  yay -S consolas-font plata-theme shellcheck-static ttf-roboto-mono vscodium-bin
   print_done
 fi
 
