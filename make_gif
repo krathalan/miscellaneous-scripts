@@ -2,7 +2,7 @@
 #
 # Description: Makes a looping .gif from a set of images.
 #
-# Homepage: https://gitlab.com/krathalan
+# Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2019 krathalan
 #
@@ -19,9 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# ------------------
-# --- Guidelines ---
-# ------------------
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
 
 # This script follows the Google Shell Style Guide: 
 # https://google.github.io/styleguide/shell.xml
@@ -31,9 +31,9 @@
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -Eeuo pipefail
 
-# -----------------------------
-# ----- Program variables -----
-# -----------------------------
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
 
 readonly SCRIPT_NAME=$(basename "$0")
 readonly TEMP_DIRECTORY="/tmp/.make_gif"
@@ -61,9 +61,9 @@ exit_script_on_failure() {
   exit 1
 }
 
-# --------------------------------------
-# --------------- Script ---------------
-# --------------------------------------
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
 
 # Print intro
 echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"

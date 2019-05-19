@@ -2,7 +2,7 @@
 #
 # Description: Updates DXVK in ~/.local/bin.
 #
-# Homepage: https://gitlab.com/krathalan
+# Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2019 krathalan
 #
@@ -19,14 +19,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# -----------------------------
-# ----- Program variables -----
-# -----------------------------
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
+
+# This script follows the Google Shell Style Guide: 
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
 
 # Colors
 readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
+# Other
 readonly DXVK_FILE_PATH="${HOME}/.local/bin"
 readonly RELEASE_NUMBER="$1"
 readonly SCRIPT_NAME=$(basename "$0")
@@ -53,9 +66,9 @@ exit_script_on_failure() {
   exit 1
 }
 
-# --------------------------------------
-# --------------- Script ---------------
-# --------------------------------------
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
 
 # Print intro
 echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"

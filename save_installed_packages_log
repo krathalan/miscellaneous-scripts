@@ -10,9 +10,9 @@
 # https://gist.github.com/anonymous/a588e2ca9160d5fb142b
 # https://web.archive.org/web/20190511164651/https://gist.github.com/anonymous/a588e2ca9160d5fb142b
 
-# ------------------
-# --- Guidelines ---
-# ------------------
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
 
 # This script follows the Google Shell Style Guide: 
 # https://google.github.io/styleguide/shell.xml
@@ -22,9 +22,9 @@
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -Eeuo pipefail
 
-# -----------------------------
-# ----- Program variables -----
-# -----------------------------
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
 
 # Colors
 readonly RED=$(tput bold && tput setaf 1)
@@ -69,9 +69,9 @@ exit_script_on_failure() {
   exit 1
 }
 
-# --------------------------------------
-# --------------- Script ---------------
-# --------------------------------------
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
 
 if [[ $(whoami) != "root" ]]; then
   exit_script_on_failure "This script must be run AS ROOT!"

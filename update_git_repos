@@ -2,7 +2,7 @@
 #
 # Description: Updates git repos in the user's ~/GitLab directory.
 #
-# Homepage: https://gitlab.com/krathalan
+# Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2019 krathalan
 #
@@ -21,9 +21,9 @@
 #
 # sed usage from https://bbs.archlinux.org/viewtopic.php?id=173653
 
-# ------------------
-# --- Guidelines ---
-# ------------------
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
 
 # This script follows the Google Shell Style Guide: 
 # https://google.github.io/styleguide/shell.xml
@@ -40,9 +40,9 @@ set -Eeuo pipefail
 readonly BASE_DIR="${HOME}/Git"
 readonly SCRIPT_NAME=$(basename "$0")
 
-# --------------------------------------
-# --------------- Script ---------------
-# --------------------------------------
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
 
 # Print intro
 echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"
