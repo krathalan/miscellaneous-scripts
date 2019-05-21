@@ -34,7 +34,7 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 # groups from final list
 readonly ALL=$(pacman --query --quiet --explicit)
 readonly AUR=$(pacman --query --quiet --foreign)
-readonly BASE=$(pacman --query --quiet --groups  base)
+readonly BASE=$(pacman --query --quiet --groups base)
 readonly BASE_DEVEL=$(pacman --query --quiet --groups base-devel)
 readonly XORG_APPS=$(pacman --query --quiet --groups xorg-apps)
 
@@ -78,9 +78,12 @@ if [[ $(whoami) != "root" ]]; then
   exit_script_on_failure "This script must be run AS ROOT!"
 fi
 
+# Remove old files
+rm -f "${LOG_PATH}"
+rm -f "${LOG_PATH}.old"
+
 # Create file
 if [[ -f "${LOG_PATH}" ]]; then
-  rm -f "${LOG_PATH}.old"
   mv "${LOG_PATH}" "${LOG_PATH}.old"
 fi
 

@@ -48,6 +48,12 @@ stepWithColor="${TURQOISE}${stepCounter}${NC}"
 readonly SCRIPT_NAME=$(basename "$0")
 
 # -----------------------------------------
+# ------------- User variables ------------
+# -----------------------------------------
+
+regenerateMirrorlist="true"
+
+# -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
 
@@ -88,6 +94,20 @@ complete_step()
 # ---------------- Script -----------------
 # -----------------------------------------
 
+# Parse flags. From:
+# https://stackoverflow.com/questions/7069682/how-to-get-arguments-with-flags-in-bash/7069755#7069755
+while test $# -gt 0; do
+  case "$1" in
+    -n|--no-mirrorlist-refresh)
+      export regenerateMirrorlist="false"
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 # Print intro
 printf "Starting %s Bash script; Copyright (C) 2019 krathalan\n" "${SCRIPT_NAME}"
 printf "This is free software: you are free to change and redistribute it.\n"
@@ -101,33 +121,35 @@ if [[ ! -x "$(command -v "yay")" ]]; then
   exit_script_on_failure "You must have the yay package installed from the Arch User Repository (https://github.com/Jguer/yay)."
 fi
 
-if [[ -x "$(command -v "reflector")" ]]; then
-  # Check last mirror list update time
-  mirrorListUpdateTime=$(grep "Last Check" /etc/pacman.d/mirrorlist | awk '{printf $4}')
-  mirrorListUpdateTime=$(date +%s -d "${mirrorListUpdateTime}") # Convert to Unix time
-  readonly currentTime=$(date +%s -d now) # Get current time as Unix time
+if [[ "${regenerateMirrorlist}" == "true" ]]; then
+  if [[ -x "$(command -v "reflector")" ]]; then
+    # Check last mirror list update time
+    mirrorListUpdateTime=$(grep "Last Check" /etc/pacman.d/mirrorlist | awk '{printf $4}')
+    mirrorListUpdateTime=$(date +%s -d "${mirrorListUpdateTime}") # Convert to Unix time
+    readonly currentTime=$(date +%s -d now) # Get current time as Unix time
 
-  # 302400 = half the number of seconds in a week
-  if [[ $(( currentTime - mirrorListUpdateTime )) -gt 302400 ]]; then
-    printf "\n%s. Regenerating mirrorlist...\n" "${stepWithColor}"
-    sudo reflector --latest 5 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 
-    complete_step
+    # 302400 = half the number of seconds in a week
+    if [[ $(( currentTime - mirrorListUpdateTime )) -gt 302400 ]]; then
+      printf "\n%s. Regenerating mirrorlist...\n" "${stepWithColor}"
+      sudo reflector --latest 5 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 
+      complete_step
 
-    printf "\nNew mirrorlist in /etc/pacman.d/mirrorlist:\n"
-    grep "Server" /etc/pacman.d/mirrorlist
+      printf "\nNew mirrorlist in /etc/pacman.d/mirrorlist:\n"
+      grep "Server" /etc/pacman.d/mirrorlist
 
-    printf "\n%s. Updating packages...\n" "${stepWithColor}"
+      printf "\n%s. Updating packages...\n" "${stepWithColor}"
 
-    # Two "y"s in -Syyu forces pacman to update the repos even if they appear to be up to date;
-    # this should be used after updating the mirrorlist 
-    # https://wiki.archlinux.org/index.php/Mirrors#Force_pacman_to_refresh_the_package_lists
-    yay -Syyu --devel
+      # Two "y"s in -Syyu forces pacman to update the repos even if they appear to be up to date;
+      # this should be used after updating the mirrorlist 
+      # https://wiki.archlinux.org/index.php/Mirrors#Force_pacman_to_refresh_the_package_lists
+      yay -Syyu --devel
 
-    complete_step
-  else
-    printf "\n%s. Updating packages...\n" "${stepWithColor}"
-    yay -Syu --devel
-    complete_step
+      complete_step
+    else
+      printf "\n%s. Updating packages...\n" "${stepWithColor}"
+      yay -Syu --devel
+      complete_step
+    fi
   fi
 else
   printf "\n%s. Updating packages...\n" "${stepWithColor}"
