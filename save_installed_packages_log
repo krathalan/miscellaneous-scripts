@@ -30,13 +30,9 @@ set -Eeuo pipefail
 readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
-# Packages -- filter out packages from base, base-devel, and xorg-apps
-# groups from final list
-readonly ALL=$(pacman --query --quiet --explicit)
-readonly AUR=$(pacman --query --quiet --foreign)
-readonly BASE=$(pacman --query --quiet --groups base)
-readonly BASE_DEVEL=$(pacman --query --quiet --groups base-devel)
-readonly XORG_APPS=$(pacman --query --quiet --groups xorg-apps)
+# Packages
+readonly AUR_PACKAGES=$(pacman --query --quiet --foreign)
+readonly DEP_PACKAGES=$(pacman --query --quiet --deps)
 
 # Other
 readonly DATE=$(date)
@@ -70,6 +66,34 @@ exit_script_on_failure() {
   exit 1
 }
 
+get_explicitly_installed_packages_incl_aur() {
+  local -r explicit=$(pacman --query --quiet --explicit)
+  local -r base=$(pacman --query --quiet --groups base)
+  local -r baseDevel=$(pacman --query --quiet --groups base-devel)
+  local -r xorgApps=$(pacman --query --quiet --groups xorg-apps)
+
+  # Filter out packages from base, base-devel, and xorg-apps groups
+  printf "%s\n%s\n%s\n%s\n%s\n%s\n%s" "${explicit}" "${base}" "${base}" "${baseDevel}" "${baseDevel}" "${xorgApps}" "${xorgApps}" | sort | uniq -u
+}
+
+get_explicitly_installed_packages_no_aur() {
+  local -r explicit=$(pacman --query --quiet --explicit)
+  local -r base=$(pacman --query --quiet --groups base)
+  local -r baseDevel=$(pacman --query --quiet --groups base-devel)
+  local -r xorgApps=$(pacman --query --quiet --groups xorg-apps)
+
+  # Filter out packages manually installed (from AUR) and from base, base-devel, and xorg-apps groups
+  printf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s" "${explicit}" "${AUR_PACKAGES}" "${AUR_PACKAGES}" "${base}" "${base}" "${baseDevel}" "${baseDevel}" "${xorgApps}" "${xorgApps}" | sort | uniq -u
+}
+
+get_groups_packages() {
+  local -r base=$(pacman --query --quiet --groups base)
+  local -r baseDevel=$(pacman --query --quiet --groups base-devel)
+  local -r xorgApps=$(pacman --query --quiet --groups xorg-apps)
+
+  printf "%s\n%s\n%s" "${base}" "${baseDevel}" "${xorgApps}" | sort | uniq -u
+}
+
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
@@ -89,15 +113,69 @@ fi
 
 touch "${LOG_PATH}"
 
+# Get list of repos in /etc/pacman.conf
+# SC disable needed to split string into array properly 
+# shellcheck disable=2207
+bracketedListOfRepos=($(grep -i "\[" /etc/pacman.conf | grep -v "#"))
+
+# Remove "[options]" from bracketedListOfRepos
+toDelete=("[options]")
+for i in "${!bracketedListOfRepos[@]}"; do
+  if [[ ${bracketedListOfRepos[i]} = "${toDelete[0]}" ]]; then
+    unset 'bracketedListOfRepos[i]'
+  fi
+done
+
+# Get number of explicit and dependency packages
+numberOfExplicitPackages=$(get_explicitly_installed_packages_incl_aur | wc -w)
+numberOfAurPackages=$(wc -w <<< "${AUR_PACKAGES}")
+numberOfRepoPackages=$(get_explicitly_installed_packages_no_aur | wc -w)
+numberOfDependencyPackages=$(wc -w <<< "${DEP_PACKAGES}")
+numberOfGroupsPackages=$(get_groups_packages | wc -w)
+
+# Print header and general information
 append_to_log "################################################################################"
 append_to_log "###################### Arch Linux installed packages list ######################"
 append_to_log "################################################################################"
 append_to_log ""
 append_to_log "# When: ${DATE}"
 append_to_log "# With: ${SCRIPT_NAME} from https://gitlab.com/krathalan/miscellaneous-scripts"
+append_to_log "# List of repos enabled in /etc/pacman.conf: ${bracketedListOfRepos[*]}"
+append_to_log "# Total number of packages: $(pacman --query --quiet | wc -w)"
 append_to_log ""
-append_to_log "# Packages installed from AUR:"
-append_to_log "$(printf "%s" "${AUR}" | sort)"
+append_to_log "###################### ${numberOfExplicitPackages} packages explicitly installed #######################"
 append_to_log ""
-append_to_log "# Packages installed from repos:"
-append_to_log "$(printf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s" "${ALL}" "${AUR}" "${AUR}" "${BASE}" "${BASE}" "${BASE_DEVEL}" "${BASE_DEVEL}" "${XORG_APPS}" "${XORG_APPS}" | sort | uniq -u)"
+append_to_log "# This section does not include packages from base, base-devel, and xorg-apps groups"
+append_to_log ""
+append_to_log "                         ##### ${numberOfAurPackages} from AUR/manual #####"
+append_to_log "$(sort <<< "${AUR_PACKAGES}")"
+append_to_log ""
+append_to_log "                           ##### ${numberOfRepoPackages} from repos #####"
+append_to_log "$(get_explicitly_installed_packages_no_aur)"
+append_to_log ""
+append_to_log "################### ${numberOfDependencyPackages} packages installed as dependencies #####################"
+append_to_log "${DEP_PACKAGES}"
+append_to_log ""
+append_to_log "###### ${numberOfGroupsPackages} packages installed from base, base-devel, and xorg-apps groups ########"
+append_to_log "$(get_groups_packages)"
+append_to_log ""
+
+# Unbracket list of repos
+listOfRepos=()
+
+for repo in "${bracketedListOfRepos[@]}"; do
+  bracketRemover=${repo/[}
+  bracketRemover=${bracketRemover/]}
+  listOfRepos+=("${bracketRemover}")
+done
+
+append_to_log "#################### List of repos and installed packages ######################"
+
+for repo in "${listOfRepos[@]}"; do
+  installedPackages="$(comm -12 <(pacman -Qq | sort) <(pacman -Slq "${repo}" | sort))"
+  numberOfPackagesFromRepo="$(wc -w <<< "$installedPackages")"
+
+  append_to_log "                 ##### ${numberOfPackagesFromRepo} packages installed from ${repo} #####"
+  append_to_log "${installedPackages}"
+  append_to_log ""
+done
