@@ -127,7 +127,7 @@ if [[ ! -x "$(command -v "flatpak")" ]]; then
 fi
 
 printf "%s. Installing fonts with pacman...\n" "${stepWithColor}"
-sudo pacman -S --needed noto-fonts noto-fonts-emoji ttf-dejavu ttf-linux-libertine ttf-roboto 
+sudo pacman -S --needed noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-dejavu ttf-linux-libertine ttf-roboto 
 print_done
 
 printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
@@ -135,7 +135,7 @@ printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 sudo pacman -S --needed linux-lts
 
 # System packages
-sudo pacman -S --needed apparmor bash-completion blueberry cups cups-pdf ffmpeg file-roller flatpak gnome-keyring gnome-online-accounts gnome-online-miners gst-libav gtk2 gvfs-goa gvfs-gphoto2 gvfs-mtp hplip intel-ucode iw iwd libxcursor libxinerama libxrandr libxss libxtst network-manager-applet pulseaudio-bluetooth python-pip system-config-printer tree unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs xdg-user-dirs-gtk xorg-xinit xorg-xinput xorg-xrandr zip
+sudo pacman -S --needed apparmor bash-completion blueberry cups cups-pdf ffmpeg file-roller flatpak gnome-keyring gnome-online-accounts gnome-online-miners gst-libav gtk2 gvfs-goa gvfs-gphoto2 gvfs-mtp hplip intel-ucode iw iwd libxcursor libxinerama libxrandr libxss libxtst network-manager-applet pixz pulseaudio-bluetooth python-pip system-config-printer tree unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs xdg-user-dirs-gtk xorg-xinit xorg-xinput xorg-xrandr zip
 
 # User packages
 sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog epiphany evince evolution firefox-developer-edition fortune-mod fractal gimp git gnome-calculator gnome-characters gnome-clocks gnome-disk-utility gnome-screenshot gnome-system-monitor imagemagick jq keepassxc libmediainfo libreoffice-fresh mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins redshift reflector rhythmbox seahorse streamlink stress syncthing tilix youtube-dl zim
@@ -171,7 +171,7 @@ if [[ "${installGamingSoftware}" == "true" ]]; then
   printf "%s Installing gaming software...\n" "${stepWithColor}"
 
   if ! grep -q "#\[multilib\]" /etc/pacman.conf; then
-    sudo pacman -S --needed wine wine_gecko wine-mono lutris
+    sudo pacman -S --needed wine-staging wine_gecko wine-mono lutris
 
     # NVIDIA drivers
     sudo pacman -S --needed nvidia nvidia-lts lib32-nvidia-utils
