@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Description: Makes a looping .gif from a set of images.
 #
@@ -29,7 +29,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeuo pipefail
+set -Eeu # (o pipefail) is Bash only!
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -66,29 +66,31 @@ exit_script_on_failure() {
 # -----------------------------------------
 
 # Print intro
-echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"
-echo -e "This is free software: you are free to change and redistribute it."
-echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
+printf "Starting %s Bash script; Copyright (C) 2019 krathalan\n" "${SCRIPT_NAME}"
+printf "This is free software: you are free to change and redistribute it.\n"
+printf "There is NO WARRANTY, to the extent permitted by law.\n"
 
-if [[ $(whoami) == "root" ]]; then
+if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
 rm -rf "${TEMP_DIRECTORY}"
 mkdir "${TEMP_DIRECTORY}"
 
-echo -en "Resizing images..."
+printf "\nResizing images..."
 
-for image in ./*.jpg; do
-  convert "${image}" -resize 13% "${TEMP_DIRECTORY}/${image}"
+for image in ./*.png; do
+  convert "${image}" -resize 13% "${TEMP_DIRECTORY}/${image}" &
 done
 
-echo -e " done."
+wait
 
-echo -en "Making gif..."
+printf " done.\n\n"
 
-convert -delay 13 -loop 0 "${TEMP_DIRECTORY}"/*.jpg "${WORKING_DIRECTORY}/result.gif"
+printf "Making gif..."
 
-echo -e " done."
+convert -delay 13 -loop 0 "${TEMP_DIRECTORY}"/*.png "${WORKING_DIRECTORY}/result.gif"
 
-rm -rf "${TEMP_DIRECTORY}"
+printf " done.\n"
+
+rm -rf "${TEMP_DIRECTORY}" &

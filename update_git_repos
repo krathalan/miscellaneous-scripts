@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 #
-# Description: Updates git repos in the user's ~/GitLab directory.
+# Description: Updates git repos in the user's ~/Git directory.
 #
 # Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
 #
@@ -31,7 +31,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeuo pipefail
+set -Eeu # (o pipefail) is Bash only!
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -45,11 +45,11 @@ readonly SCRIPT_NAME=$(basename "$0")
 # -----------------------------------------
 
 # Print intro
-echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"
-echo -e "This is free software: you are free to change and redistribute it."
-echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
+printf "Starting %s Bash script; Copyright (C) 2019 krathalan\n" "${SCRIPT_NAME}"
+printf "This is free software: you are free to change and redistribute it.\n"
+printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 
-echo -e "Updating git repos..."
+printf "Updating git repos...\n"
 
 for dir in "${BASE_DIR}"/*; do
   (
@@ -59,4 +59,4 @@ for dir in "${BASE_DIR}"/*; do
   )
 done
 
-echo -e "Done."
+printf "Done.\n"

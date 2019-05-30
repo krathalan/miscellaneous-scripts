@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Description: Updates DXVK in ~/.local/bin.
 #
@@ -29,7 +29,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeuo pipefail
+set -Eeu # (o pipefail) is Bash only!
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -71,11 +71,11 @@ exit_script_on_failure() {
 # -----------------------------------------
 
 # Print intro
-echo -e "Starting ${SCRIPT_NAME} Bash script; Copyright (C) 2019 krathalan"
-echo -e "This is free software: you are free to change and redistribute it."
-echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
+printf "Starting %s Bash script; Copyright (C) 2019 krathalan\n" "${SCRIPT_NAME}"
+printf "This is free software: you are free to change and redistribute it.\n"
+printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 
-if [[ $(whoami) == "root" ]]; then
+if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
@@ -88,4 +88,4 @@ fi
   rm -f "dxvk-${RELEASE_NUMBER}".tar.gz
 )
 
-echo -e "\nDone."
+printf "\nDone.\n"
