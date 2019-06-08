@@ -54,7 +54,8 @@ readonly WORKING_DIRECTORY="${PWD}"
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() {
+exit_script_on_failure() 
+{
   printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
 

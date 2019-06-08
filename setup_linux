@@ -72,7 +72,8 @@ installGamingSoftware=false
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() {
+exit_script_on_failure() 
+{
   printf "\n[%s✖%s] Error: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
 
@@ -88,7 +89,8 @@ exit_script_on_failure() {
 # Returns:
 #   none
 #######################################
-print_done() {
+print_done() 
+{
   stepCounter=$(( stepCounter + 1 ))
   stepWithColor="${TURQOISE}${stepCounter}${NC}"
   printf "Done.\n\n"

@@ -59,7 +59,8 @@ append_to_log()
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() {
+exit_script_on_failure() 
+{
   printf "\n[%s✖%s] Error: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
 
