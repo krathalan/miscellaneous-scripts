@@ -67,7 +67,7 @@ exit_script_on_failure()
 # -----------------------------------------
 
 # Print intro
-printf "Starting %s Bash script; Copyright (C) 2019 krathalan\n" "${SCRIPT_NAME}"
+printf "Starting %s Bash script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
 printf "This is free software: you are free to change and redistribute it.\n"
 printf "There is NO WARRANTY, to the extent permitted by law.\n"
 

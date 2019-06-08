@@ -79,7 +79,7 @@ exit_script_on_failure()
 # -----------------------------------------
 
 # Print intro
-printf "Starting %s Bash script; Copyright (C) 2019 krathalan\n" "${SCRIPT_NAME}"
+printf "Starting %s Bash script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
 printf "This is free software: you are free to change and redistribute it.\n"
 printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 
@@ -87,12 +87,12 @@ if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
-# Record the execution time of the command 20 times
-printf "Running command 10 times, please be patient...\n"
+# Record the execution time of the command 15 times
+printf "Running command 15 times, please be patient...\n"
 
 whileCounter=0
 
-while [[ "${whileCounter}" -lt 10 ]]; do
+while [[ "${whileCounter}" -lt 15 ]]; do
   startCommandTime=$(date +%s%N | cut -b1-13)
   ${command_to_time} > /dev/null 2> /dev/null
   endCommandTime=$(date +%s%N | cut -b1-13)
