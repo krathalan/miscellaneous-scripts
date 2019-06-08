@@ -36,7 +36,7 @@ Here's an example gif of my cat I made with make_gif:
 ![Example gif](Images/example.gif)
 
 ## save_installed_packages_log
-This script will save a list of your explicitly installed packages to `/var/log/installed_packages.log`. It's meant to be used in a pacman hook in `/etc/pacman.d/hooks/`, like this:
+This script will save a comprehensive, organized list of installed packages to `/var/log/installed_packages.log`. It's meant to be used in a pacman hook in `/etc/pacman.d/hooks/`, like this:
 
 ```
 [Trigger]
@@ -74,7 +74,7 @@ This script will perform system maintenance on an Arch Linux system. You must ha
   - This functionality requires the [neofetch](https://www.archlinux.org/packages/community/any/neofetch/) package to be installed 
 
 ## update_dxvk
-This script will place the version of DXVK you tell it to download in `~/.local/bin`. For example, if you run the command `bash update_dxvk 1.2`, the script will download (from DXVK's GitHub releases) and extract version 1.2 of DXVK to `~/.local/bin/dxvk-1.2`.
+This script will place the version of DXVK you tell it to download in `~/.local/bin`. For example, if you run the command `bash update_dxvk 1.2`, the script will download (from [DXVK's GitHub releases](https://github.com/doitsujin/dxvk/releases)) and extract version 1.2 of DXVK to `~/.local/bin/dxvk-1.2`.
 
 ## update_git_repos
 This script will `git pull` inside every Git repository in `~/Git`. The script will automatically determine whatever branch the repository is on and pull that branch. For example, if I had a Git repository at `~/Git/miscellaneous-scripts` on the branch "testing", and I ran the update_git_repos script, the script would run `git pull origin testing` in the `~/Git/miscellaneous-scripts` directory.
