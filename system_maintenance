@@ -37,12 +37,12 @@ set -Eeu # (o pipefail) is Bash only!
 
 # Colors
 readonly RED=$(tput bold && tput setaf 1)
-readonly TURQOISE=$(tput bold && tput setaf 6)
+readonly PURPLE=$(tput bold && tput setaf 5)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Step variables
 stepCounter=1
-stepWithColor="${TURQOISE}${stepCounter}${NC}"
+stepWithColor="${PURPLE}${stepCounter}${NC}"
 
 # Other
 readonly SCRIPT_NAME=$(basename "$0")
@@ -79,7 +79,7 @@ exit_script_on_failure()
 #######################################
 # Properly configures stepWithColor.
 # Globals:
-#   stepCounter, stepWithColor, TURQOISE, NC
+#   stepCounter, stepWithColor, PURPLE, NC
 # Arguments:
 #   none
 # Returns:
@@ -88,7 +88,7 @@ exit_script_on_failure()
 complete_step()
 {
   stepCounter=$(( stepCounter + 1 ))
-  stepWithColor="${TURQOISE}${stepCounter}${NC}"
+  stepWithColor="${PURPLE}${stepCounter}${NC}"
 }
 
 # -----------------------------------------

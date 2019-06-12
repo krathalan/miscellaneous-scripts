@@ -40,6 +40,33 @@ set -Eeu # (o pipefail) is Bash only!
 readonly BASE_DIR="${HOME}/Git"
 readonly SCRIPT_NAME=$(basename "$0")
 
+# Colors
+readonly PURPLE=$(tput bold && tput setaf 5)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+# Step variables
+stepCounter=1
+stepWithColor="${PURPLE}${stepCounter}${NC}"
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Prints "Done."
+# Globals:
+#   PURPLE, stepCounter, NC
+# Arguments:
+#   none
+# Returns:
+#   none
+#######################################
+print_done() 
+{
+  stepCounter=$(( stepCounter + 1 ))
+  stepWithColor="${PURPLE}${stepCounter}${NC}"
+}
+
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
@@ -52,11 +79,15 @@ printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 printf "Updating git repos...\n"
 
 for dir in "${BASE_DIR}"/*; do
+  printf "\n%s. Updating %s..." "${stepWithColor}" "${dir}"
+
   (
-  cd "${dir}" || exit
-  git pull origin "$(git status | grep "On branch" | awk '{printf $3}')" 
-  echo ""
+    cd "${dir}" || exit
+    git pull origin "$(git status | grep "On branch" | awk '{printf $3}')" 
+    echo ""
   )
+  
+  print_done
 done
 
 printf "Done.\n"
