@@ -137,7 +137,7 @@ printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 sudo pacman -S --needed linux-lts
 
 # System packages
-sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf dmenu ffmpeg flatpak gnome-keyring gnome-online-accounts gnome-online-miners gst-libav gtk2 gvfs-goa gvfs-mtp hplip intel-ucode i3-gaps i3lock i3status iw iwd network-manager-applet pamixer pavucontrol pigz pulseaudio-alsa pulseaudio-bluetooth system-config-printer unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs xdg-user-dirs-gtk zip
+sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf dmenu dunst ffmpeg flatpak gnome-keyring gnome-online-accounts gnome-online-miners gst-libav gvfs-goa gvfs-mtp hplip intel-ucode i3-gaps i3lock i3status iw iwd network-manager-applet notification-daemon pamixer pavucontrol pigz pulseaudio-alsa pulseaudio-bluetooth system-config-printer unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs xdg-user-dirs-gtk zip
 
 # User packages
 sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince evolution firefox firefox-developer-edition fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins redshift reflector seahorse streamlink stress syncthing youtube-dl zim
