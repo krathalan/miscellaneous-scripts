@@ -180,13 +180,7 @@ fi
 rm -rf "${HOME}/.cache/thumbnails"
 print_done
 
-if [[ "${qtThemesNeedRestart}" == "true" ]]; then
-  printf "[%s!%s] You will need to reboot your computer for Qt applications to start using your Gtk theme.\n" "${ORANGE}" "${NC}"
-fi
-
-if [[ "${flatpakNeedsRestart}" == "true" ]]; then
-  printf "[%s!%s] You will need to reboot your computer for Flatpak applications to show up in your application menu.\n" "${ORANGE}" "${NC}"
-fi
+printf "%s Performing machine-specific configuration...\n" "${stepWithColor}"
 
 # Machine specific configuration
 if grep -q desktop <<< "$HOSTNAME"; then
@@ -211,6 +205,22 @@ if grep -q desktop <<< "$HOSTNAME"; then
   else
     exit_script_on_failure "You must enable the multilib repositories in /etc/pacman.conf to install gaming software."
   fi
+fi
+
+print_done
+
+printf "%s Making Firefox your default browser...\n" "${stepWithColor}"
+xdg-settings set default-web-browser firefox.desktop
+print_done
+
+# Print summary info for user
+
+if [[ "${qtThemesNeedRestart}" == "true" ]]; then
+  printf "[%s!%s] You will need to reboot your computer for Qt applications to start using your Gtk theme.\n" "${ORANGE}" "${NC}"
+fi
+
+if [[ "${flatpakNeedsRestart}" == "true" ]]; then
+  printf "[%s!%s] You will need to reboot your computer for Flatpak applications to show up in your application menu.\n" "${ORANGE}" "${NC}"
 fi
 
 printf "[%s✔%s] Bash script %s complete.\n" "${GREEN}" "${NC}" "${SCRIPT_NAME}"
