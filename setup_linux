@@ -169,26 +169,6 @@ flatpak install -y flathub org.signal.Signal
 flatpak update -y # Needed to force flatpak to install drivers and themes
 print_done
 
-if [[ "${installGamingSoftware}" == "true" ]]; then
-  printf "%s Installing gaming software...\n" "${stepWithColor}"
-
-  if ! grep -q "#\[multilib\]" /etc/pacman.conf; then
-    sudo pacman -S --needed wine-staging wine_gecko wine-mono lutris
-
-    # NVIDIA drivers
-    sudo pacman -S --needed nvidia nvidia-lts lib32-nvidia-utils
-
-    # Battle.net dependencies
-    sudo pacman -S --needed lib32-gnutls lib32-libldap lib32-libgpg-error lib32-sqlite lib32-libpulse 
-
-    # More 32 bit libraries
-    sudo pacman -S lib32-alsa-plugins lib32-vulkan-icd-loader
-    print_done
-  else
-    exit_script_on_failure "You must enable the multilib repositories in /etc/pacman.conf to install gaming software."
-  fi
-fi
-
 # From https://bbs.archlinux.org/viewtopic.php?id=173653
 echo -e "${stepWithColor}. Adding .gif thumbnailer for file browsers..."
 sudo pacman -S --needed ffmpegthumbnailer
@@ -206,6 +186,31 @@ fi
 
 if [[ "${flatpakNeedsRestart}" == "true" ]]; then
   printf "[%s!%s] You will need to reboot your computer for Flatpak applications to show up in your application menu.\n" "${ORANGE}" "${NC}"
+fi
+
+# Machine specific configuration
+if grep -q desktop <<< "$HOSTNAME"; then
+  # Hi-DPI scaling
+  echo "GDK_SCALE=2" | sudo tee -a /etc/environment > /dev/null
+  
+  printf "%s Installing gaming software...\n" "${stepWithColor}"
+
+  if ! grep -q "#\[multilib\]" /etc/pacman.conf; then
+    # NVIDIA drivers
+    sudo pacman -S --needed nvidia nvidia-lts lib32-nvidia-utils
+
+    # WINE stuff
+    sudo pacman -S --needed wine-staging wine_gecko wine-mono lutris
+
+    # Battle.net dependencies
+    sudo pacman -S --needed lib32-gnutls lib32-libldap lib32-libgpg-error lib32-sqlite lib32-libpulse 
+
+    # More 32 bit libraries
+    sudo pacman -S lib32-alsa-plugins lib32-vulkan-icd-loader
+    print_done
+  else
+    exit_script_on_failure "You must enable the multilib repositories in /etc/pacman.conf to install gaming software."
+  fi
 fi
 
 printf "[%s✔%s] Bash script %s complete.\n" "${GREEN}" "${NC}" "${SCRIPT_NAME}"
