@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Description: Sets up Arch Linux with the software I use, and 
 #              configures various aspects of each system to my liking.
@@ -30,7 +30,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeuo pipefail
+set -Eeu # (o pipefail) is bash only!
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -49,13 +49,6 @@ stepWithColor="${PURPLE}${stepCounter}${NC}"
 
 # Other
 readonly SCRIPT_NAME=$(basename "$0")
-
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
-
-# Value is set to "true" if script is called with "-g" option
-installGamingSoftware=false
 
 # -----------------------------------------
 # --------------- Functions ---------------
@@ -100,31 +93,17 @@ print_done()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-# Parse flags. From:
-# https://stackoverflow.com/questions/7069682/how-to-get-arguments-with-flags-in-bash/7069755#7069755
-while test $# -gt 0; do
-  case "$1" in
-    -g)
-      installGamingSoftware=true;
-      break
-      ;;
-    *)
-      break
-      ;;
-  esac
-done
-
 # Print intro
 printf "Starting %s Bash script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
 printf "This is free software: you are free to change and redistribute it.\n"
 printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 
-if [[ $(whoami) == "root" ]]; then
+if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
 flatpakNeedsRestart="false"
-if [[ ! -x "$(command -v "flatpak")" ]]; then
+if [ ! -x "$(command -v "flatpak")" ]; then
   flatpakNeedsRestart="true"
 fi
 
@@ -140,15 +119,15 @@ sudo pacman -S --needed linux-lts
 sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf dmenu dunst ffmpeg flatpak gnome-keyring gnome-online-accounts gnome-online-miners gnome-system-monitor gst-libav gvfs-goa gvfs-mtp hplip intel-ucode i3-gaps i3lock i3status iw iwd network-manager-applet notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa pulseaudio-bluetooth scrot system-config-printer unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs xdg-user-dirs-gtk zip
 
 # User packages
-sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince evolution feh firefox firefox-developer-edition fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins redshift reflector seahorse streamlink stress syncthing youtube-dl zim
+sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince evolution feh firefox firefox-developer-edition fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins redshift reflector streamlink stress syncthing youtube-dl zim
 
 # Dependency for building yay and gotop
 sudo pacman -S --needed --asexplicit go
 print_done 
 
-if [[ -x "$(command -v "yay")" ]]; then
+if [ -x "$(command -v "yay")" ]; then
   printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-  yay -S consolas-font gotop nano-syntax-highlighting-git plata-theme ripcord shellcheck-static ttf-roboto-mono vscodium-bin yay
+  #yay -S consolas-font gotop nano-syntax-highlighting-git plata-theme ripcord shellcheck-static ttf-roboto-mono vscodium-bin yay
   print_done
 fi
 
@@ -170,7 +149,7 @@ flatpak update -y # Needed to force flatpak to install drivers and themes
 print_done
 
 # From https://bbs.archlinux.org/viewtopic.php?id=173653
-echo -e "${stepWithColor}. Adding .gif thumbnailer for file browsers..."
+printf "%s. Adding .gif thumbnailer for file browsers...\n" "${stepWithColor}"
 sudo pacman -S --needed ffmpegthumbnailer
 
 if ! grep -q -i "MimeType=image/gif" /usr/share/thumbnailers/ffmpegthumbnailer.thumbnailer; then
@@ -183,7 +162,7 @@ print_done
 printf "%s Performing machine-specific configuration...\n" "${stepWithColor}"
 
 # Machine specific configuration
-if grep -q desktop <<< "$HOSTNAME"; then
+if grep -q desktop /etc/hostname; then
   # Hi-DPI scaling
   echo "GDK_SCALE=2" | sudo tee -a /etc/environment > /dev/null
   
@@ -200,7 +179,7 @@ if grep -q desktop <<< "$HOSTNAME"; then
     sudo pacman -S --needed lib32-gnutls lib32-libldap lib32-libgpg-error lib32-sqlite lib32-libpulse 
 
     # More 32 bit libraries
-    sudo pacman -S lib32-alsa-plugins lib32-vulkan-icd-loader
+    sudo pacman -S --needed lib32-alsa-plugins lib32-vulkan-icd-loader
     print_done
   else
     exit_script_on_failure "You must enable the multilib repositories in /etc/pacman.conf to install gaming software."
@@ -214,11 +193,11 @@ xdg-settings set default-web-browser firefox.desktop
 print_done
 
 # Print summary info for user
-if [[ "${qtThemesNeedRestart}" == "true" ]]; then
+if [ "${qtThemesNeedRestart}" = "true" ]; then
   printf "[%s!%s] You will need to reboot your computer for Qt applications to start using your Gtk theme.\n" "${ORANGE}" "${NC}"
 fi
 
-if [[ "${flatpakNeedsRestart}" == "true" ]]; then
+if [ "${flatpakNeedsRestart}" = "true" ]; then
   printf "[%s!%s] You will need to reboot your computer for Flatpak applications to show up in your application menu.\n" "${ORANGE}" "${NC}"
 fi
 
