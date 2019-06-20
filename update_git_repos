@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Description: Updates git repos in the user's ~/Git directory.
 #
@@ -79,15 +79,17 @@ printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 printf "Updating git repos...\n"
 
 for dir in "${BASE_DIR}"/*; do
-  printf "\n%s. Updating %s..." "${stepWithColor}" "${dir}"
+  if [[ "${dir}" != *.git ]]; then
+    printf "\n%s. Updating %s..." "${stepWithColor}" "${dir}"
 
-  (
-    cd "${dir}" || exit
-    git pull origin "$(git status | grep "On branch" | awk '{printf $3}')" 
-    echo ""
-  )
-  
-  print_done
+    (
+      cd "${dir}" || exit
+      git pull origin "$(git status | grep "On branch" | awk '{printf $3}')" 
+      echo ""
+    )
+    
+    print_done
+  fi
 done
 
 printf "Done.\n"

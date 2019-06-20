@@ -3,7 +3,7 @@ This repository is a collection of scripts I wrote and use/modify regularly. The
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Two bash scripts, six POSIX-compliant sh scripts.
+Three bash scripts, five POSIX-compliant sh scripts.
 
 ## gather_time_data (bash)
 This script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in Bash scripts. For example, testing [wtwitch](https://gitlab.com/krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
@@ -81,5 +81,7 @@ This script will perform system maintenance on an Arch Linux system. You must ha
 ## update_dxvk (sh)
 This script will place the version of DXVK you tell it to download in `~/.local/bin`. For example, if you run the command `bash update_dxvk 1.2`, the script will download DXVK version 1.2 (from [DXVK's GitHub releases](https://github.com/doitsujin/dxvk/releases)) and extract it to `~/.local/bin/dxvk-1.2`.
 
-## update_git_repos (sh)
+## update_git_repos (bash)
 This script will `git pull` inside every Git repository in `~/Git`. The script will automatically determine whatever branch the repository is on and pull that branch. For example, if I had a Git repository at `~/Git/miscellaneous-scripts` on the branch "testing", and I ran the update_git_repos script, the script would run `git pull origin testing` in the `~/Git/miscellaneous-scripts` directory.
+
+This script will skip any directory ending in ".git".
