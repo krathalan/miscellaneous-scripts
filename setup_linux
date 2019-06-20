@@ -116,7 +116,7 @@ printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 sudo pacman -S --needed linux-lts
 
 # System packages
-sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf dmenu dunst ffmpeg flatpak gnome-keyring gnome-online-accounts gnome-online-miners gnome-system-monitor gst-libav gvfs-goa gvfs-mtp hplip intel-ucode i3-gaps i3lock i3status iw iwd network-manager-applet notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa pulseaudio-bluetooth scrot system-config-printer unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs xdg-user-dirs-gtk zip
+sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf dmenu dunst ffmpeg flatpak gnome-keyring gnome-online-accounts gnome-online-miners gnome-system-monitor gst-libav gvfs-goa gvfs-mtp hplip intel-ucode i3-gaps i3lock i3status iw iwd network-manager-applet notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa scrot system-config-printer unzip wget wireguard-dkms wireguard-tools xdg-user-dirs xdg-user-dirs-gtk zip
 
 # User packages
 sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince evolution feh firefox firefox-developer-edition fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins redshift reflector streamlink stress syncthing youtube-dl zim
@@ -127,7 +127,8 @@ print_done
 
 if [ -x "$(command -v "yay")" ]; then
   printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-  #yay -S consolas-font gotop nano-syntax-highlighting-git plata-theme ripcord shellcheck-static ttf-roboto-mono vscodium-bin yay
+  yay -S consolas-font gotop libldac nano-syntax-highlighting-git plata-theme ripcord shellcheck-static ttf-roboto-mono vscodium-bin yay
+  yay -S pulseaudio-modules-bt-git
   print_done
 fi
 
@@ -170,7 +171,7 @@ if grep -q desktop /etc/hostname; then
 
   if ! grep -q "#\[multilib\]" /etc/pacman.conf; then
     # NVIDIA drivers
-    sudo pacman -S --needed nvidia nvidia-lts lib32-nvidia-utils
+    sudo pacman -S --needed nvidia-dkms lib32-nvidia-utils
 
     # WINE stuff
     sudo pacman -S --needed wine-staging wine_gecko wine-mono lutris
