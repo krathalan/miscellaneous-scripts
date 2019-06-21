@@ -38,7 +38,7 @@ Here's an example gif of my cat I made with make_gif:
 ![Example gif](Images/example.gif)
 
 ## prntscrn (sh)
-Takes a nice screenshot after the specified seconds and saves it to `~/Pictures/Screenshots`.
+Takes a nice screenshot after the specified seconds and saves it to `~/Pictures/Screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 config.
 
 ## save_installed_packages_log (bash)
 This script will save a comprehensive, organized list of installed packages to `/var/log/installed_packages.log`. It's meant to be used in a pacman hook in `/etc/pacman.d/hooks/`, like this:
