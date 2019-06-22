@@ -86,7 +86,8 @@ if [ $# -eq 0 ]; then
   exit_script_on_failure "No tarball to make release of"
 fi
 
-gpg --output "$1.sig" --detach-sig "$1"
 sha256sum "$1" > sha256sums
+gpg --output "$1.sig" --detach-sig "$1"
+gpg --output "sha256sums.sig" --detach-sig "sha256sums"
 
 printf "Done.\n"
