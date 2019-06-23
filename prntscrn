@@ -88,10 +88,12 @@ if [ $# -gt 0 ]; then
   delay=$1
 fi
 
-currentDate=$(date +%s)
-fileName="screen_${currentDate}.jpg"
+currentDate=$(date +%b-%d-%Y_%H-%M-%S)
+fileName="screen_${currentDate}.jpeg"
 
-if [ "${delay}" -gt 0 ]; then
+if [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
+  grim -t jpeg -q 90 "${fileName}"
+elif [ "${delay}" -gt 0 ]; then
   scrot -q 90 -d "${delay}" "${fileName}"
 else
   scrot -q 90 "${fileName}"
