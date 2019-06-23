@@ -112,11 +112,8 @@ sudo pacman -S --needed noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-dejavu tt
 print_done
 
 printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
-# Kernel packages
-sudo pacman -S --needed linux-lts
-
 # System packages
-sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf dmenu dunst ffmpeg flatpak gnome-keyring gst-libav gvfs-mtp hplip i3status iw iwd notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa scrot system-config-printer unzip wget xdg-user-dirs xdg-user-dirs-gtk zip
+sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf dmenu dunst ffmpeg flatpak gnome-keyring gst-libav gvfs-mtp hplip i3status iw iwd notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer unzip wget xdg-user-dirs xdg-user-dirs-gtk zip
 
 # User packages
 sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins redshift reflector streamlink stress syncthing youtube-dl zim
@@ -167,6 +164,9 @@ if grep -q desktop /etc/hostname; then
   # Hi-DPI scaling
   echo "GDK_SCALE=2" | sudo tee -a /etc/environment > /dev/null
 
+  # Kernel packages
+  sudo pacman -S --needed linux-lts
+
   # Wireguard, prebuilt versions
   sudo pacman -S --needed wireguard-arch wireguard-lts wireguard-tools
 
@@ -178,7 +178,7 @@ if grep -q desktop /etc/hostname; then
   xdg-settings set default-web-browser firefox.desktop
 
   # X11 packages
-  sudo pacman -S --needed i3-gaps i3lock
+  sudo pacman -S --needed i3-gaps i3lock scrot
   
   printf "%s Installing gaming software...\n" "${stepWithColor}"
 
@@ -199,6 +199,9 @@ if grep -q desktop /etc/hostname; then
     exit_script_on_failure "You must enable the multilib repositories in /etc/pacman.conf to install gaming software."
   fi
 elif grep -q laptop /etc/hostname; then
+  # Kernel packages
+  sudo pacman -S --needed linux-libre-headers linux-libre-lts linux-libre-lts-headers
+
   # Wireguard, DKMS version
   sudo pacman -S --needed wireguard-dkms wireguard-tools
 
@@ -206,7 +209,7 @@ elif grep -q laptop /etc/hostname; then
   sudo pacman -S --needed icecat icedove iceweasel
 
   # Wayland packages 
-  sudo pacman -S qt5-wayland sway swayidle swaylock wl-clipboard xorg-server-xwayland
+  sudo pacman -S grim qt5-wayland sway swayidle swaylock wl-clipboard xorg-server-xwayland
 fi
 
 print_done
