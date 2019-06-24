@@ -113,7 +113,7 @@ print_done
 
 printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 # System packages
-sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf dmenu dunst ffmpeg flatpak gnome-keyring gst-libav gvfs-mtp hplip i3status iw iwd meson ninja notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer unzip wget xdg-user-dirs xdg-user-dirs-gtk zip
+sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf ffmpeg flatpak gnome-keyring gst-libav gvfs-mtp hplip i3status iw iwd meson ninja notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer unzip wget xdg-user-dirs xdg-user-dirs-gtk zip
 
 # User packages
 sudo pacman -S --needed android-tools bookworm borg cowsay easytag evince fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick imv jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins redshift reflector streamlink stress syncthing youtube-dl zim
@@ -178,7 +178,7 @@ if grep -q desktop /etc/hostname; then
   xdg-settings set default-web-browser firefox.desktop
 
   # X11 packages
-  sudo pacman -S --needed compton i3-gaps i3lock scrot
+  sudo pacman -S --needed compton dmenu dunst i3-gaps i3lock scrot
   
   printf "%s Installing gaming software...\n" "${stepWithColor}"
 
@@ -209,8 +209,8 @@ elif grep -q laptop /etc/hostname; then
   sudo pacman -S --needed icecat icedove iceweasel
 
   # Wayland packages 
-  sudo pacman -S grim qt5-wayland sway swayidle swaylock wl-clipboard xorg-server-xwayland
-fi
+  sudo pacman -S bemenu grim mako qt5-wayland sway swayidle swaylock wl-clipboard xorg-server-xwayland 
+  fi
 
 print_done
 
