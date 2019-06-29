@@ -3,10 +3,10 @@ This repository is a collection of scripts I wrote and use/modify regularly. The
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Three bash scripts, five POSIX-compliant sh scripts.
+Seven POSIX-compliant sh scripts, three Bash scripts.
 
 ## gather_time_data (bash)
-This script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in Bash scripts. For example, testing [wtwitch](https://gitlab.com/krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
+This script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in other scripts. For example, testing [wtwitch](https://gitlab.com/krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
 
 ```
 Running command 15 times, please be patient...
@@ -69,6 +69,7 @@ This script will perform system maintenance on an Arch Linux system. You must ha
 
 - Update `/etc/pacman.d/mirrorlist` if it hasn't been updated in more than 3.5 days
   - This functionality requires the [reflector](https://www.archlinux.org/packages/community/any/reflector/) package to be installed
+  - If you have the `firefox-nightly` package installed, this script will update it along with the mirrorlist
 - Update installed packages and remove unused packages
 - Clean pacman and yay caches
 - Check your pacman database
@@ -79,9 +80,22 @@ This script will perform system maintenance on an Arch Linux system. You must ha
   - This functionality requires the [neofetch](https://www.archlinux.org/packages/community/any/neofetch/) package to be installed 
 
 ## update_dxvk (sh)
-This script will place the version of DXVK you tell it to download in `~/.local/bin`. For example, if you run the command `bash update_dxvk 1.2`, the script will download DXVK version 1.2 (from [DXVK's GitHub releases](https://github.com/doitsujin/dxvk/releases)) and extract it to `~/.local/bin/dxvk-1.2`.
+This script will place the version of DXVK you tell it to download in `~/.local/bin`. For example, if you run the command `sh update_dxvk 1.2`, the script will download DXVK version 1.2 (from [DXVK's GitHub releases](https://github.com/doitsujin/dxvk/releases)) and extract it to `~/.local/bin/dxvk-1.2`.
 
 ## update_git_repos (bash)
 This script will `git pull` inside every Git repository in `~/Git`. The script will automatically determine whatever branch the repository is on and pull that branch. For example, if I had a Git repository at `~/Git/miscellaneous-scripts` on the branch "testing", and I ran the update_git_repos script, the script would run `git pull origin testing` in the `~/Git/miscellaneous-scripts` directory.
 
 This script will skip any directory ending in ".git".
+
+# vpn_detect (sh)
+This script takes the name of a VPN interface, like "mullvad-us3", and returns a `.json` file containing information on the state of the VPN connection. This script is meant to be used in a [waybar](https://github.com/Alexays/Waybar) module, like this:
+
+```
+"custom/vpn": {
+  "interval": 5,
+  "tooltip": false,
+  "format": "{}",
+  "return-type": "json",
+  "exec": "bash /path/to/vpn_detect mullvad-us3"
+}
+```
