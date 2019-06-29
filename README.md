@@ -87,7 +87,7 @@ This script will `git pull` inside every Git repository in `~/Git`. The script w
 
 This script will skip any directory ending in ".git".
 
-# vpn_detect (sh)
+## vpn_detect (sh)
 This script takes the name of a VPN interface, like "mullvad-us3", and returns a `.json` file containing information on the state of the VPN connection. This script is meant to be used in a [waybar](https://github.com/Alexays/Waybar) module, like this:
 
 ```
