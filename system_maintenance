@@ -147,8 +147,14 @@ if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ];
     # this should be used only after updating the mirrorlist 
     # https://wiki.archlinux.org/index.php/Mirrors#Force_pacman_to_refresh_the_package_lists
     yay -Syyu --devel
-
     complete_step
+
+    # Update firefox-nightly package if it's installed
+    if yay -Qi firefox-nightly > /dev/null 2> /dev/null; then
+      printf "\n%s. Updating firefox-nightly...\n" "${stepWithColor}"
+      yay -S firefox-nightly
+      complete_step
+    fi
   else
     printf "\n%s. Updating packages...\n" "${stepWithColor}"
     yay -Syu --devel
