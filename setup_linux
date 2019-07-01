@@ -113,7 +113,7 @@ print_done
 
 printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 # System packages
-sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion blueman cups cups-pdf ffmpeg flatpak gnome-keyring gst-libav gvfs-mtp hplip i3status iw iwd meson ninja notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer unzip wget xdg-user-dirs xdg-user-dirs-gtk zip
+sudo pacman -S --needed alsa-plugins apparmor bash-completion blueman cups cups-pdf ffmpeg flatpak gst-libav hplip iw iwd meson ninja notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer termite unzip wget xdg-user-dirs-gtk zip
 
 # User packages
 sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins reflector streamlink stress syncthing youtube-dl zim
@@ -121,13 +121,13 @@ sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince fo
 # Dependency for building yay and gotop
 sudo pacman -S --needed --asexplicit go
 
-# Dependencies for building pulseaudio-modules-bt-git
-sudo pacman -S --needed cmake jsoncpp libuv rhash
+# Dependency for building pulseaudio-modules-bt-git
+sudo pacman -S --needed cmake
 print_done 
 
 if [ -x "$(command -v "yay")" ]; then
   printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-  yay -S consolas-font gotop libldac nano-syntax-highlighting-git plata-theme shellcheck-static ttf-roboto-mono vscodium-bin wtwitch yay
+  yay -S firefox-nightly gotop libldac nano-syntax-highlighting-git plata-theme shellcheck-static ttf-roboto-mono vscodium-bin wtwitch yay
   yay -S pulseaudio-modules-bt-git
   print_done
 fi
@@ -177,11 +177,10 @@ if grep -q desktop /etc/hostname; then
   sudo pacman -S --needed feh
 
   # Arch-specific packages
-  sudo pacman -S --needed firefox firefox-developer-edition intel-ucode thunderbird
-  xdg-settings set default-web-browser firefox.desktop
+  sudo pacman -S --needed firefox intel-ucode thunderbird
 
   # X11 packages
-  sudo pacman -S --needed compton dmenu dunst i3-gaps i3lock redshift scrot
+  sudo pacman -S --needed compton dmenu dunst i3-gaps i3lock i3status redshift scrot
   
   printf "%s Installing gaming software...\n" "${stepWithColor}"
 
@@ -209,15 +208,18 @@ elif grep -q laptop /etc/hostname; then
   sudo pacman -S --needed wireguard-dkms wireguard-tools
 
   # Parabola-specific packages
-  sudo pacman -S --needed icecat icedove iceweasel
+  sudo pacman -S --needed icedove iceweasel
 
   # Power management
   sudo pacman -S --needed tlp x86_energy_perf_policy
 
   # Wayland packages 
-  sudo pacman -S bemenu grim light mako qt5-wayland redshift-wlr-gamma-control sway swayidle swaylock wl-clipboard xorg-server-xwayland 
-  fi
+  sudo pacman -S bemenu grim light mako qt5-wayland sway swayidle swaylock wl-clipboard xorg-server-xwayland 
 
+  if [ -x "$(command -v "yay")" ]; then
+    yay -S redshift-wlr-gamma-control ttf-material-design-icons-webfont waybar
+  fi
+fi
 print_done
 
 # Print summary info for user
