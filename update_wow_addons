@@ -144,4 +144,4 @@ mkdir -p "${PATH_TO_WOW_ADDONS}"
 
 mv "${TMP_DIR_EXTRACT}"/* "${PATH_TO_WOW_ADDONS}" || exit_script_on_failure "Problem moving extracted files"
 
-printf "\nDone.\n\n%s==> Script finished with no errors.%s" "${GREEN}" "${NC}"
+printf "\nDone.\n\n%s==> Script finished with no errors.%s\n" "${GREEN}" "${NC}"
