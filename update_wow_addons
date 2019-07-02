@@ -77,7 +77,7 @@ readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of
 #######################################
 exit_script_on_failure() 
 {
-  printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
 
   exit 1
@@ -109,8 +109,7 @@ for addon in "${ADDONS[@]}"; do
   printf "Downloading %s" "${addon}"
   downloadURL="$(get_download_url "${addon}")"
 
-  wget -qO- --show-progress "https://www.curseforge.com/${downloadURL}" > "${TMP_DIR_DOWNLOAD}/${addon}" \
-  || exit_script_on_failure "Problem downloading ${downloadURL}"
+  wget -qO- --show-progress "https://www.curseforge.com/${downloadURL}" > "${TMP_DIR_DOWNLOAD}/${addon}"
 done
 
 wait
@@ -121,8 +120,7 @@ printf "Done.\n\n%s==> Safely unzipping to temporary folder…%s\n" "${GREEN}" "
 for addonFile in "${TMP_DIR_DOWNLOAD}"/*; do
   printf "Unzipping %s…\n" "$(basename "${addonFile}")"
 
-  unzip "${addonFile}" -d "${TMP_DIR_EXTRACT}" > /dev/null \
-  || exit_script_on_failure "Problem unzipping ${addonFile}"
+  unzip "${addonFile}" -d "${TMP_DIR_EXTRACT}" > /dev/null 
 done
 
 wait
@@ -131,8 +129,7 @@ wait
 printf "Done.\n\n%s==> Creating compressed backup of old addon files…%s" "${GREEN}" "${NC}"
 
 if [[ -d "${PATH_TO_WOW_ADDONS}" ]]; then
-  tar -czf "${PATH_TO_WOW_ADDONS}_old_$(date +%s).tar.gz" "${PATH_TO_WOW_ADDONS}" &> /dev/null \
-  || exit_script_on_failure "Problem creating archive of old addon files"
+  tar -czf "${PATH_TO_WOW_ADDONS}_old_$(date +%s).tar.gz" "${PATH_TO_WOW_ADDONS}" &> /dev/null 
 
   rm -rf "${PATH_TO_WOW_ADDONS}"
 fi
@@ -142,6 +139,6 @@ printf "\nDone.\n\n%s==> Moving fresh addons to World of Warcraft directory…%s
 
 mkdir -p "${PATH_TO_WOW_ADDONS}"
 
-mv "${TMP_DIR_EXTRACT}"/* "${PATH_TO_WOW_ADDONS}" || exit_script_on_failure "Problem moving extracted files"
+mv "${TMP_DIR_EXTRACT}"/* "${PATH_TO_WOW_ADDONS}" 
 
 printf "\nDone.\n\n%s==> Script finished with no errors.%s\n" "${GREEN}" "${NC}"
