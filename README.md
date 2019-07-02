@@ -1,9 +1,9 @@
 # Krathalan's Scripts
-This repository is a collection of scripts I wrote and use/modify regularly. These scripts are provided without warranty in the hope that you will find them useful. Contributions are accepted, just open an issue or a pull request.
+This repository is a collection of scripts I wrote and use/update regularly. These scripts are provided without warranty in the hope that you will find them useful. Contributions are accepted, just open an issue or a pull request.
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Seven POSIX-compliant sh scripts, three Bash scripts.
+Seven POSIX-compliant sh scripts, four Bash scripts.
 
 ## gather_time_data (bash)
 This script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in other scripts. For example, testing [wtwitch](https://gitlab.com/krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
@@ -86,6 +86,11 @@ This script will place the version of DXVK you tell it to download in `~/.local/
 This script will `git pull` inside every Git repository in `~/Git`. The script will automatically determine whatever branch the repository is on and pull that branch. For example, if I had a Git repository at `~/Git/miscellaneous-scripts` on the branch "testing", and I ran the update_git_repos script, the script would run `git pull origin testing` in the `~/Git/miscellaneous-scripts` directory.
 
 This script will skip any directory ending in ".git".
+
+## update_wow_addons
+A work-in-progress script that updates all your World of Warcraft addons. 
+
+Click here for a 3.4 MB video of the script in action: [https://gitlab.com/krathalan/miscellaneous-scripts/raw/master/recording.mp4](https://gitlab.com/krathalan/miscellaneous-scripts/raw/master/recording.mp4)
 
 ## vpn_detect (sh)
 This script takes the name of a VPN interface, like "mullvad-us3", and returns a `.json` file containing information on the state of the VPN connection. This script is meant to be used in a [waybar](https://github.com/Alexays/Waybar) module, like this:
