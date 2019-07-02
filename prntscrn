@@ -99,7 +99,7 @@ else
   scrot -q 90 "${fileName}"
 fi
 
-mv "$PWD/${fileName}" ~/Pictures/Screenshots/
+mv "$PWD/${fileName}" ~/pictures/screenshots/
 notify-send "grab_screen" "Saved ${fileName} to ~/Pictures/Screenshots."
 
 printf "Done.\n"
