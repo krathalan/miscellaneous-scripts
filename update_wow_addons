@@ -42,6 +42,7 @@ readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
+readonly CURSE_URL="https://www.curseforge.com"
 readonly SCRIPT_NAME=$(basename "$0")
 readonly TMP_DIR_DOWNLOAD="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
 readonly TMP_DIR_EXTRACT="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
@@ -83,10 +84,18 @@ exit_script_on_failure()
   exit 1
 }
 
+#######################################
 # Extracts the random download URL of the latest version of the specified addon.
+# Globals:
+#   none
+# Arguments:
+#   $1: name of addon
+# Returns:
+#   none
+#######################################
 get_download_url() 
 {
-  wget -qO- "https://www.curseforge.com/wow/addons/$1/download" \
+  wget -qO- "${CURSE_URL}/wow/addons/$1/download" \
   | grep -oE 'href="[^"]+"' \
   | sed 's/^href="//; s/"$//' \
   | grep '/file$' \
@@ -109,7 +118,7 @@ for addon in "${ADDONS[@]}"; do
   printf "Downloading %s" "${addon}"
   downloadURL="$(get_download_url "${addon}")"
 
-  wget -qO- --show-progress "https://www.curseforge.com/${downloadURL}" > "${TMP_DIR_DOWNLOAD}/${addon}"
+  wget -qO- --show-progress "${CURSE_URL}${downloadURL}" > "${TMP_DIR_DOWNLOAD}/${addon}"
 done
 
 wait
