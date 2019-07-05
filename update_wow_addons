@@ -43,6 +43,7 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
 readonly CURSE_URL="https://www.curseforge.com"
+readonly ELVUI_URL="https://www.tukui.org"
 readonly SCRIPT_NAME=$(basename "$0")
 readonly TMP_DIR_DOWNLOAD="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
 readonly TMP_DIR_EXTRACT="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
@@ -52,11 +53,15 @@ readonly TMP_DIR_EXTRACT="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
 # -----------------------------------------
 
 # Path to the root of your WoW installation
-readonly PATH_TO_WOW="/home/anders/downloads/fakedir"
+readonly PATH_TO_WOW="/home/anders/games/world-of-warcraft"
+
+# Whether or not to download ElvUI from https://www.tukui.org/download.php?ui=elvui
+# Set to true or false
+readonly INCLUDE_ELVUI="true"
 
 # Enter the end of the URL, for example: https://www.curseforge.com/wow/addons/big-wigs
 # ...would be entered as "big-wigs"
-readonly ADDONS=("addonskins" "adibags" "advanced-tooltips" "altoholic" "big-wigs")
+readonly ADDONS=("addonskins" "adibags" "advanced-tooltips" "altoholic" "auctionlite" "auto-gossip" "autoturnin" "azeritetooltip" "battle_pet_breedid" "big-wigs" "bigwigs_countdown_overwatch" "project-2590" "dejacharacterstats" "details" "elvui-shadow-light" "fishingbuddy" "gathermate2" "gottagofast" "islandexpeditionhelper" "litemount" "little-wigs" "long-macros" "opie" "pettracker" "quartz" "rematch" "rematch-elvui-skin" "tellmewhen" "tomtom" "weakauras-2" "xloot" "xmerchant")
 
 # Don't edit this!
 readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of Warcraft/_retail_/Interface/AddOns"
@@ -118,8 +123,21 @@ for addon in "${ADDONS[@]}"; do
   printf "Downloading %s" "${addon}"
   downloadURL="$(get_download_url "${addon}")"
 
-  wget -qO- --show-progress "${CURSE_URL}${downloadURL}" > "${TMP_DIR_DOWNLOAD}/${addon}"
+  wget -q --show-progress --directory-prefix="${TMP_DIR_DOWNLOAD}" "${CURSE_URL}${downloadURL}"
 done
+
+if [[ "${INCLUDE_ELVUI}" == "true" ]]; then
+  printf "Downloading ElvUI"
+
+  # Extract download URL for latest version
+  pageHTML="$(wget -qO- --show-progress "${ELVUI_URL}/download.php?ui=elvui")"
+  pageHTML=$(grep -i "zip" <<< "${pageHTML}" | awk '{printf $2}')
+  pageHTML=${pageHTML//\"}
+  pageHTML=${pageHTML//href=}
+
+  # Download ElvUI
+  wget -q --show-progress --directory-prefix="${TMP_DIR_DOWNLOAD}" "${ELVUI_URL}${pageHTML}"
+fi
 
 wait
 

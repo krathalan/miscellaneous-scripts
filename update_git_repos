@@ -37,7 +37,7 @@ set -Eeu # (o pipefail) is Bash only!
 # ----------- Program variables -----------
 # -----------------------------------------
 
-readonly BASE_DIR="${HOME}/Git"
+readonly BASE_DIR="${HOME}/git"
 readonly SCRIPT_NAME=$(basename "$0")
 
 # Colors
