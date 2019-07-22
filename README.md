@@ -6,7 +6,7 @@ Please don't run these scripts without reading them first. Always read a script 
 Seven POSIX-compliant sh scripts, four Bash scripts.
 
 ## gather_time_data (bash)
-This script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in other scripts. For example, testing [wtwitch](https://gitlab.com/krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
+This Bash script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in other scripts. For example, testing [wtwitch](https://gitlab.com/krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
 
 ```
 Running command 15 times, please be patient...
@@ -31,17 +31,19 @@ Average execution time: 3.51 seconds
 ```
 
 ## make_gif (sh)
-I made this script after the camera app I use on my phone lost it's auto-gif-making functionality whenever I would take burst photos. To use it, put only the photos you want in the gif into a directory, and then run the script in that directory.
+I made this script after the camera app I use on my phone lost it's auto-gif-making functionality whenever I would take burst photos. 
+
+To use it, put the photos you want to make into a gif into a directory, and then run the script in that directory.
 
 Here's an example gif of my cat I made with make_gif:
 
 ![Example gif](Images/example.gif)
 
 ## prntscrn (sh)
-Takes a nice screenshot after the specified seconds and saves it to `~/Pictures/Screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 config.
+Takes a nice screenshot after the specified seconds and saves it to `${XDG_PICTURES_DIR}/screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 or sway config. Uses `scrot` for i3/Xorg and `grim` for sway/Wayland. Provides nice errors via desktop notifications as well if you don't have the proper package installed.
 
 ## save_installed_packages_log (bash)
-This script will save a comprehensive, organized list of installed packages to `/var/log/installed_packages.log`. It's meant to be used in a pacman hook in `/etc/pacman.d/hooks/`, like this:
+This Bash script will save an extremely comprehensive, organized list of installed packages to `/var/log/installed_packages.log`. It's meant to be used in a pacman hook in `/etc/pacman.d/hooks/`, like this:
 
 ```
 [Trigger]
@@ -62,7 +64,7 @@ Exec=/path/to/where/you/put/this/script/save_installed_packages_log
 A simple POSIX-compliant script template I use. Easy to use as a Bash script template as well.
 
 ## setup_linux (sh)
-This script sets up Arch Linux with the programs I use and configures a few things for me automatically. You don't want to run this script without reading through it and changing it to your liking. 
+This script sets up Arch Linux with the programs I use and configures a few things for me automatically. This script is meant to be run *after installation*, NOT as an installation script. You don't want to run this script without reading through it and changing it to your liking. 
 
 ## system_maintenance (sh)
 This script will perform system maintenance on an Arch Linux system. You must have the yay package installed from the AUR (https://github.com/Jguer/yay). It will:
@@ -88,12 +90,12 @@ This script will `git pull` inside every Git repository in `~/Git`. The script w
 This script will skip any directory ending in ".git".
 
 ## update_wow_addons
-A work-in-progress script that updates all your World of Warcraft addons. 
+A script that updates all your World of Warcraft addons. You'll need to edit some variables to specify your addons and installation location instead of mine.
 
 Click here for a 3.4 MB video of the script in action: [https://gitlab.com/krathalan/miscellaneous-scripts/raw/master/recording.mp4](https://gitlab.com/krathalan/miscellaneous-scripts/raw/master/recording.mp4)
 
 ## vpn_detect (sh)
-This script takes the name of a VPN interface, like "mullvad-us3", and returns a `.json` file containing information on the state of the VPN connection. This script is meant to be used in a [waybar](https://github.com/Alexays/Waybar) module, like this:
+This script takes the name of a VPN interface, like "mullvad-us3", and returns json data containing information on the state of the VPN connection. This script is meant to be used in a [waybar](https://github.com/Alexays/Waybar) module, like this:
 
 ```
 "custom/vpn": {
@@ -102,5 +104,5 @@ This script takes the name of a VPN interface, like "mullvad-us3", and returns a
   "format": "{}",
   "return-type": "json",
   "exec": "bash /path/to/vpn_detect mullvad-us3"
-}
+},
 ```
