@@ -130,7 +130,7 @@ print_done
 
 if [ -x "$(command -v "yay")" ]; then
   printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-  yay -S firefox-nightly gotop libldac nano-syntax-highlighting-git plata-theme shellcheck-static ttf-roboto-mono vscodium-bin wtwitch yay
+  yay -S firefox-nightly gotop libldac nano-syntax-highlighting-git plata-theme shellcheck-static ttf-roboto-mono wtwitch yay
   yay -S pulseaudio-modules-bt-git
   print_done
 fi
