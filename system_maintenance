@@ -184,10 +184,6 @@ if [ -x "$(command -v "flatpak")" ]; then
   printf "\n%s. Updating Flatpaks...\n" "${stepWithColor}"
   flatpak update -y
   complete_step
-
-  printf "\n%s. Removing unused Flatpaks...\n" "${stepWithColor}"
-  flatpak uninstall -y --unused
-  complete_step
 fi
 
 printf "\n%s. Emptying trash...\n" "${stepWithColor}"
