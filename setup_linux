@@ -119,7 +119,7 @@ sudo pacman -S --needed linux-lts
 sudo pacman -S --needed alsa-plugins apparmor bash-completion bluez-utils cups cups-pdf ffmpeg flatpak gst-libav hplip intel-ucode iw iwd notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer termite unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs-gtk zip
 
 # Development packages
-sudo pacman -S --needed clang geany geany-plugins lld meson ninja valgrind
+sudo pacman -S --needed clang geany geany-plugins lld llvm meson ninja valgrind
 
 # User packages
 sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince firefox fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins reflector streamlink stress syncthing thunderbird youtube-dl zim
@@ -133,7 +133,7 @@ print_done
 
 if [ -x "$(command -v "yay")" ]; then
   printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-  yay -S firefox-nightly gotop libldac nano-syntax-highlighting-git plata-theme shellcheck-static ttf-roboto-mono wtwitch yay
+  yay -S firefox-nightly gotop libldac nano-syntax-highlighting-git plata-theme shellcheck-static sparse ttf-roboto-mono wtwitch yay
   yay -S pulseaudio-modules-bt-git
   print_done
 fi
