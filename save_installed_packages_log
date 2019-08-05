@@ -121,7 +121,7 @@ append_to_log "# With: ${SCRIPT_NAME} from https://gitlab.com/krathalan/miscella
 append_to_log "# List of repos enabled in /etc/pacman.conf: ${bracketedListOfRepos[*]}"
 append_to_log "# Total number of packages: $(pacman --query --quiet | wc -w)"
 append_to_log ""
-append_to_log "###################### ${numberOfExplicitPackages} packages explicitly installed #######################"
+append_to_log "###################### $(( numberOfExplicitPackages + numberOfAurPackages )) packages explicitly installed #######################"
 append_to_log ""
 append_to_log "# This section does not include packages from base, base-devel, and xorg-apps groups"
 append_to_log ""

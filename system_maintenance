@@ -29,7 +29,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeu # (o pipefail) is Bash only!
+set -eu # (Eo pipefail) is Bash only!
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -178,6 +178,10 @@ complete_step
 
 printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
 sudo pacman -Dk
+complete_step
+
+printf "\n%s. Removing system journal entries older than one day...\n" "${stepWithColor}"
+sudo journalctl --vacuum-time=1d
 complete_step
 
 if [ -x "$(command -v "flatpak")" ]; then
