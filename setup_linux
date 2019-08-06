@@ -116,13 +116,13 @@ printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 sudo pacman -S --needed linux-lts
 
 # System packages
-sudo pacman -S --needed alsa-plugins apparmor bash-completion bluez-utils cups cups-pdf ffmpeg flatpak gst-libav hplip intel-ucode iw iwd notification-daemon pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer termite unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs-gtk zip
+sudo pacman -S --needed alsa-plugins apparmor bash-completion bluez-utils cups cups-pdf dash ffmpeg flatpak gst-libav gvfs-mtp hplip iftop intel-ucode iw iwd notification-daemon ntfs-3g pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer termite unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs-gtk zip
 
 # Development packages
 sudo pacman -S --needed clang geany geany-plugins lld llvm meson ninja valgrind
 
 # User packages
-sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince firefox fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins reflector streamlink stress syncthing thunderbird youtube-dl zim
+sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince firefox fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool polari qbittorrent qt5-styleplugins reflector retext streamlink stress syncthing thunderbird youtube-dl zim
 
 # Dependency for building yay and gotop
 sudo pacman -S --needed --asexplicit go
@@ -199,7 +199,7 @@ if grep -q desktop /etc/hostname; then
   fi
 elif grep -q laptop /etc/hostname; then
   # Power management
-  sudo pacman -S --needed tlp x86_energy_perf_policy
+  sudo pacman -S --needed smartmontools tlp x86_energy_perf_policy
 
   # Wayland packages 
   sudo pacman -S bemenu grim light mako qt5-wayland sway swayidle swaylock wl-clipboard xorg-server-xwayland 
