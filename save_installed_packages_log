@@ -111,6 +111,10 @@ explicitlyInstalledPackages=$(get_explicitly_installed_packages_no_aur)
 numberOfExplicitPackages=$(wc -w <<< "${explicitlyInstalledPackages}")
 numberOfAurPackages=$(wc -w <<< "${AUR_PACKAGES}")
 
+# Buffers
+sortedAURPackages="$(sort <<< "${AUR_PACKAGES}")"
+sortedRepoPackages="$(sort <<< "${explicitlyInstalledPackages}")"
+
 # Print header and general information
 append_to_log "################################################################################"
 append_to_log "###################### Arch Linux installed packages list ######################"
@@ -126,8 +130,12 @@ append_to_log ""
 append_to_log "# This section does not include packages from base, base-devel, and xorg-apps groups"
 append_to_log ""
 append_to_log "                         ##### ${numberOfAurPackages} from AUR/manual #####"
-append_to_log "$(sort <<< "${AUR_PACKAGES}" | tr '\n' ' ')"
+append_to_log "# Easy reinstall list: $(tr '\n' ' ' <<< "${sortedAURPackages}")"
+append_to_log ""
+append_to_log "${sortedAURPackages}"
 append_to_log ""
 append_to_log "                         ##### ${numberOfExplicitPackages} from repos #####"
-append_to_log "$(sort <<< "${explicitlyInstalledPackages}" | tr '\n' ' ')"
+append_to_log "# Easy reinstall list: $(tr '\n' ' ' <<< "${sortedRepoPackages}")"
+append_to_log ""
+append_to_log "${sortedRepoPackages}"
 append_to_log ""
