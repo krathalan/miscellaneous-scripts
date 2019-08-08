@@ -122,7 +122,7 @@ sudo pacman -S --needed alsa-plugins apparmor bash-completion bluez-utils cups c
 sudo pacman -S --needed clang geany geany-plugins lld llvm meson ninja valgrind
 
 # User packages
-sudo pacman -S --needed android-tools bookworm borg cowsay easytag eog evince firefox fortune-mod fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool qbittorrent qt5-styleplugins reflector retext streamlink stress syncthing thunderbird youtube-dl zim
+sudo pacman -S --needed android-tools bookworm borg easytag eog evince firefox fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool qbittorrent qt5-styleplugins reflector retext streamlink stress syncthing thunderbird youtube-dl zim
 
 # Dependency for building yay and gotop
 sudo pacman -S --needed --asexplicit go
