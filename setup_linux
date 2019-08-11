@@ -116,24 +116,24 @@ printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 sudo pacman -S --needed linux-lts
 
 # System packages
-sudo pacman -S --needed alsa-plugins apparmor bash-completion bluez-utils cups cups-pdf dash ffmpeg flatpak gst-libav gvfs-mtp hplip iftop intel-ucode iw iwd notification-daemon ntfs-3g pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer termite unzip wget wireguard-arch wireguard-lts wireguard-tools xdg-user-dirs-gtk zip
+sudo pacman -S --needed alsa-plugins apparmor bash-completion bluez-utils cups cups-pdf dash ffmpeg gst-libav hplip iftop intel-ucode iw iwd notification-daemon ntfs-3g pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer termite unzip wget wireguard-arch wireguard-lts wireguard-tools zip
 
 # Development packages
-sudo pacman -S --needed clang geany geany-plugins lld llvm meson ninja valgrind
+sudo pacman -S --needed clang geany geany-plugins lld llvm meson ninja shellcheck valgrind
 
 # User packages
-sudo pacman -S --needed android-tools bookworm borg easytag eog evince firefox fractal gimp git gnome-calculator gnome-characters imagemagick jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool qbittorrent qt5-styleplugins reflector retext streamlink stress syncthing thunderbird youtube-dl zim
+sudo pacman -S --needed android-tools bookworm borg eog evince firefox gimp git gnome-calculator gnome-characters imagemagick irssi jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool qbittorrent qt5-styleplugins reflector retext streamlink stress syncthing thunderbird youtube-dl zim
 
-# Dependency for building yay and gotop
+# Dependency for building yay
 sudo pacman -S --needed --asexplicit go
 
 # Dependency for building pulseaudio-modules-bt-git
 sudo pacman -S --needed cmake
-print_done 
+print_done
 
 if [ -x "$(command -v "yay")" ]; then
   printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-  yay -S firefox-nightly gotop libldac nano-syntax-highlighting-git plata-theme shellcheck-static sparse ttf-roboto-mono wtwitch yay
+  yay -S firefox-nightly libldac nano-syntax-highlighting-git plata-theme sparse ttf-roboto-mono wtwitch yay
   yay -S pulseaudio-modules-bt-git
   print_done
 fi
@@ -145,15 +145,6 @@ if ! grep -qi "QT_QPA_PLATFORMTHEME" /etc/environment; then
   qtThemesNeedRestart="true"
   print_done
 fi
-
-printf "%s. Installing Flatpaks from Flathub...\n" "${stepWithColor}"
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y flathub com.discordapp.Discord
-flatpak install -y flathub io.freetubeapp.FreeTube
-flatpak install -y flathub org.freac.freac
-flatpak install -y flathub org.signal.Signal
-flatpak update -y # Needed to force flatpak to install drivers and themes
-print_done
 
 # From https://bbs.archlinux.org/viewtopic.php?id=173653
 printf "%s. Adding .gif thumbnailer for file browsers...\n" "${stepWithColor}"
