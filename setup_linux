@@ -124,6 +124,9 @@ sudo pacman -S --needed clang geany geany-plugins lld llvm meson ninja shellchec
 # User packages
 sudo pacman -S --needed android-tools bookworm borg eog evince firefox gimp git gnome-calculator gnome-characters imagemagick irssi jq keepassxc mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme perl-image-exiftool qbittorrent qt5-styleplugins reflector retext streamlink stress syncthing thunderbird youtube-dl zim
 
+# Needed for some features/to play some codecs
+sudo pacman -S --needed gst-plugins-base gst-plugins-good
+
 # Dependency for building yay
 sudo pacman -S --needed --asexplicit go
 
