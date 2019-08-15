@@ -84,7 +84,7 @@ for dir in "${BASE_DIR}"/*; do
 
     (
       cd "${dir}" || exit
-      git pull origin "$(git status | grep "On branch" | awk '{printf $3}')" 
+      git pull
       echo ""
     )
     
