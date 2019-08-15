@@ -29,7 +29,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeu # (o pipefail) is Bash only!
+set -eu # (Eo pipefail) is Bash only!
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -45,7 +45,7 @@ readonly SCRIPT_NAME="$(basename "$0")"
 # Determine pictures directory
 USER_PICTURES_DIR="${HOME}/pictures"
 
-if [ $(command -v xdg-user-dir) ]; then
+if [ "$(command -v xdg-user-dir)" ]; then
   USER_PICTURES_DIR="$(xdg-user-dir PICTURES)"
 fi
 
@@ -70,7 +70,7 @@ readonly SCREENSHOTS_DIR="${USER_PICTURES_DIR}/screenshots"
 #######################################
 check_command()
 {
-  if [[ ! -x "$(command -v "$1")" ]]; then
+  if [ ! -x "$(command -v "$1")" ]; then
     exit_script_on_failure "Package $1 is required and is not installed."
   fi
 }
