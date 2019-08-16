@@ -182,7 +182,7 @@ elif grep -q laptop /etc/hostname; then
   sudo pacman -S --needed smartmontools tlp x86_energy_perf_policy
 
   # Wayland packages 
-  sudo pacman -S bemenu grim light mako sway swayidle swaylock wl-clipboard
+  sudo pacman -S bemenu grim light mako sway swaylock wl-clipboard
 
   if [ -x "$(command -v "yay")" ]; then
     yay -S redshift-wlr-gamma-control waybar
