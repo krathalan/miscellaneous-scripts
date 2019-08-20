@@ -110,7 +110,7 @@ printf "%s. Installing packages with pacman...\n" "${stepWithColor}"
 sudo pacman -S --needed linux-lts
 
 # System packages
-sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion bluez-utils cups cups-pdf dash ffmpeg gst-libav hplip iftop intel-ucode iw iwd notification-daemon ntfs-3g pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer tmux unzip wget wireguard-arch wireguard-lts wireguard-tools zip
+sudo pacman -S --needed alacritty alsa-plugins apparmor bash-completion bluez-utils cups cups-pdf dash ffmpeg gst-libav hplip iftop intel-ucode iw iwd notification-daemon ntfs-3g pamixer pavucontrol pigz playerctl pulseaudio-alsa source-highlight system-config-printer tmux tree unzip wget wireguard-arch wireguard-lts wireguard-tools zip
 
 # Development packages
 sudo pacman -S --needed clang geany geany-plugins lld llvm meson ninja shellcheck valgrind
