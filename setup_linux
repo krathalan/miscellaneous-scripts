@@ -101,7 +101,7 @@ if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
-if [ -x "$(command -v "yay")" ]; then
+if [ ! -x "$(command -v yay)" ]; then
   exit_script_on_failure "You must have yay installed to install all packages."
 fi
 printf "%s. Installing fonts with pacman...\n" "${stepWithColor}"
