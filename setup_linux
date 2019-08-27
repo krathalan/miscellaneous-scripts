@@ -119,7 +119,7 @@ sudo pacman -S --needed alacritty alacritty-terminfo alsa-plugins apparmor bash-
 sudo pacman -S --needed clang geany geany-plugins lld llvm meson ninja shellcheck valgrind
 
 # User packages
-sudo pacman -S --needed android-tools bookworm borg eog evince firefox gimp git gnome-calculator gnome-characters imagemagick irssi jq mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme pass perl-image-exiftool reflector streamlink stress syncthing thunderbird transmission-cli youtube-dl zim
+sudo pacman -S --needed android-tools bookworm borg evince firefox gimp git gnome-calculator gnome-characters imagemagick imv irssi jq mediainfo libreoffice-fresh lollypop mosh mpv neofetch papirus-icon-theme pass perl-image-exiftool reflector streamlink stress syncthing thunderbird transmission-cli youtube-dl zim
 
 # Needed for some features/to play some codecs
 sudo pacman -S --needed gst-libav gst-plugins-base gst-plugins-good
