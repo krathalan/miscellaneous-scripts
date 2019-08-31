@@ -64,7 +64,7 @@ readonly INCLUDE_ELVUI="true"
 readonly ADDONS=("details-damage-meter-classic-wow" "real-mob-health" "vendor-price")
 
 # Don't edit this!
-readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of Warcraft/_retail_/Interface/AddOns"
+readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of Warcraft/_classic_/Interface/AddOns"
 
 # -----------------------------------------
 # --------------- Functions ---------------
