@@ -1,0 +1,163 @@
+#!/bin/bash
+#
+# Description: WARNING: WORK IN PROGRESS. Updates WoW addons. Inspired by 
+# https://www.reddit.com/r/bash/comments/c7shdr/ugly_bastard_son_of_a_pwsh_and_bash/
+#
+# Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
+#
+# Copyright (C) 2019 krathalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
+
+# This script follows the Google Shell Style Guide: 
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
+
+# Colors
+readonly GREEN=$(tput bold && tput setaf 2)
+readonly RED=$(tput bold && tput setaf 1)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+# Other
+readonly CURSE_URL="https://www.curseforge.com"
+readonly ELVUI_URL="https://www.tukui.org"
+readonly SCRIPT_NAME=$(basename "$0")
+readonly TMP_DIR_DOWNLOAD="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
+readonly TMP_DIR_EXTRACT="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
+
+# -----------------------------------------
+# ------------- User variables ------------
+# -----------------------------------------
+
+# Path to the root of your WoW installation
+readonly PATH_TO_WOW="/home/anders/Games/world-of-warcraft-classic"
+
+# Whether or not to download ElvUI from https://www.tukui.org/download.php?ui=elvui
+# Set to true or false
+readonly INCLUDE_ELVUI="true"
+
+# Enter the end of the URL, for example: https://www.curseforge.com/wow/addons/big-wigs
+# ...would be entered as "big-wigs"
+readonly ADDONS=("details-damage-meter-classic-wow" "real-mob-health" "vendor-price")
+
+# Don't edit this!
+readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of Warcraft/_retail_/Interface/AddOns"
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure() 
+{
+  printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
+
+#######################################
+# Extracts the random download URL of the latest version of the specified addon.
+# Globals:
+#   none
+# Arguments:
+#   $1: name of addon
+# Returns:
+#   none
+#######################################
+get_download_url() 
+{
+  wget -qO- "${CURSE_URL}/wow/addons/$1/download" \
+  | grep -oE 'href="[^"]+"' \
+  | sed 's/^href="//; s/"$//' \
+  | grep '/file$' \
+  | head -n1
+}
+
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
+
+if [[ "$(whoami)" = "root" ]]; then
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+fi
+
+# Step 1
+printf "\n%s==> Downloading addons to temporary folder…%s\n" "${GREEN}" "${NC}"
+
+downloadURL=""
+for addon in "${ADDONS[@]}"; do
+  printf "Downloading %s" "${addon}"
+  downloadURL="$(get_download_url "${addon}")"
+
+  wget -q --show-progress --directory-prefix="${TMP_DIR_DOWNLOAD}" "${CURSE_URL}${downloadURL}"
+done
+
+if [[ "${INCLUDE_ELVUI}" == "true" ]]; then
+  printf "Downloading ElvUI"
+  wget -q --show-progress --directory-prefix="${TMP_DIR_DOWNLOAD}" "${ELVUI_URL}/classic-addons.php?download=2"
+fi
+
+wait
+
+# Step 2
+printf "Done.\n\n%s==> Safely unzipping to temporary folder…%s\n" "${GREEN}" "${NC}"
+
+for addonFile in "${TMP_DIR_DOWNLOAD}"/*; do
+  printf "Unzipping %s…\n" "$(basename "${addonFile}")"
+
+  unzip "${addonFile}" -d "${TMP_DIR_EXTRACT}" > /dev/null 
+done
+
+wait
+
+# Step 3
+printf "Done.\n\n%s==> Creating compressed backup of old addon files…%s" "${GREEN}" "${NC}"
+
+if [[ -d "${PATH_TO_WOW_ADDONS}" ]]; then
+  tar -czf "${PATH_TO_WOW_ADDONS}_old_$(date +%s).tar.gz" "${PATH_TO_WOW_ADDONS}" &> /dev/null 
+
+  rm -rf "${PATH_TO_WOW_ADDONS}"
+fi
+
+# Step 4
+printf "\nDone.\n\n%s==> Moving fresh addons to World of Warcraft directory…%s" "${GREEN}" "${NC}"
+
+mkdir -p "${PATH_TO_WOW_ADDONS}"
+
+mv "${TMP_DIR_EXTRACT}"/* "${PATH_TO_WOW_ADDONS}" 
+
+printf "\nDone.\n\n%s==> Script finished with no errors.%s\n" "${GREEN}" "${NC}"
