@@ -61,7 +61,7 @@ readonly INCLUDE_ELVUI="true"
 
 # Enter the end of the URL, for example: https://www.curseforge.com/wow/addons/big-wigs
 # ...would be entered as "big-wigs"
-readonly ADDONS=("details-damage-meter-classic-wow" "real-mob-health" "vendor-price")
+readonly ADDONS=("advancedinterfaceoptions" "big-wigs" "classicauradurations" "classicthreatmeter" "details" "little-wigs" "quest-icon-desaturation" "questframefixer" "questie" "vendor-price")
 
 # Don't edit this!
 readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of Warcraft/_classic_/Interface/AddOns"
@@ -100,11 +100,15 @@ exit_script_on_failure()
 #######################################
 get_download_url() 
 {
-  wget -qO- "${CURSE_URL}/wow/addons/$1/download" \
-  | grep -oE 'href="[^"]+"' \
-  | sed 's/^href="//; s/"$//' \
-  | grep '/file$' \
-  | head -n1
+  returnURL=$(wget -qO- "${CURSE_URL}/wow/addons/$1" \
+  | grep "/wow/addons/$1/download/" \
+  | sed 's/^.*href=\"//' \
+  | sed 's/\" data-action.*//' \
+  | sed 's/\" class.*//' \
+  | head -n1 \
+  | sed "s#files#download#")
+  
+  printf "%s/file" "${returnURL}"
 }
 
 # -----------------------------------------
@@ -114,6 +118,9 @@ get_download_url()
 if [[ "$(whoami)" = "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
+
+# Clean up
+rm -rf -- /tmp/update_wow_classic_addons_*
 
 # Step 1
 printf "\n%s==> Downloading addons to temporary folder…%s\n" "${GREEN}" "${NC}"
