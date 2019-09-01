@@ -187,7 +187,6 @@ install_package dictd
 install_package evince
 install_package firefox
 install_package firefox-developer-edition
-install_package gimp
 install_package git
 install_package gnome-calculator
 install_package gnome-characters
@@ -270,6 +269,7 @@ if grep -q desktop /etc/hostname; then
   install_package dmenu
   install_package dunst
   install_package feh
+  install_package gimp
   install_package i3-gaps
   install_package i3lock
   install_package i3status
@@ -301,6 +301,7 @@ elif grep -q laptop /etc/hostname; then
   install_package wl-clipboard
   # From AUR
   yay -S redshift-wlr-gamma-control
+  yay -S wdisplays-git
   print_done
 fi
 
