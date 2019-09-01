@@ -105,7 +105,7 @@ get_download_url()
   | sed 's/^.*href=\"//' \
   | sed 's/\" data-action.*//' \
   | sed 's/\" class.*//' \
-  | head -n1 \
+  | tail -n1 \
   | sed "s#files#download#")
   
   printf "%s/file" "${returnURL}"
