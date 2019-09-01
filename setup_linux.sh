@@ -301,6 +301,7 @@ elif grep -q laptop /etc/hostname; then
   install_package wl-clipboard
   # From AUR
   yay -S redshift-wlr-gamma-control
+  yay -S wdisplays-git
   print_done
 fi
 
