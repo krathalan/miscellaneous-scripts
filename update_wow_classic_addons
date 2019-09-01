@@ -61,7 +61,7 @@ readonly INCLUDE_ELVUI="true"
 
 # Enter the end of the URL, for example: https://www.curseforge.com/wow/addons/big-wigs
 # ...would be entered as "big-wigs"
-readonly ADDONS=("advancedinterfaceoptions" "big-wigs" "classicauradurations" "classicthreatmeter" "details" "little-wigs" "quest-icon-desaturation" "questframefixer" "questie" "vendor-price")
+readonly ADDONS=("advancedinterfaceoptions" "big-wigs" "classicauradurations" "classicthreatmeter" "dejaclassicstats" "details" "little-wigs" "quest-icon-desaturation" "questframefixer" "questie" "vendor-price")
 
 # Don't edit this!
 readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of Warcraft/_classic_/Interface/AddOns"
