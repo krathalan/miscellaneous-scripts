@@ -190,6 +190,7 @@ install_package firefox-developer-edition
 install_package git
 install_package gnome-calculator
 install_package gnome-characters
+install_package gnome-system-monitor
 install_package imagemagick
 install_package imv
 install_package irssi
