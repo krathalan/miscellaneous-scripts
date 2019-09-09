@@ -304,6 +304,10 @@ elif grep -q laptop /etc/hostname; then
   yay -S redshift-wlr-gamma-control
   yay -S wdisplays-git
   print_done
+
+  printf "%s Adding user to \"video\" group for light package...\n" "${stepWithColor}"
+  sudo usermod -aG video "${LOGNAME}"
+  print_done
 fi
 
 # Print summary info for user
