@@ -190,6 +190,7 @@ install_package firefox-developer-edition
 install_package git
 install_package gnome-calculator
 install_package gnome-characters
+install_package gnome-system-monitor
 install_package imagemagick
 install_package imv
 install_package irssi
@@ -302,6 +303,10 @@ elif grep -q laptop /etc/hostname; then
   # From AUR
   yay -S redshift-wlr-gamma-control
   yay -S wdisplays-git
+  print_done
+
+  printf "%s Adding user to \"video\" group for light package...\n" "${stepWithColor}"
+  sudo usermod -aG video "${LOGNAME}"
   print_done
 fi
 
