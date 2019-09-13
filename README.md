@@ -3,7 +3,10 @@ This repository is a collection of scripts I wrote and use/update regularly. The
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Seven POSIX-compliant sh scripts, four Bash scripts.
+Six POSIX-compliant sh scripts, six Bash scripts.
+
+## flac_to_opus (bash)
+This Bash script will convert all "\*.flac" files in the working directory to "\*.opus" files and place all "\*.flac" files into a "flac/" directory, again in the working directory. 
 
 ## gather_time_data (bash)
 This Bash script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in other scripts. For example, testing [wtwitch](https://gitlab.com/krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
@@ -30,7 +33,7 @@ Execution 15 completed in 3363 milliseconds
 Average execution time: 3.51 seconds
 ```
 
-## make_gif (sh)
+## make_gif.sh
 I made this script after the camera app I use on my phone lost it's auto-gif-making functionality whenever I would take burst photos. 
 
 To use it, put the photos you want to make into a gif into a directory, and then run the script in that directory.
@@ -39,7 +42,7 @@ Here's an example gif of my cat I made with make_gif:
 
 ![Example gif](Images/example.gif)
 
-## prntscrn (sh)
+## prntscrn.sh
 Takes a nice screenshot after the specified seconds and saves it to `${XDG_PICTURES_DIR}/screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 or sway config. Uses `scrot` for i3/Xorg and `grim` for sway/Wayland. Provides nice errors via desktop notifications as well if you don't have the proper package installed.
 
 ## save_installed_packages_log (bash)
@@ -60,13 +63,13 @@ NeedsTargets
 Exec=/path/to/where/you/put/this/script/save_installed_packages_log
 ```
 
-## script_template (sh)
+## script_template.sh
 A simple POSIX-compliant script template I use. Easy to use as a Bash script template as well.
 
-## setup_linux (sh)
+## setup_linux.sh
 This script sets up Arch Linux with the programs I use and configures a few things for me automatically. This script is meant to be run *after installation*, NOT as an installation script. You don't want to run this script without reading through it and changing it to your liking. 
 
-## system_maintenance (sh)
+## system_maintenance.sh
 This script will perform system maintenance on an Arch Linux system. You must have the yay package installed from the AUR (https://github.com/Jguer/yay). It will:
 
 - Update `/etc/pacman.d/mirrorlist` if it hasn't been updated in more than 3.5 days
@@ -94,15 +97,6 @@ A script that updates all your World of Warcraft addons. You'll need to edit som
 
 Click here for a 3.4 MB video of the script in action: [https://gitlab.com/krathalan/miscellaneous-scripts/raw/master/recording.mp4](https://gitlab.com/krathalan/miscellaneous-scripts/raw/master/recording.mp4)
 
-## vpn_detect (sh)
-This script takes the name of a VPN interface, like "mullvad-us3", and returns json data containing information on the state of the VPN connection. This script is meant to be used in a [waybar](https://github.com/Alexays/Waybar) module, like this:
+## update_wow_addons_classic
+The same as the previous script, but for Classic! You will need to edit some variables to specify your addons and installation location instead of mine.
 
-```
-"custom/vpn": {
-  "interval": 5,
-  "tooltip": false,
-  "format": "{}",
-  "return-type": "json",
-  "exec": "bash /path/to/vpn_detect mullvad-us3"
-},
-```
