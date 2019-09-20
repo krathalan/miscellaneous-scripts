@@ -149,6 +149,7 @@ install_package iw
 install_package iwd
 install_package ncdu
 install_package ntfs-3g
+install_package openvpn
 install_package pamixer
 install_package pavucontrol
 install_package pigz
@@ -206,6 +207,8 @@ install_package notification-daemon
 install_package papirus-icon-theme
 install_package pass
 install_package perl-image-exiftool
+# For mounting a borg backup as a file system
+install_package python-llfuse
 install_package streamlink
 install_package syncthing
 install_package thunderbird
@@ -276,12 +279,15 @@ if grep -q desktop /etc/hostname; then
   install_package i3status
   install_package redshift
   install_package scrot
+  # From AUR
+  yay -S polybar
   print_done
 
   if lspci | grep -qi nvidia; then
     printf "%s Installing Nvidia packages...\n" "${stepWithColor}"
     install_package nvidia
     install_package nvidia-lts
+    install_package opencl-nvidia
     print_done
   fi
 elif grep -q laptop /etc/hostname; then
