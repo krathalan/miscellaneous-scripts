@@ -87,10 +87,6 @@ if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
-if [[ ! -x "$(command -v "$1")" ]]; then
-  exit_script_on_failure "Invalid command: cannot execute $1"
-fi
-
 # Record the execution time of the command 15 times
 printf "Running command 15 times, please be patient...\n"
 
@@ -117,7 +113,11 @@ while [[ "${whileCounter}" -lt ${#timeData[@]} ]]; do
   whileCounter=$(( whileCounter + 1 ))
 done
 
-averageExecutionTime=$(echo "${sum} ${#timeData[@]}" | awk '{printf "%.2f\n", $1/$2}') # Currently in milliseconds
-averageExecutionTime=$(echo "${averageExecutionTime} 1000" | awk '{printf "%.2f\n", $1/$2}') # Convert to seconds
+# Get average execution time by dividing the total time elapsed by the number of executions
+# Currently in milliseconds
+averageExecutionTime=$(echo "${sum} ${#timeData[@]}" | awk '{printf "%.2f\n", $1/$2}')
+
+# Convert to seconds with a precision of 2 decimals
+averageExecutionTime=$(echo "${averageExecutionTime} 1000" | awk '{printf "%.2f\n", $1/$2}')
 
 printf "\n\nAverage execution time: %s seconds\n" "${averageExecutionTime}"

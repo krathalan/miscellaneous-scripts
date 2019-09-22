@@ -115,8 +115,11 @@ if [ $# -gt 0 ]; then
   delay=$1
 fi
 
-currentDate=$(date +%b-%d-%Y_%H-%M-%S)
-fileName="screen_${currentDate}.jpeg"
+currentDate=$(date +%b-%d-%Y-%H-%M-%S)
+fileName="screen-${currentDate}.jpg"
+
+# Convert to completely lowercase for easier tab completion
+fileName="$(echo "${fileName}" | tr '[:upper:]' '[:lower:]')"
 
 if [ "${XDG_SESSION_TYPE}" = "wayland" ] || pgrep sway; then
   check_command "grim"
@@ -132,7 +135,9 @@ fi
 # Make screenshots directory if it does not exist yet
 mkdir -p "${SCREENSHOTS_DIR}"
 
-mv "$PWD/${fileName}" "${SCREENSHOTS_DIR}"
+if [ ! "${PWD}" = "${SCREENSHOTS_DIR}" ]; then
+  mv "$PWD/${fileName}" "${SCREENSHOTS_DIR}"
+fi
 
 notify-send -i "folder-pictures-open" "${SCRIPT_NAME}" "Saved screenshot to ${SCREENSHOTS_DIR}."
 

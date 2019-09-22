@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 #
-# Description: Converts *.flac to 256Kb/s *.opus
+# Description: 
 #
 # Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
 #
@@ -29,10 +29,10 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeuo pipefail
+set -u # (Eo pipefail) is Bash only!
 
-# This script spawns subshell processes
-trap 'killall background' SIGINT
+# No "set -e" because this script should continue if shellcheck "fails" when 
+# printing errors in a script
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -40,10 +40,15 @@ trap 'killall background' SIGINT
 
 # Colors
 readonly RED=$(tput bold && tput setaf 1)
+readonly GREEN=$(tput bold && tput setaf 2)
+readonly WHITE=$(tput sgr0 && tput bold)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
 readonly SCRIPT_NAME=$(basename "$0")
+
+# Step variables
+stepCounter=1
 
 # -----------------------------------------
 # ------------- User variables ------------
@@ -52,14 +57,6 @@ readonly SCRIPT_NAME=$(basename "$0")
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
-
-convert_file()
-{
-	# Overwrite if present
-	rm -f "$1.opus"
-	
-	ffmpeg -loglevel panic -i "$1.flac" -c:a libopus -b:a 256K "$1.opus"
-}
 
 #######################################
 # Prints passed error message before premature exit.
@@ -80,6 +77,20 @@ exit_script_on_failure()
   exit 1
 }
 
+#######################################
+# Properly formats a step statement.
+# Globals:
+#   stepCounter, GREEN, NC, WHITE
+# Arguments:
+#   none
+# Returns:
+#   none
+#######################################
+print_step()
+{
+  printf "%s==> %s%s. %s%s" "${GREEN}" "${WHITE}" "${stepCounter}" "$1" "${NC}"
+}
+
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
@@ -93,40 +104,21 @@ if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
+printf "Checking scripts in working directory...\n\n"
+
+# Get the file name without the full path
 fileName=""
 
-for file in "$PWD"/*.flac; do
-	fileName="$(basename -- "${file}")"
-	fileName="${fileName%.*}"
+for file in "${PWD}"/*; do
+  if [ ! -d "${file}" ] && head -n1 "${file}" | grep -q "\#\!/bin"; then
+    fileName="$(realpath --relative-to="${PWD}" "${file}")"
+    print_step "${fileName}"
+    
+    shellcheck "${file}"
 
-	convert_file "${fileName}" &
+    printf "\n\n"
+    stepCounter=$(( stepCounter + 1 ))
+  fi
 done
 
-# Track progress
-filesToProcess=$(find . -name "*.flac" | wc -l)
-# shellcheck disable=SC2207
-joblist=($(jobs -p))
-joblistLength=${#joblist[*]}
-percentageComplete="0"
-
-while (( joblistLength > 1 )); do
-  sleep 2
-  
-  # Refresh data
-	# shellcheck disable=SC2207
-  joblist=($(jobs -p))
-  joblistLength=${#joblist[*]}
-  percentageComplete="$(awk '{printf "%.0f", $1/$2*100}' <<< "$(( filesToProcess - joblistLength )) ${filesToProcess}")"
-  
-	printf "\r%s/%s files processed. %s%% complete" $(( filesToProcess - joblistLength )) "${filesToProcess}" "${percentageComplete}"
-done
-
-wait
-
-if [[ ! -d "flac" ]]; then
-	mkdir flac/
-fi
-
-mv ./*.flac flac/
-
-printf "\n\nDone.\n"
+printf "Done.\n"

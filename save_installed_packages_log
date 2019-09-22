@@ -120,6 +120,7 @@ append_to_log "#################################################################
 append_to_log "###################### Arch Linux installed packages list ######################"
 append_to_log "################################################################################"
 append_to_log ""
+append_to_log "# For device (hostname): ${HOSTNAME}"
 append_to_log "# When: ${DATE}"
 append_to_log "# With: ${SCRIPT_NAME} from https://gitlab.com/krathalan/miscellaneous-scripts"
 append_to_log "# List of repos enabled in /etc/pacman.conf: ${bracketedListOfRepos[*]}"
