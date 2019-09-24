@@ -84,9 +84,6 @@ This script will perform system maintenance on an Arch Linux system. You must ha
 - Print disk usage
   - This functionality requires the [neofetch](https://www.archlinux.org/packages/community/any/neofetch/) package to be installed 
 
-## update_dxvk (sh)
-This script will place the version of DXVK you tell it to download in `~/.local/bin`. For example, if you run the command `sh update_dxvk 1.2`, the script will download DXVK version 1.2 (from [DXVK's GitHub releases](https://github.com/doitsujin/dxvk/releases)) and extract it to `~/.local/bin/dxvk-1.2`.
-
 ## update_git_repos (bash)
 This script will `git pull` inside every Git repository in `~/Git`. The script will automatically determine whatever branch the repository is on and pull that branch. For example, if I had a Git repository at `~/Git/miscellaneous-scripts` on the branch "testing", and I ran the update_git_repos script, the script would run `git pull origin testing` in the `~/Git/miscellaneous-scripts` directory.
 
