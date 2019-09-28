@@ -169,8 +169,7 @@ print_done
 
 printf "%s. Installing development packages...\n" "${stepWithColor}"
 install_package clang
-install_package geany
-install_package geany-plugins
+install_package code
 install_package lld
 install_package llvm
 install_package meson
@@ -189,6 +188,7 @@ install_package dictd
 install_package evince
 install_package firefox
 install_package firefox-developer-edition
+install_package gimp
 install_package git
 install_package gnome-calculator
 install_package gnome-characters
@@ -274,7 +274,6 @@ if grep -q desktop /etc/hostname; then
   install_package dmenu
   install_package dunst
   install_package feh
-  install_package gimp
   install_package i3-gaps
   install_package i3lock
   install_package i3status
