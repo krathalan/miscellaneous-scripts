@@ -92,7 +92,9 @@ This script will skip any directory ending in ".git".
 ## update_wow_addons
 A script that updates all your World of Warcraft addons. You'll need to edit some variables to specify your addons and installation location instead of mine.
 
-Click here for a 3.4 MB video of the script in action: [https://gitlab.com/krathalan/miscellaneous-scripts/raw/master/recording.mp4](https://gitlab.com/krathalan/miscellaneous-scripts/raw/master/recording.mp4)
+As of September 29, 2019, due to Cloudflare restrictions, it is impossible to use `wget` to download addons from the command line. Therefore the design of the script has changed. The script now opens Firefox, then opens a download link for each addon. Ensure your `~/Downloads` folder is empty of `*.zip` files before starting the script. Set `*.zip` files to download automatically in Firefox's settings so you don't have to click "Save" for each addon.
+
+Click here for a video of the script in action: [https://peertube.social/videos/watch/3e2c4f6d-6d10-450b-997f-5d3b2f2d85fe](https://peertube.social/videos/watch/3e2c4f6d-6d10-450b-997f-5d3b2f2d85fe)
 
 ## update_wow_addons_classic
 The same as the previous script, but for Classic! You will need to edit some variables to specify your addons and installation location instead of mine.
