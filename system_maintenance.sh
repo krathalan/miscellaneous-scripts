@@ -110,7 +110,7 @@ while test $# -gt 0; do
 done
 
 # Print intro
-printf "Starting %s sh script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
+printf "Starting %s script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
 printf "This is free software: you are free to change and redistribute it.\n"
 printf "There is NO WARRANTY, to the extent permitted by law.\n"
 
@@ -176,10 +176,6 @@ yay -Sc --noconfirm > /dev/null || exit_script_on_failure "Problem cleaning pacm
 printf "Done.\n"
 complete_step
 
-printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
-sudo pacman -Dk
-complete_step
-
 printf "\n%s. Removing system journal entries older than one day...\n" "${stepWithColor}"
 sudo journalctl --vacuum-time=1d
 complete_step
@@ -193,6 +189,19 @@ fi
 printf "\n%s. Emptying trash...\n" "${stepWithColor}"
 rm -rf "${HOME}/.local/share/Trash"
 printf "Done.\n"
+complete_step
+
+printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
+sudo pacman -Dk
+complete_step
+
+printf "\n%s. Listing failed systemd units...\n" "${stepWithColor}"
+systemctl --failed
+complete_step
+
+printf "\n%s. Listing *.pacsave and *.pacnew files...\n" "${stepWithColor}"
+find / -name *.pacsave 2> /dev/null || true
+find / -name *.pacnew 2> /dev/null || true
 complete_step
 
 if [ -x "$(command -v "neofetch")" ]; then
