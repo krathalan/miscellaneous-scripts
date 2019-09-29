@@ -45,7 +45,6 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 readonly CURSE_URL="https://www.curseforge.com"
 readonly ELVUI_URL="https://www.tukui.org"
 readonly SCRIPT_NAME=$(basename "$0")
-readonly TMP_DIR_DOWNLOAD="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
 readonly TMP_DIR_EXTRACT="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
 
 # -----------------------------------------
@@ -53,7 +52,8 @@ readonly TMP_DIR_EXTRACT="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
 # -----------------------------------------
 
 # Path to the root of your WoW installation
-readonly PATH_TO_WOW="/home/anders/games/world-of-warcraft"
+# This is the default location if you install via Lutris
+readonly PATH_TO_WOW="${HOME}/Games/world-of-warcraft"
 
 # Whether or not to download ElvUI from https://www.tukui.org/download.php?ui=elvui
 # Set to true or false
@@ -89,22 +89,9 @@ exit_script_on_failure()
   exit 1
 }
 
-#######################################
-# Extracts the random download URL of the latest version of the specified addon.
-# Globals:
-#   none
-# Arguments:
-#   $1: name of addon
-# Returns:
-#   none
-#######################################
-get_download_url() 
+open_url()
 {
-  wget -qO- "${CURSE_URL}/wow/addons/$1/download" \
-  | grep -oE 'href="[^"]+"' \
-  | sed 's/^href="//; s/"$//' \
-  | grep '/file$' \
-  | head -n1
+  xdg-open "$1"
 }
 
 # -----------------------------------------
@@ -116,18 +103,23 @@ if [[ "$(whoami)" = "root" ]]; then
 fi
 
 # Step 1
-printf "\n%s==> Downloading addons to temporary folder…%s\n" "${GREEN}" "${NC}"
+printf "\n%s==> Please ensure your ~/Downloads folder is empty.%s\n" "${GREEN}" "${NC}"
+read -n 1 -s -r -p "Press any key when you are ready."
 
-downloadURL=""
+firefox &> /dev/null &
+
+printf "\n\n%s==> Downloading addons…%s\n" "${GREEN}" "${NC}"
+
+# Give firefox a second to open
+sleep 3
+
 for addon in "${ADDONS[@]}"; do
-  printf "Downloading %s" "${addon}"
-  downloadURL="$(get_download_url "${addon}")"
-
-  wget -q --show-progress --directory-prefix="${TMP_DIR_DOWNLOAD}" "${CURSE_URL}${downloadURL}"
+  open_url "${CURSE_URL}/wow/addons/${addon}/download" &> /dev/null &
+  sleep 1
 done
 
 if [[ "${INCLUDE_ELVUI}" == "true" ]]; then
-  printf "Downloading ElvUI"
+  printf "Downloading ElvUI\n"
 
   # Extract download URL for latest version
   pageHTML="$(wget -qO- --show-progress "${ELVUI_URL}/download.php?ui=elvui")"
@@ -136,18 +128,20 @@ if [[ "${INCLUDE_ELVUI}" == "true" ]]; then
   pageHTML=${pageHTML//href=}
 
   # Download ElvUI
-  wget -q --show-progress --directory-prefix="${TMP_DIR_DOWNLOAD}" "${ELVUI_URL}${pageHTML}"
+  wget -q --show-progress --directory-prefix="${HOME}/Downloads" "${ELVUI_URL}${pageHTML}"
 fi
 
-wait
+read -n 1 -s -r -p "Press any key when all addons are downloaded."
 
 # Step 2
-printf "Done.\n\n%s==> Safely unzipping to temporary folder…%s\n" "${GREEN}" "${NC}"
+printf "\n%s==> Safely unzipping to temporary folder…%s\n" "${GREEN}" "${NC}"
 
-for addonFile in "${TMP_DIR_DOWNLOAD}"/*; do
-  printf "Unzipping %s…\n" "$(basename "${addonFile}")"
+for addonFile in "${HOME}/Downloads"/*; do
+  if [[ "${addonFile}" == *.zip ]]; then
+    printf "Unzipping %s…\n" "$(basename "${addonFile}")"
 
-  unzip "${addonFile}" -d "${TMP_DIR_EXTRACT}" > /dev/null 
+    unzip "${addonFile}" -d "${TMP_DIR_EXTRACT}" > /dev/null 
+  fi
 done
 
 wait
@@ -167,5 +161,7 @@ printf "\nDone.\n\n%s==> Moving fresh addons to World of Warcraft directory…%s
 mkdir -p "${PATH_TO_WOW_ADDONS}"
 
 mv "${TMP_DIR_EXTRACT}"/* "${PATH_TO_WOW_ADDONS}" 
+
+rm -rf "${TMP_DIR_EXTRACT}"
 
 printf "\nDone.\n\n%s==> Script finished with no errors.%s\n" "${GREEN}" "${NC}"
