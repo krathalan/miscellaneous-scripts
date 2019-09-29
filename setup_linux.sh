@@ -182,6 +182,8 @@ printf "%s. Installing user packages...\n" "${stepWithColor}"
 install_package alacritty
 install_package alacritty-terminfo
 install_package android-tools
+install_package aspell
+install_package aspell-en
 install_package bookworm
 install_package borg
 install_package dictd
