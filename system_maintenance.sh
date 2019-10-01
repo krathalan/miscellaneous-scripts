@@ -200,8 +200,8 @@ systemctl --failed
 complete_step
 
 printf "\n%s. Listing *.pacsave and *.pacnew files...\n" "${stepWithColor}"
-find / -name *.pacsave 2> /dev/null || true
-find / -name *.pacnew 2> /dev/null || true
+find /etc -name *.pacsave 2> /dev/null || true
+find /etc -name *.pacnew 2> /dev/null || true
 complete_step
 
 if [ -x "$(command -v "neofetch")" ]; then
