@@ -199,7 +199,7 @@ printf "\n%s. Listing failed systemd units...\n" "${stepWithColor}"
 systemctl --failed
 complete_step
 
-printf "\n%s. Listing *.pacsave and *.pacnew files...\n" "${stepWithColor}"
+printf "\n%s. Listing *.pacsave and *.pacnew files in /etc...\n" "${stepWithColor}"
 find /etc -name *.pacsave 2> /dev/null || true
 find /etc -name *.pacnew 2> /dev/null || true
 complete_step
