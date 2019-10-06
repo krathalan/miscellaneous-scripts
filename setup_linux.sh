@@ -177,12 +177,9 @@ print_done
 printf "%s. Installing development packages...\n" "${stepWithColor}"
 install_package clang
 install_package code
-install_package lld
-install_package llvm
 install_package meson
 install_package ninja
 install_package shellcheck
-install_package valgrind
 print_done
 
 printf "%s. Installing user packages...\n" "${stepWithColor}"
