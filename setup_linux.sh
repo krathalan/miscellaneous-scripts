@@ -126,8 +126,7 @@ print_done
 
 printf "%s. Installing kernel packages with pacman...\n" "${stepWithColor}"
 install_package linux-lts
-install_package wireguard-arch
-install_package wireguard-lts
+install_package wireguard-dkms
 install_package wireguard-tools
 print_done
 
@@ -140,6 +139,7 @@ install_package cups
 install_package cups-pdf
 install_package dash
 install_package dosfstools
+install_package e2fsprogs
 install_package ffmpeg
 install_package gptfdisk
 install_package hplip
@@ -147,6 +147,11 @@ install_package iftop
 install_package intel-ucode
 install_package iw
 install_package iwd
+install_package less
+install_package logrotate
+install_package man-db
+install_package man-pages
+install_package nano
 install_package ncdu
 install_package ntfs-3g
 install_package openvpn
@@ -163,7 +168,9 @@ install_package system-config-printer
 install_package tmux
 install_package tree
 install_package unzip
+install_package usbutils
 install_package wget
+install_package which
 install_package zip
 print_done
 
@@ -186,15 +193,14 @@ install_package aspell
 install_package aspell-en
 install_package bookworm
 install_package borg
+install_package calc
 install_package dictd
 install_package evince
 install_package firefox
 install_package firefox-developer-edition
 install_package gimp
 install_package git
-install_package gnome-calculator
 install_package gnome-characters
-install_package gnome-system-monitor
 install_package hunspell-en_US
 install_package imagemagick
 install_package imv
