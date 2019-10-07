@@ -126,7 +126,8 @@ print_done
 
 printf "%s. Installing kernel packages with pacman...\n" "${stepWithColor}"
 install_package linux-lts
-install_package wireguard-dkms
+install_package wireguard-arch
+install_package wireguard-lts
 install_package wireguard-tools
 print_done
 
