@@ -68,9 +68,9 @@ exit_script_on_failure()
 
 get_explicitly_installed_packages_no_aur() {
   local -r explicit=$(pacman --query --quiet --explicit)
-  local -r groups=$(pacman --query --quiet --groups base base-devel xorg-apps)
+  local -r groups=$(pacman --query --quiet --groups base-devel xorg-apps)
 
-  # Filter out packages manually installed (from AUR) and from base, base-devel, and xorg-apps groups
+  # Filter out packages manually installed (from AUR) and from base-devel and xorg-apps groups
   printf "%s\n%s\n%s\n%s\n%s" "${explicit}" "${groups}" "${groups}" "${AUR_PACKAGES}" "${AUR_PACKAGES}" | sort | uniq -u
 }
 

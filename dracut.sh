@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Description: Generates a new initramfs with dracut. To be used in the interim
 #              until official dracut ALPM hooks are provided.
@@ -30,16 +30,21 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -eu # (Eo pipefail) is Bash only!
+set -Eeuo pipefail
 
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [ "$#" -gt 0 ] && [ "$1" = "--lts" ]; then
-  kver=$(find /usr/lib/modules -maxdepth 1 -type d -name "*lts*" \( ! -name "extra*" \))
-  dracut --stdlog 4 --omit "network iscsi" --hostonly --lz4 -f /boot/initramfs-linux-lts-dracut.img --kver "${kver##*/}"
+outputfilename="/boot/initramfs-linux"
+read -r kver
+kver=${kver#"usr/lib/modules/"}
+kver=${kver%"/vmlinuz"}
+
+if grep -q "lts" <<< "${kver}"; then
+  outputfilename="${outputfilename}-lts-dracut.img"
 else
-  kver=$(find /usr/lib/modules -maxdepth 1 -type d -name "*arch*" \( ! -name "extra*" \))
-  dracut --stdlog 4 --omit "network iscsi" --hostonly --lz4 -f /boot/initramfs-linux-dracut.img --kver "${kver##*/}"
+  outputfilename="${outputfilename}-dracut.img"
 fi
+
+dracut --stdlog 4 --omit "network iscsi stratis" --hostonly --lz4 -f "${outputfilename}" --kver "${kver}"
