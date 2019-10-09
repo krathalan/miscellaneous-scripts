@@ -124,13 +124,6 @@ install_package ttf-linux-libertine
 install_package ttf-roboto
 print_done
 
-printf "%s. Installing kernel packages with pacman...\n" "${stepWithColor}"
-install_package linux-lts
-install_package wireguard-arch
-install_package wireguard-lts
-install_package wireguard-tools
-print_done
-
 printf "%s. Installing system packages with pacman...\n" "${stepWithColor}"
 install_package alsa-plugins
 install_package apparmor
@@ -172,6 +165,8 @@ install_package unzip
 install_package usbutils
 install_package wget
 install_package which
+install_package wireguard-arch
+install_package wireguard-tools
 install_package zip
 print_done
 
@@ -293,7 +288,6 @@ if grep -q desktop /etc/hostname; then
   if lspci | grep -qi nvidia; then
     printf "%s Installing Nvidia packages...\n" "${stepWithColor}"
     install_package nvidia
-    install_package nvidia-lts
     install_package opencl-nvidia
     print_done
   fi
