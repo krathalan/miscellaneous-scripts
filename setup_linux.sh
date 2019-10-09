@@ -127,6 +127,7 @@ print_done
 printf "%s. Installing system packages with pacman...\n" "${stepWithColor}"
 install_package alsa-plugins
 install_package apparmor
+install_package arch-wiki-docs
 install_package bash-completion
 install_package bluez-utils
 install_package cups
