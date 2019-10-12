@@ -142,7 +142,6 @@ install_package iftop
 install_package intel-ucode
 install_package iw
 install_package iwd
-install_package less
 install_package logrotate
 install_package man-db
 install_package man-pages
