@@ -92,12 +92,15 @@ printf "Done.\n\n"
 
 printf "Nonfree packages:\n"
 
+# Remove "branding" and "technical" reasons
 grep -v "\[branding\]" "${TMP_DIR}/blacklist.txt" | grep -v "\[technical\]" > "${TMP_DIR}/blacklist_no_branding.txt"
 
+# Get list of installed packages that belong to the filtered blacklist
 printf "%s\n%s\n" "$(pacman -Qq)" "$(cut -d ':' -f1 "${TMP_DIR}/blacklist_no_branding.txt")" | sort | uniq -d > "${TMP_DIR}/nonfree_packages.txt"
 
 mapfile -t nonfree_packages < "${TMP_DIR}/nonfree_packages.txt"
 
+# List each installed nonfree package with reasoning
 counter=0
 
 for package in "${nonfree_packages[@]}"; do
