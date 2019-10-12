@@ -157,7 +157,6 @@ install_package playerctl
 install_package pulseaudio-alsa
 install_package reflector
 install_package rng-tools
-install_package source-highlight
 install_package stress
 install_package system-config-printer
 install_package tmux
