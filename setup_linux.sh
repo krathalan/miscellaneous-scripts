@@ -185,13 +185,13 @@ install_package alacritty-terminfo
 install_package android-tools
 install_package aspell
 install_package aspell-en
-install_package bookworm
 install_package borg
 install_package calc
 install_package dictd
 install_package evince
 install_package firefox
 install_package firefox-developer-edition
+install_package foliate
 install_package gimp
 install_package git
 install_package gnome-characters
