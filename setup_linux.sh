@@ -119,6 +119,7 @@ install_package noto-fonts
 install_package noto-fonts-cjk
 install_package noto-fonts-emoji
 install_package ttf-dejavu
+install_package ttf-fira-mono
 install_package ttf-ibm-plex
 install_package ttf-linux-libertine
 install_package ttf-roboto
