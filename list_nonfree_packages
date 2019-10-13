@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: 
+# Description: Lists installed nonfree packages on Arch Linux systems.
 #
 # Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
 #
