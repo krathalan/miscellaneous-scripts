@@ -250,7 +250,6 @@ install_package cmake
 print_done
 
 printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-yay -S hardened-malloc-git
 yay -S libldac
 yay -S nano-syntax-highlighting-git
 yay -S plata-theme
