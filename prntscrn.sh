@@ -123,13 +123,13 @@ fileName="$(echo "${fileName}" | tr '[:upper:]' '[:lower:]')"
 
 if [ "${XDG_SESSION_TYPE}" = "wayland" ] || pgrep sway; then
   check_command "grim"
-  grim -t jpeg -q 90 "${fileName}"
+  grim -t jpeg -q 95 "${fileName}"
 elif [ "${delay}" -gt 0 ]; then
   check_command "scrot"
-  scrot -q 90 -d "${delay}" "${fileName}"
+  scrot -q 95 -d "${delay}" "${fileName}"
 else
   check_command "scrot"
-  scrot -q 90 "${fileName}"
+  scrot -q 95 "${fileName}"
 fi
 
 # Make screenshots directory if it does not exist yet
