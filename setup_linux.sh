@@ -146,6 +146,7 @@ install_package logrotate
 install_package man-db
 install_package man-pages
 install_package nano
+install_package nano-syntax-highlighting
 install_package ncdu
 install_package ntfs-3g
 install_package openvpn
@@ -251,7 +252,6 @@ print_done
 
 printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
 yay -S libldac
-yay -S nano-syntax-highlighting-git
 yay -S plata-theme
 yay -S sparse
 yay -S ttf-material-design-icons-webfont
