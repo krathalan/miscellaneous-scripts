@@ -121,7 +121,7 @@ fileName="screen-${currentDate}.jpg"
 # Convert to completely lowercase for easier tab completion
 fileName="$(echo "${fileName}" | tr '[:upper:]' '[:lower:]')"
 
-if [ -n "${SWAYSOCK}" ]; then
+if env | grep -q SWAYSOCK; then
   check_command "grim"
   grim -t jpeg -q 95 "${fileName}"
 elif [ "${delay}" -gt 0 ]; then
