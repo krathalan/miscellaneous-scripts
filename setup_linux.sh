@@ -264,60 +264,30 @@ yay -S yay
 yay -S pulseaudio-modules-bt-git
 print_done
 
-# Machine specific configuration
-if grep -q desktop /etc/hostname; then
-  if ! grep -q GDK_SCALE /etc/environment; then
-    printf "%s Enabling 2x DPI scaling for your HiDPI display...\n" "${stepWithColor}"
-    printf "GDK_SCALE=2" | sudo tee -a /etc/environment > /dev/null
-    print_done
-  fi
+printf "%s Installing power management packages...\n" "${stepWithColor}"
+install_package smartmontools
+install_package tlp
+install_package x86_energy_perf_policy
+print_done
 
-  printf "%s Installing Xorg packages...\n" "${stepWithColor}"
-  install_package compton
-  install_package dmenu
-  install_package dunst
-  install_package feh
-  install_package i3-gaps
-  install_package i3lock
-  install_package i3status
-  install_package redshift
-  install_package scrot
-  # From AUR
-  yay -S polybar
-  print_done
+printf "%s Installing Wayland packages...\n" "${stepWithColor}"
+install_package bemenu
+install_package grim
+install_package light
+install_package mako
+install_package sway
+install_package swaylock
+install_package waybar
+install_package wl-clipboard
+# From AUR
+yay -S redshift-wlr-gamma-control
+yay -S wdisplays-git
+yay -S wob
+print_done
 
-  if lspci | grep -qi nvidia; then
-    printf "%s Installing Nvidia packages...\n" "${stepWithColor}"
-    install_package nvidia
-    install_package opencl-nvidia
-    print_done
-  fi
-elif grep -q laptop /etc/hostname; then
-  printf "%s Installing power management packages...\n" "${stepWithColor}"
-  install_package smartmontools
-  install_package tlp
-  install_package x86_energy_perf_policy
-  print_done
-
-  printf "%s Installing Wayland packages...\n" "${stepWithColor}"
-  install_package bemenu
-  install_package grim
-  install_package light
-  install_package mako
-  install_package sway
-  install_package swaylock
-  install_package waybar
-  install_package wl-clipboard
-  # From AUR
-  yay -S redshift-wlr-gamma-control
-  yay -S wdisplays-git
-  yay -S wob
-  print_done
-
-  printf "%s Adding user to \"video\" group for light package...\n" "${stepWithColor}"
-  sudo usermod -aG video "${LOGNAME}"
-  print_done
-fi
+printf "%s Adding user to \"video\" group for light package...\n" "${stepWithColor}"
+sudo usermod -aG video "${LOGNAME}"
+print_done
 
 # Print summary info for user
 printf "[%s✔%s] %s complete.\n" "${GREEN}" "${NC}" "${SCRIPT_NAME}"
