@@ -233,7 +233,7 @@ printf "%s. Installing go to build yay...\n" "${stepWithColor}"
 install_package go
 print_done
 
-if [ ! -x "$(command -v yay)" ]; then
+if ! command -v yay > /dev/null 2> /dev/null; then
   printf "%s. Installing yay...\n" "${stepWithColor}"
   aurURL="https://aur.archlinux.org/yay.git"
   tempFolderName="$(mktemp -d --tmpdir=/tmp "setup_linux.sh.XXXXX")"
