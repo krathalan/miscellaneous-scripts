@@ -118,8 +118,9 @@ printf "%s. Installing fonts with pacman...\n" "${stepWithColor}"
 install_package noto-fonts
 install_package noto-fonts-cjk
 install_package noto-fonts-emoji
+install_package terminus-font
 install_package ttf-dejavu
-install_package ttf-fira-mono
+install_package otf-fira-mono
 install_package ttf-ibm-plex
 install_package ttf-linux-libertine
 install_package ttf-roboto
@@ -210,6 +211,7 @@ install_package neofetch
 install_package notification-daemon
 install_package papirus-icon-theme
 install_package pass
+install_package pass-otp
 install_package perl-image-exiftool
 # For mounting a borg backup as a file system
 install_package python-llfuse
@@ -231,7 +233,7 @@ printf "%s. Installing go to build yay...\n" "${stepWithColor}"
 install_package go
 print_done
 
-if [ ! -x "$(command -v yay)" ]; then
+if ! command -v yay > /dev/null 2> /dev/null; then
   printf "%s. Installing yay...\n" "${stepWithColor}"
   aurURL="https://aur.archlinux.org/yay.git"
   tempFolderName="$(mktemp -d --tmpdir=/tmp "setup_linux.sh.XXXXX")"
@@ -309,6 +311,7 @@ elif grep -q laptop /etc/hostname; then
   # From AUR
   yay -S redshift-wlr-gamma-control
   yay -S wdisplays-git
+  yay -S wob
   print_done
 
   printf "%s Adding user to \"video\" group for light package...\n" "${stepWithColor}"
