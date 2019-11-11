@@ -206,6 +206,12 @@ find /etc -name "*.pacnew" 2> /dev/null || true
 printf "%s" "${NC}"
 complete_step
 
+if [ -x "$(command -v "version-check")" ]; then
+  printf "\n%s. Checking AppArmor profile versions against installed package versions...\n" "${stepWithColor}"
+  version-check "/home/${LOGNAME}/git/apparmor-profiles" > /dev/null
+  complete_step
+fi
+
 if [ -x "$(command -v "neofetch")" ]; then
   printf "\n%s. Printing disk usage...\n" "${stepWithColor}"
   neofetch disk
