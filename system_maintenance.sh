@@ -99,6 +99,12 @@ complete_step()
 # https://stackoverflow.com/questions/7069682/how-to-get-arguments-with-flags-in-bash/7069755#7069755
 while test $# -gt 0; do
   case "$1" in
+    -c|--clean)
+      printf "\n%s. Cleaning pacman and yay caches...\n" "${stepWithColor}"
+      yay -Sc --noconfirm || exit_script_on_failure "Problem cleaning pacman and yay caches with command \"yay -Sc --noconfirm\""
+      printf "Done.\n"
+      exit 0
+      ;;
     -n|--no-mirrorlist-refresh)
       export regenerateMirrorlist="false"
       shift
@@ -169,11 +175,6 @@ fi
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
 yay -c
 sudo pacman -Rs "$(pacman -Qtdq)" 2> /dev/null || printf "No packages to remove.\n"
-complete_step
-
-printf "\n%s. Cleaning pacman and yay caches...\n" "${stepWithColor}"
-yay -Sc --noconfirm > /dev/null || exit_script_on_failure "Problem cleaning pacman and yay caches with command \"yay -Sc --noconfirm\""
-printf "Done.\n"
 complete_step
 
 printf "\n%s. Removing system journal entries older than one day...\n" "${stepWithColor}"
