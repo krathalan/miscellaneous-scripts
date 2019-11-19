@@ -4,7 +4,7 @@
 #
 # This script is intended to be used in a pacman hook in /etc/pacman.d/hooks.
 #
-# Homepage: https://gitlab.com/krathalan/miscellaneous-scripts
+# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
 # Edited from an anonymous gist on Github
 # https://gist.github.com/anonymous/a588e2ca9160d5fb142b
@@ -122,7 +122,7 @@ append_to_log "#################################################################
 append_to_log ""
 append_to_log "# For device (hostname): ${HOSTNAME}"
 append_to_log "# When: ${DATE}"
-append_to_log "# With: ${SCRIPT_NAME} from https://gitlab.com/krathalan/miscellaneous-scripts"
+append_to_log "# With: ${SCRIPT_NAME} from https://git.sr.ht/~krathalan/miscellaneous-scripts"
 append_to_log "# List of repos enabled in /etc/pacman.conf: ${bracketedListOfRepos[*]}"
 append_to_log "# Total number of packages: $(pacman --query --quiet | wc -w)"
 append_to_log ""
