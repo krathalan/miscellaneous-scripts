@@ -3,7 +3,7 @@ This repository is a collection of scripts I wrote and use/update regularly. The
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Six POSIX-compliant sh scripts, six Bash scripts.
+Six POSIX-compliant sh scripts, six Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
 
 ## `flac_to_opus` (bash)
 This Bash script will convert all "\*.flac" files in the working directory to "\*.opus" files and place all "\*.flac" files into a "flac/" directory, again in the working directory. 
@@ -99,6 +99,6 @@ As of September 29, 2019, due to Cloudflare restrictions, it is impossible to us
 
 Click here for a video of the script in action: [https://peertube.social/videos/watch/3e2c4f6d-6d10-450b-997f-5d3b2f2d85fe](https://peertube.social/videos/watch/3e2c4f6d-6d10-450b-997f-5d3b2f2d85fe)
 
-## update_wow_addons_classic (bash)
+## `update_wow_addons_classic` (bash)
 The same as the previous script, but for Classic! You will need to edit some variables to specify your addons and installation location instead of mine.
 
