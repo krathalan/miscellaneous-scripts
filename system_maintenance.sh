@@ -100,8 +100,8 @@ complete_step()
 while test $# -gt 0; do
   case "$1" in
     -c|--clean)
-      printf "\n%s. Cleaning pacman and yay caches...\n" "${stepWithColor}"
-      yay -Sc --noconfirm || exit_script_on_failure "Problem cleaning pacman and yay caches with command \"yay -Sc --noconfirm\""
+      printf "\n%s. Cleaning pacman caches...\n" "${stepWithColor}"
+      sudo pacman -Sc --noconfirm || exit_script_on_failure "Problem cleaning pacman caches with command \"pacman -Sc --noconfirm\""
       printf "Done.\n"
       exit 0
       ;;
@@ -122,10 +122,6 @@ printf "There is NO WARRANTY, to the extent permitted by law.\n"
 
 if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
-
-if [ ! -x "$(command -v "yay")" ]; then
-  exit_script_on_failure "You must have the yay package installed from the Arch User Repository (https://github.com/Jguer/yay)."
 fi
 
 if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ]; then
@@ -152,28 +148,26 @@ if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ];
     # Two "y"s in -Syyu forces pacman to update the repos even if they appear to be up to date;
     # this should be used only after updating the mirrorlist 
     # https://wiki.archlinux.org/index.php/Mirrors#Force_pacman_to_refresh_the_package_lists
-    yay -Syyu --devel
+    sudo pacman -Syyu
     complete_step
-
-    # Update firefox-nightly package if it's installed
-    if yay -Qi firefox-nightly > /dev/null 2> /dev/null; then
-      printf "\n%s. Updating firefox-nightly...\n" "${stepWithColor}"
-      yay -S firefox-nightly
-      complete_step
-    fi
   else
     printf "\n%s. Updating packages...\n" "${stepWithColor}"
-    yay -Syu --devel
+    sudo pacman -Syu
     complete_step
   fi
 else
   printf "\n%s. Updating packages...\n" "${stepWithColor}"
-  yay -Syu --devel
+  sudo pacman -Syu
+  complete_step
+fi
+
+if [ -x "$(command -v "aur")" ]; then
+  printf "\n%s. Checking local AUR repo for updates...\n" "${stepWithColor}"
+  aur repo --upgrades
   complete_step
 fi
 
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
-yay -c
 sudo pacman -Rs "$(pacman -Qtdq)" 2> /dev/null || printf "No packages to remove.\n"
 complete_step
 
@@ -186,11 +180,6 @@ if [ -x "$(command -v "flatpak")" ]; then
   flatpak update -y
   complete_step
 fi
-
-printf "\n%s. Emptying trash...\n" "${stepWithColor}"
-rm -rf "${HOME}/.local/share/Trash"
-printf "Done.\n"
-complete_step
 
 printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
 sudo pacman -Dk
