@@ -134,8 +134,10 @@ install_package bluez-utils
 install_package cups
 install_package cups-pdf
 install_package dash
+install_package devtools
 install_package dosfstools
 install_package e2fsprogs
+install_package efitools
 install_package ffmpeg
 install_package gptfdisk
 install_package hplip
@@ -158,6 +160,7 @@ install_package playerctl
 install_package pulseaudio-alsa
 install_package reflector
 install_package rng-tools
+install_package sbsigntools
 install_package stress
 install_package system-config-printer
 install_package tmux
@@ -186,7 +189,6 @@ install_package alacritty-terminfo
 install_package android-tools
 install_package aspell
 install_package aspell-en
-install_package borg
 install_package calc
 install_package dictd
 install_package evince
@@ -213,8 +215,6 @@ install_package papirus-icon-theme
 install_package pass
 install_package pass-otp
 install_package perl-image-exiftool
-# For mounting a borg backup as a file system
-install_package python-llfuse
 install_package streamlink
 install_package syncthing
 install_package thunderbird
@@ -229,50 +229,34 @@ install_package gst-plugins-base
 install_package gst-plugins-good
 print_done
 
-printf "%s. Installing go to build yay...\n" "${stepWithColor}"
-install_package go
-print_done
-
-if ! command -v yay > /dev/null 2> /dev/null; then
-  printf "%s. Installing yay...\n" "${stepWithColor}"
-  aurURL="https://aur.archlinux.org/yay.git"
+if ! command -v aur > /dev/null 2> /dev/null; then
+  printf "%s. Installing aurutils...\n" "${stepWithColor}"
+  aurURL="https://aur.archlinux.org/aurutils.git"
   tempFolderName="$(mktemp -d --tmpdir=/tmp "setup_linux.sh.XXXXX")"
   printf "==> Cloning %s to a temporary folder...\n" "${aurURL}"
   (
   cd "${tempFolderName}" || exit
   git clone "${aurURL}"
-  cd yay || exit
+  cd aurutils || exit
   makepkg -si
   rm -rf "${tempFolderName}"
   )
   print_done
 fi
 
-printf "%s. Installing cmake to build pulseaudio-modules-bt-git...\n" "${stepWithColor}"
-install_package cmake
-print_done
-
-printf "%s. Installing packages from AUR...\n" "${stepWithColor}"
-yay -S libldac
-yay -S plata-theme
-yay -S sparse
-yay -S ttf-material-design-icons-webfont
-yay -S ttf-roboto-mono
-yay -S wtwitch
-yay -S yay
-# Must be installed *after* libldac
-yay -S pulseaudio-modules-bt-git
+printf "%s. Packages to build from AUR:\n" "${stepWithColor}"
+printf "polybar, libldac, plata-theme, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wtwitch, wdisplays-git, wob, pulseaudio-modules-bt-git\n"
 print_done
 
 # Machine specific configuration
 if grep -q desktop /etc/hostname; then
   if ! grep -q GDK_SCALE /etc/environment; then
-    printf "%s Enabling 2x DPI scaling for your HiDPI display...\n" "${stepWithColor}"
+    printf "%s. Enabling 2x DPI scaling for your HiDPI display...\n" "${stepWithColor}"
     printf "GDK_SCALE=2" | sudo tee -a /etc/environment > /dev/null
     print_done
   fi
 
-  printf "%s Installing Xorg packages...\n" "${stepWithColor}"
+  printf "%s. Installing Xorg packages...\n" "${stepWithColor}"
   install_package compton
   install_package dmenu
   install_package dunst
@@ -282,24 +266,22 @@ if grep -q desktop /etc/hostname; then
   install_package i3status
   install_package redshift
   install_package scrot
-  # From AUR
-  yay -S polybar
   print_done
 
   if lspci | grep -qi nvidia; then
-    printf "%s Installing Nvidia packages...\n" "${stepWithColor}"
+    printf "%s. Installing Nvidia packages...\n" "${stepWithColor}"
     install_package nvidia
     install_package opencl-nvidia
     print_done
   fi
 elif grep -q laptop /etc/hostname; then
-  printf "%s Installing power management packages...\n" "${stepWithColor}"
+  printf "%s. Installing power management packages...\n" "${stepWithColor}"
   install_package smartmontools
   install_package tlp
   install_package x86_energy_perf_policy
   print_done
 
-  printf "%s Installing Wayland packages...\n" "${stepWithColor}"
+  printf "%s. Installing Wayland packages...\n" "${stepWithColor}"
   install_package bemenu
   install_package grim
   install_package light
@@ -308,13 +290,10 @@ elif grep -q laptop /etc/hostname; then
   install_package swaylock
   install_package waybar
   install_package wl-clipboard
-  # From AUR
-  yay -S redshift-wlr-gamma-control
-  yay -S wdisplays-git
-  yay -S wob
+  install_package xorg-server-xwayland
   print_done
 
-  printf "%s Adding user to \"video\" group for light package...\n" "${stepWithColor}"
+  printf "%s. Adding user to \"video\" group for light package...\n" "${stepWithColor}"
   sudo usermod -aG video "${LOGNAME}"
   print_done
 fi
