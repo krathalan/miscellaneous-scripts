@@ -73,17 +73,21 @@ A simple POSIX-compliant script template I use. Easy to use as a Bash script tem
 This script sets up Arch Linux with the programs I use and configures a few things for me automatically. This script is meant to be run *after installation*, NOT as an installation script. You don't want to run this script without reading through it and changing it to your liking. 
 
 ## `system_maintenance.sh`
-This script will perform system maintenance on an Arch Linux system. You must have the yay package installed from the AUR (https://github.com/Jguer/yay). It will:
+This script will perform system maintenance on an Arch Linux system. It will:
 
+- Clean pacman caches (if the flag `--clean` is passed)
 - Update `/etc/pacman.d/mirrorlist` if it hasn't been updated in more than 3.5 days
   - This functionality requires the [reflector](https://www.archlinux.org/packages/community/any/reflector/) package to be installed
-  - If you have the `firefox-nightly` package installed, this script will update it along with the mirrorlist
-- Update installed packages and remove unused packages
-- Clean pacman and yay caches
-- Check your pacman database
+- Update installed packages
+- Check for local AUR repo updates
+  - This functionality requires the [aurutils](https://aur.archlinux.org/packages/aurutils) package to be installed
+- Remove unused packages
+- Remove old journald entries
 - Update installed flatpaks and remove unused flatpaks
   - This functionality requires the [flatpak](https://www.archlinux.org/packages/extra/x86_64/flatpak/) package to be installed
-- Empty your trash
+- Check your pacman database for errors
+- List failed systemd units
+- List `*.pacsave` and `*.pacnew` files in `/etc`
 - Print disk usage
   - This functionality requires the [neofetch](https://www.archlinux.org/packages/community/any/neofetch/) package to be installed 
 
