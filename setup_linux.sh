@@ -257,13 +257,13 @@ if grep -q desktop /etc/hostname; then
   fi
 
   printf "%s. Installing Xorg packages...\n" "${stepWithColor}"
-  install_package compton
   install_package dmenu
   install_package dunst
   install_package feh
   install_package i3-gaps
   install_package i3lock
   install_package i3status
+  install_package picom
   install_package redshift
   install_package scrot
   print_done
