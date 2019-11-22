@@ -163,7 +163,7 @@ fi
 
 if [ -x "$(command -v "aur")" ]; then
   printf "\n%s. Checking local AUR repo for updates...\n" "${stepWithColor}"
-  aur sync -u
+  aur sync -cu
   complete_step
 fi
 
