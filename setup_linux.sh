@@ -217,6 +217,7 @@ install_package pass-otp
 install_package perl-image-exiftool
 install_package streamlink
 install_package syncthing
+install_package termdown
 install_package thunderbird
 install_package transmission-cli
 install_package youtube-dl
