@@ -124,6 +124,7 @@ install_package otf-fira-mono
 install_package ttf-ibm-plex
 install_package ttf-linux-libertine
 install_package ttf-roboto
+install_package ttf-roboto-mono
 print_done
 
 printf "%s. Installing system packages with pacman...\n" "${stepWithColor}"
@@ -201,6 +202,7 @@ install_package gnome-characters
 install_package hunspell-en_US
 install_package imagemagick
 install_package imv
+install_package inkscape
 install_package irssi
 install_package jq
 install_package mediainfo
