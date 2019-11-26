@@ -115,12 +115,13 @@ if [ "$(whoami)" = "root" ]; then
 fi
 
 printf "%s. Installing fonts with pacman...\n" "${stepWithColor}"
+install_package gnu-free-fonts
 install_package noto-fonts
 install_package noto-fonts-cjk
 install_package noto-fonts-emoji
+install_package otf-fira-mono
 install_package terminus-font
 install_package ttf-dejavu
-install_package otf-fira-mono
 install_package ttf-ibm-plex
 install_package ttf-linux-libertine
 install_package ttf-roboto

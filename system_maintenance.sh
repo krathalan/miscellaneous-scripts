@@ -165,6 +165,10 @@ if [ -x "$(command -v "aur")" ]; then
   printf "\n%s. Checking local AUR repo for updates...\n" "${stepWithColor}"
   aur sync -cu
   complete_step
+
+  printf "\n%s. Checking for local AUR repo updates...\n" "${stepWithColor}"
+  sudo pacman -Syu
+  complete_step
 fi
 
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
