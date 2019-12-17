@@ -168,6 +168,7 @@ install_package system-config-printer
 install_package tmux
 install_package tree
 install_package unzip
+install_package usbguard
 install_package usbutils
 install_package wget
 install_package which
@@ -249,7 +250,7 @@ if ! command -v aur > /dev/null 2> /dev/null; then
 fi
 
 printf "%s. Packages to build from AUR:\n" "${stepWithColor}"
-printf "polybar, libldac, plata-theme, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wtwitch, wdisplays-git, wob, pulseaudio-modules-bt-git\n"
+printf "aerc, aurutils, hardened-malloc-git, libldac, minecraft-launcher plata-theme, polybar, pulseaudio-modules-bt-git, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wtwitch, wdisplays-git, wob\n"
 print_done
 
 # Machine specific configuration
