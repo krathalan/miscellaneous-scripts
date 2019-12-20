@@ -202,7 +202,7 @@ complete_step
 
 if [ -x "$(command -v "version-check")" ]; then
   printf "\n%s. Checking AppArmor profile versions against installed package versions...\n" "${stepWithColor}"
-  version-check "/home/${LOGNAME}/git/apparmor-profiles" > /dev/null
+  version-check "/home/${LOGNAME}/git/apparmor-profiles" -q
   complete_step
 fi
 
