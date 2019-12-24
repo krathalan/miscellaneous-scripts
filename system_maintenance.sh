@@ -172,7 +172,11 @@ if [ -x "$(command -v "aur")" ]; then
 fi
 
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
-sudo pacman -Rs "$(pacman -Qtdq)" 2> /dev/null || printf "No packages to remove.\n"
+if pacman -Qtdq > /dev/null; then
+  sudo pacman -Rs "$(pacman -Qtdq)"
+else
+  printf "No packages to remove.\n"
+fi
 complete_step
 
 printf "\n%s. Removing system journal entries older than one day...\n" "${stepWithColor}"
