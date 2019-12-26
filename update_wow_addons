@@ -115,8 +115,6 @@ fi
 printf "\n%s==> Please ensure your ~/Downloads folder is empty.%s\n" "${GREEN}" "${NC}"
 read -n 1 -s -r -p "Press any key when you are ready."
 
-firefox &> /dev/null &
-
 printf "\n\n%s==> Downloading addons…%s\n" "${GREEN}" "${NC}"
 
 # Give firefox a second to open
