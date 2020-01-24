@@ -231,7 +231,6 @@ print_done
 printf "%s. Installing gstreamer packages for additional codecs...\n" "${stepWithColor}"
 install_package gst-libav
 install_package gst-plugins-base
-install_package gst-plugins-good
 print_done
 
 if ! command -v aur > /dev/null 2> /dev/null; then
