@@ -64,7 +64,7 @@ readonly INCLUDE_ELVUI="true"
 
 # Enter the end of the URL, for example: https://www.curseforge.com/wow/addons/big-wigs
 # ...would be entered as "big-wigs"
-readonly ADDONS=("addonskins" "adibags" "advanced-tooltips" "altoholic" "announce-rare" "auctionlite" "auctionator" "auto-gossip" "autoturnin" "azeritetooltip" "battle_pet_breedid" "big-wigs" "bigwigs_countdown_overwatch" "project-2590" "dejacharacterstats" "details" "dialogkey" "elvui-shadow-light" "fishingbuddy" "gathermate2" "gottagofast" "islandexpeditionhelper" "litemount" "little-wigs" "long-macros" "pawn" "pettracker" "quartz" "raiderio" "rarescanner" "rematch" "rematch-elvui-skin" "simulationcraft" "tellmewhen" "tomtom" "weakauras-2" "world-quest-tracker" "xmerchant")
+readonly ADDONS=("addonskins" "elvui-adibags" "advanced-tooltips" "altoholic" "announce-rare" "auctionlite" "auctionator" "auto-gossip" "autoturnin" "azeritetooltip" "battle_pet_breedid" "big-wigs" "bigwigs_countdown_overwatch" "project-2590" "dejacharacterstats" "details" "dialogkey" "elvui-shadow-light" "fishingbuddy" "gathermate2" "gottagofast" "islandexpeditionhelper" "jelly-deposit-locations" "litemount" "little-wigs" "long-macros" "pawn" "pettracker" "quartz" "raiderio" "rarescanner" "rematch" "rematch-elvui-skin" "simulationcraft" "tellmewhen" "tomtom" "weakauras-2" "world-quest-tracker" "xmerchant")
 
 # Don't edit this!
 readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of Warcraft/_retail_/Interface/AddOns"

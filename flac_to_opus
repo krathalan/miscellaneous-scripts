@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Converts *.flac to 256Kb/s *.opus
+# Description: Converts audio to 256Kb/s *.opus
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
@@ -53,12 +53,22 @@ readonly SCRIPT_NAME=$(basename "$0")
 # --------------- Functions ---------------
 # -----------------------------------------
 
+#######################################
+# Converts a file to an opus file.
+# Globals:
+#   none
+# Arguments:
+#   $1: base file name to convert
+#   $2: origin file format
+# Returns:
+#   none
+#######################################
 convert_file()
 {
 	# Overwrite if present
 	rm -f "$1.opus"
 	
-	ffmpeg -loglevel panic -i "$1.flac" -c:a libopus -b:a 256K "$1.opus"
+	ffmpeg -loglevel panic -i "$1.$2" -c:a libopus -b:a 256K "$1.opus"
 }
 
 #######################################
@@ -85,25 +95,27 @@ exit_script_on_failure()
 # -----------------------------------------
 
 # Print intro
-printf "Starting %s Bash script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
-printf "This is free software: you are free to change and redistribute it.\n"
-printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
+if [[ $# -lt 1 ]]; then
+  exit_script_on_failure "Please specify an origin format (e.g. flac)."
+fi
 
-if [ "$(whoami)" = "root" ]; then
+readonly ORIGINFORMAT="$1"
+
+if [[ "$(whoami)" = "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
 fileName=""
 
-for file in "$PWD"/*.flac; do
+for file in "$PWD"/*."${ORIGINFORMAT}"; do
 	fileName="$(basename -- "${file}")"
 	fileName="${fileName%.*}"
 
-	convert_file "${fileName}" &
+	convert_file "${fileName}" "${ORIGINFORMAT}" &
 done
 
 # Track progress
-filesToProcess=$(find . -name "*.flac" | wc -l)
+filesToProcess=$(find . -name "*.${ORIGINFORMAT}" | wc -l)
 # shellcheck disable=SC2207
 joblist=($(jobs -p))
 joblistLength=${#joblist[*]}
@@ -123,10 +135,10 @@ done
 
 wait
 
-if [[ ! -d "flac" ]]; then
-	mkdir flac/
+if [[ ! -d "${ORIGINFORMAT}" ]]; then
+	mkdir "${ORIGINFORMAT}"/
 fi
 
-mv ./*.flac flac/
+mv ./*."${ORIGINFORMAT}" "${ORIGINFORMAT}"/
 
 printf "\n\nDone.\n"
