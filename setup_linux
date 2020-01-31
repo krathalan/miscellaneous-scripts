@@ -250,7 +250,7 @@ if ! command -v aur > /dev/null 2> /dev/null; then
 fi
 
 printf "%s. Packages to build from AUR:\n" "${stepWithColor}"
-printf "aerc, aurutils, hardened-malloc-git, plata-theme, polybar, simulationcraft-git, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wdisplays-git, wob, wtwitch\n"
+printf "aerc, aurutils, hardened-malloc-git, hashboot, pacaudit, plata-theme, polybar, simulationcraft-git, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wdisplays-git, wob, wtwitch\n"
 print_done
 
 # Machine specific configuration
