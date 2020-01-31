@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 #
-# Description: Installs various packages on Arch Linux.
+# Description: Installs various packages and performs configuration 
+#              on Arch Linux.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019 krathalan
+# Copyright (C) 2019-2020 krathalan
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +30,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -eu # (Eo pipefail) is Bash only!
+set -Eeuo pipefail
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -80,7 +81,7 @@ install_package()
 exit_script_on_failure() 
 {
   printf "\n[%s✖%s] Error: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+  printf "Exiting %s script.\n" "${SCRIPT_NAME}" >&2
 
   exit 1
 }
@@ -106,7 +107,7 @@ print_done()
 # -----------------------------------------
 
 # Print intro
-printf "Starting %s sh script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
+printf "Starting %s script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
 printf "This is free software: you are free to change and redistribute it.\n"
 printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 
@@ -249,7 +250,7 @@ if ! command -v aur > /dev/null 2> /dev/null; then
 fi
 
 printf "%s. Packages to build from AUR:\n" "${stepWithColor}"
-printf "aerc, aurutils, hardened-malloc-git, libldac, minecraft-launcher plata-theme, polybar, pulseaudio-modules-bt-git, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wtwitch, wdisplays-git, wob\n"
+printf "aerc, aurutils, hardened-malloc-git, plata-theme, polybar, simulationcraft-git, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wdisplays-git, wob, wtwitch\n"
 print_done
 
 # Machine specific configuration
@@ -297,9 +298,11 @@ elif grep -q laptop /etc/hostname; then
   install_package xorg-server-xwayland
   print_done
 
-  printf "%s. Adding user to \"video\" group for light package...\n" "${stepWithColor}"
-  sudo usermod -aG video "${LOGNAME}"
-  print_done
+  if ! grep -q video <<< "$(groups)"; then
+    printf "%s. Adding user to \"video\" group for light package...\n" "${stepWithColor}"
+    sudo usermod -aG video "${LOGNAME}"
+    print_done
+  fi
 fi
 
 # Print summary info for user

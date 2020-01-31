@@ -78,7 +78,7 @@ Files renamed.
 ## `script_template.sh`
 A simple POSIX-compliant script template I use. Easy to use as a Bash script template as well.
 
-## `setup_linux.sh`
+## `setup_linux` (bash)
 This script sets up Arch Linux with the programs I use and configures a few things for me automatically. This script is meant to be run *after installation*, NOT as an installation script. You don't want to run this script without reading through it and changing it to your liking. 
 
 ## `system_maintenance.sh`
