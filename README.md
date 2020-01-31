@@ -48,7 +48,7 @@ To use it, put the photos you want to make into a gif into a directory, and then
 
 Here's an example gif of my cat I made with make_gif:
 
-![Example gif](Images/example.gif)
+![Example](https://i.imgur.com/V63J3UY.gif)
 
 ## `prntscrn.sh`
 Takes a nice screenshot after the specified seconds and saves it to `${XDG_PICTURES_DIR}/screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 or sway config. Uses `scrot` for i3/Xorg and `grim` for sway/Wayland. Provides nice errors via desktop notifications as well if you don't have the proper package installed.
