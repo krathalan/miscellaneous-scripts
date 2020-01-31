@@ -117,9 +117,6 @@ read -n 1 -s -r -p "Press any key when you are ready."
 
 printf "\n\n%s==> Downloading addons…%s\n" "${GREEN}" "${NC}"
 
-# Give firefox a second to open
-sleep 3
-
 for addon in "${ADDONS[@]}"; do
   open_url "${CURSE_URL}/wow/addons/${addon}/download" &> /dev/null &
   sleep 1

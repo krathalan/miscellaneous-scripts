@@ -5,8 +5,13 @@ Please don't run these scripts without reading them first. Always read a script 
 
 Six POSIX-compliant sh scripts, six Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
 
-## `flac_to_opus` (bash)
-This Bash script will convert all "\*.flac" files in the working directory to "\*.opus" files and place all "\*.flac" files into a "flac/" directory, again in the working directory. 
+## `audio_to_opus` (bash)
+Simply specify an audio type (e.g. "mp3", "flac") and this script will convert all audio files in that directory to the opus format. 
+
+For example, if you execute `bash audio_to_opus flac`: all "\*.flac" files in the working directory will be converted to "\*.opus" files, all "\*.flac" files will be placed into a new "flac/" directory, again in the working directory. 
+
+## `check_all.sh`
+Checks all shell scripts in the current directory with shellcheck.
 
 ## `gather_time_data` (bash)
 This Bash script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in other scripts. For example, testing [wtwitch](https://git.sr.ht/~krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
@@ -37,7 +42,7 @@ Average execution time: 3.51 seconds
 Lists nonfree packages installed on Arch Linux according to Parabola's blacklist. Ignores packages that are blacklisted for "branding" or "technical" reasons; that is, they are not necessarily nonfree, but may conflict with Parabola's rebuilds of certain packages.
 
 ## `make_gif.sh`
-I made this script after the camera app I use on my phone lost it's auto-gif-making functionality whenever I would take burst photos. 
+I made this script after the camera app I use on my phone lost its auto-gif-making functionality whenever I would take burst photos. 
 
 To use it, put the photos you want to make into a gif into a directory, and then run the script in that directory.
 
@@ -48,22 +53,26 @@ Here's an example gif of my cat I made with make_gif:
 ## `prntscrn.sh`
 Takes a nice screenshot after the specified seconds and saves it to `${XDG_PICTURES_DIR}/screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 or sway config. Uses `scrot` for i3/Xorg and `grim` for sway/Wayland. Provides nice errors via desktop notifications as well if you don't have the proper package installed.
 
-## `save_installed_packages_log` (bash)
-This Bash script will save a comprehensive, organized list of installed packages to `/var/log/installed_packages.log`. It's meant to be used in a pacman hook in `/etc/pacman.d/hooks/`, like this:
+## `remove_from_name` (bash)
+This script will rename all files in the current working directory by removing a specified string from their file names.
+
+For example:
 
 ```
-[Trigger]
-Operation=Install
-Operation=Upgrade
-Operation=Remove
-Type=Package
-Target=*
+$ ls
+test-remove1.txt  test-remove2.txt  test-remove3.txt  test-remove4.txt  test-remove5.txt
 
-[Action]
-Description=Saving list of installed packages to /var/log/installed_packages.log...
-When=PostTransaction
-NeedsTargets
-Exec=/path/to/where/you/put/this/script/save_installed_packages_log
+$ remove_from_name "remove"
+==> This is what the files will be renamed to:
+test-1.txt
+test-2.txt
+test-3.txt
+test-4.txt
+test-5.txt
+
+==> Proceed with renaming?
+[y/N] y
+Files renamed.
 ```
 
 ## `script_template.sh`
@@ -97,12 +106,15 @@ This script will `git pull` inside every Git repository in `~/git`. The script w
 This script will skip any directory ending in ".git".
 
 ## `update_wow_addons` (bash)
-A script that updates all your World of Warcraft addons. You'll need to edit some variables to specify your addons and installation location instead of mine.
+A script that updates all your World of Warcraft addons. You will need to edit some variables at the top of the script to specify your addons and installation location instead of mine.
 
-As of September 29, 2019, due to Cloudflare restrictions, it is impossible to use `wget` to download addons from the command line. Therefore the design of the script has changed. The script now opens Firefox, then opens a download link for each addon. Ensure your `~/Downloads` folder is empty of `*.zip` files before starting the script. Set `*.zip` files to download automatically in Firefox's settings so you don't have to click "Save" for each addon.
+As of September 29, 2019, due to Cloudflare restrictions, it is impossible to use `wget` or `curl` to download addons from the command line. Therefore the design of the script has changed. The script now opens your default browser, then opens a download link for each addon. Ensure your `~/Downloads` folder is empty of `*.zip` files before starting the script. 
+
+Tip: in Firefox's settings, under General > Files and Applications > Downloads, set Firefox to "Save files do Downloads" automatically so you don't have to click "Save" for each addon.
 
 Click here for a video of the script in action: [https://peertube.social/videos/watch/3e2c4f6d-6d10-450b-997f-5d3b2f2d85fe](https://peertube.social/videos/watch/3e2c4f6d-6d10-450b-997f-5d3b2f2d85fe)
 
 ## `update_wow_addons_classic` (bash)
 The same as the previous script, but for Classic! You will need to edit some variables to specify your addons and installation location instead of mine.
 
+Note: this script has not been touched in some time and may be broken.
