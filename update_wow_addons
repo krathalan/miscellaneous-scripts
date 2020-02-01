@@ -152,7 +152,11 @@ done
 printf "Done.\n\n%s==> Creating compressed backup of old addon files…%s" "${GREEN}" "${NC}"
 
 if [[ -d "${PATH_TO_WOW_ADDONS}" ]]; then
-  tar -czf "${PATH_TO_WOW_ADDONS}_old_$(date +%s).tar.gz" "${PATH_TO_WOW_ADDONS}" &> /dev/null 
+  if [ -x "$(command -v "lz4")" ]; then
+    tar -cf - "${PATH_TO_WOW_ADDONS}" 2> /dev/null  | lz4 > "${PATH_TO_WOW_ADDONS}_old_$(date +%s).tar.lz4" 2> /dev/null 
+  else
+    tar -czf "${PATH_TO_WOW_ADDONS}_old_$(date +%s).tar.gz" "${PATH_TO_WOW_ADDONS}" &> /dev/null 
+  fi
 
   rm -rf "${PATH_TO_WOW_ADDONS}"
 fi
