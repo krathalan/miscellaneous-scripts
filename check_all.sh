@@ -110,7 +110,7 @@ printf "Checking scripts in working directory...\n\n"
 fileName=""
 
 for file in "${PWD}"/*; do
-  if [ ! -d "${file}" ] && head -n1 "${file}" | grep -q "\#\!/bin"; then
+  if [ ! -d "${file}" ] && head -n1 "${file}" | grep -q "\#\!/.*sh"; then
     fileName="$(realpath --relative-to="${PWD}" "${file}")"
     print_step "${fileName}"
     
