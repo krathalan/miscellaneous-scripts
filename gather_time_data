@@ -29,6 +29,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+# No -Ee because commands this script measures may fail, and this script should keep going
 set -uo pipefail
 
 # -----------------------------------------
@@ -36,8 +37,10 @@ set -uo pipefail
 # -----------------------------------------
 
 # Colors
+readonly GREEN=$(tput bold && tput setaf 2)
 readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly WHITE=$(tput sgr0 && tput bold)
 
 # Other
 readonly SCRIPT_NAME=$(basename "$0")
@@ -90,16 +93,19 @@ fi
 # Record the execution time of the command 15 times
 printf "Running command 15 times, please be patient...\n"
 
+# Let user read message before potentially pages of output
+sleep 3
+
 whileCounter=0
 
 while [[ "${whileCounter}" -lt 15 ]]; do
   startCommandTime=$(date +%s%N | cut -b1-13)
-  ${command_to_time} > /dev/null 2> /dev/null
+  ${command_to_time}
   endCommandTime=$(date +%s%N | cut -b1-13)
 
   timeData+=( $(( endCommandTime - startCommandTime )) )
 
-  printf "\nExecution %s completed in %s milliseconds" $(( whileCounter + 1 )) "${timeData[${whileCounter}]}"
+  printf "\n%s===> %sgather_time_data: %sExecution %s completed in %s milliseconds %s<===%s" "${WHITE}" "${GREEN}" "${NC}" $(( whileCounter + 1 )) "${timeData[${whileCounter}]}" "${WHITE}" "${NC}"
 
   whileCounter=$(( whileCounter + 1 ))
 done
@@ -120,4 +126,4 @@ averageExecutionTime=$(echo "${sum} ${#timeData[@]}" | awk '{printf "%.2f\n", $1
 # Convert to seconds with a precision of 2 decimals
 averageExecutionTime=$(echo "${averageExecutionTime} 1000" | awk '{printf "%.2f\n", $1/$2}')
 
-printf "\n\nAverage execution time: %s seconds\n" "${averageExecutionTime}"
+printf "\n\n%s===> %sgather_time_data: %sAverage execution time: %s seconds %s<===%s\n" "${WHITE}" "${GREEN}" "${NC}" "${averageExecutionTime}" "${WHITE}" "${NC}"
