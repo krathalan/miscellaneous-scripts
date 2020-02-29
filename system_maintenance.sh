@@ -95,13 +95,20 @@ complete_step()
 # ---------------- Script -----------------
 # -----------------------------------------
 
+# Use doas if sudo is not present
+rootCommand="sudo"
+
+if [ ! -x "$(command -v "sudo")" ]; then
+  rootCommand="doas --"
+fi
+
 # Parse flags. From:
 # https://stackoverflow.com/questions/7069682/how-to-get-arguments-with-flags-in-bash/7069755#7069755
 while test $# -gt 0; do
   case "$1" in
     -c|--clean)
       printf "\n%s. Cleaning pacman caches...\n" "${stepWithColor}"
-      sudo pacman -Sc --noconfirm || exit_script_on_failure "Problem cleaning pacman caches with command \"pacman -Sc --noconfirm\""
+      ${rootCommand} pacman -Sc --noconfirm || exit_script_on_failure "Problem cleaning pacman caches with command \"pacman -Sc --noconfirm\""
       printf "Done.\n"
       exit 0
       ;;
@@ -121,7 +128,7 @@ printf "This is free software: you are free to change and redistribute it.\n"
 printf "There is NO WARRANTY, to the extent permitted by law.\n"
 
 if [ "$(whoami)" = "root" ]; then
-  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+  exit_script_on_failure "This script should NOT be run as root (or ${rootCommand})!"
 fi
 
 if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ]; then
@@ -137,7 +144,7 @@ if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ];
   # 302400 = half the number of seconds in a week
   if [ -z "${mirrorListUpdateTime}" ] || [ $(( currentTime - mirrorListUpdateTime )) -gt 302400 ]; then
     printf "\n%s. Regenerating mirrorlist...\n" "${stepWithColor}"
-    sudo reflector --latest 8 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 
+    ${rootCommand} reflector --latest 8 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 
     complete_step
 
     printf "\nNew mirrorlist in /etc/pacman.d/mirrorlist:\n"
@@ -148,16 +155,16 @@ if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ];
     # Two "y"s in -Syyu forces pacman to update the repos even if they appear to be up to date;
     # this should be used only after updating the mirrorlist 
     # https://wiki.archlinux.org/index.php/Mirrors#Force_pacman_to_refresh_the_package_lists
-    sudo pacman -Syyu
+    ${rootCommand} pacman -Syyu
     complete_step
   else
     printf "\n%s. Updating packages...\n" "${stepWithColor}"
-    sudo pacman -Syu
+    ${rootCommand} pacman -Syu
     complete_step
   fi
 else
   printf "\n%s. Updating packages...\n" "${stepWithColor}"
-  sudo pacman -Syu
+  ${rootCommand} pacman -Syu
   complete_step
 fi
 
@@ -167,20 +174,20 @@ if [ -x "$(command -v "aur")" ]; then
   complete_step
 
   printf "\n%s. Checking for local AUR repo updates...\n" "${stepWithColor}"
-  sudo pacman -Syu
+  ${rootCommand} pacman -Syu
   complete_step
 fi
 
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
 if pacman -Qtdq > /dev/null; then
-  sudo pacman -Rs "$(pacman -Qtdq)"
+  ${rootCommand} pacman -Rs "$(pacman -Qtdq)"
 else
   printf "No packages to remove.\n"
 fi
 complete_step
 
 printf "\n%s. Removing system journal entries older than one day...\n" "${stepWithColor}"
-sudo journalctl --vacuum-time=1d
+${rootCommand} journalctl --vacuum-time=1d
 complete_step
 
 if [ -x "$(command -v "flatpak")" ]; then
@@ -190,7 +197,7 @@ if [ -x "$(command -v "flatpak")" ]; then
 fi
 
 printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
-sudo pacman -Dk
+${rootCommand} pacman -Dk
 complete_step
 
 printf "\n%s. Listing failed systemd units...\n" "${stepWithColor}"
