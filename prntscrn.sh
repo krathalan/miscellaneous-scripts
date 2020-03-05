@@ -107,11 +107,10 @@ fi
 # Make screenshots directory if it does not exist yet
 mkdir -p "${SCREENSHOTS_DIR}"
 
-outputFile="screen-$(date +%b-%d-%Y-%H-%M-%S).jpg"
 notificationMessage="Saved screenshot to ${SCREENSHOTS_DIR}."
 
-# Convert to completely lowercase for easier tab completion
-outputFile="${SCREENSHOTS_DIR}/$(printf "%s" "${outputFile}" | tr '[:upper:]' '[:lower:]')"
+# Convert output file name to lowercase for easier tab completion
+outputFile="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
 
 if [ ! "${SWAYSOCK}" = "" ]; then
     check_command "grim"
