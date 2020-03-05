@@ -100,45 +100,39 @@ exit_script_on_failure()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-# Print intro
-printf "Starting %s Bash script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
-printf "This is free software: you are free to change and redistribute it.\n"
-printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
-
 if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
-
-delay=0
-
-if [ $# -gt 0 ]; then
-  delay=$1
-fi
-
-currentDate=$(date +%b-%d-%Y-%H-%M-%S)
-fileName="screen-${currentDate}.jpg"
-
-# Convert to completely lowercase for easier tab completion
-fileName="$(echo "${fileName}" | tr '[:upper:]' '[:lower:]')"
-
-if env | grep -q SWAYSOCK; then
-  check_command "grim"
-  grim -t jpeg -q 95 "${fileName}"
-elif [ "${delay}" -gt 0 ]; then
-  check_command "scrot"
-  scrot -q 95 -d "${delay}" "${fileName}"
-else
-  check_command "scrot"
-  scrot -q 95 "${fileName}"
 fi
 
 # Make screenshots directory if it does not exist yet
 mkdir -p "${SCREENSHOTS_DIR}"
 
-if [ ! "${PWD}" = "${SCREENSHOTS_DIR}" ]; then
-  mv "$PWD/${fileName}" "${SCREENSHOTS_DIR}"
+outputFile="screen-$(date +%b-%d-%Y-%H-%M-%S).jpg"
+notificationMessage="Saved screenshot to ${SCREENSHOTS_DIR}."
+
+# Convert to completely lowercase for easier tab completion
+outputFile="${SCREENSHOTS_DIR}/$(printf "%s" "${outputFile}" | tr '[:upper:]' '[:lower:]')"
+
+if [ ! "${SWAYSOCK}" = "" ]; then
+    check_command "grim"
+  if [ $# -gt 0 ]; then
+    if [ -x "$(command -v "slurp")" ]; then
+      grim -g "$(slurp)" -t jpeg -q 95 "${outputFile}"
+
+      if [ -x "$(command -v "wl-copy")" ]; then
+        wl-copy < "${outputFile}"
+        rm -f "${outputFile}"
+        notificationMessage="Copied selection to clipboard."
+      fi
+    fi
+  else
+    grim -t jpeg -q 95 "${outputFile}"
+  fi
+else
+  check_command "scrot"
+  scrot -q 95 "${outputFile}"
 fi
 
-notify-send -i "folder-pictures-open" "${SCRIPT_NAME}" "Saved screenshot to ${SCREENSHOTS_DIR}."
+notify-send -i "folder-pictures-open" "${SCRIPT_NAME}" "${notificationMessage}"
 
 printf "Done.\n"
