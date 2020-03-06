@@ -156,6 +156,7 @@ install_package nano
 install_package nano-syntax-highlighting
 install_package ncdu
 install_package ntfs-3g
+install_package openresolv
 install_package openvpn
 install_package pamixer
 install_package pavucontrol
@@ -180,8 +181,10 @@ install_package zip
 print_done
 
 printf "%s. Installing development packages...\n" "${stepWithColor}"
+install_package base-devel
 install_package clang
 install_package code
+install_package go
 install_package lld
 install_package meson
 install_package ninja
