@@ -113,7 +113,8 @@ notificationMessage="Saved screenshot to ${SCREENSHOTS_DIR}."
 outputFile="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
 
 if [ ! "${SWAYSOCK:-x}" = "x" ]; then
-    check_command "grim"
+  check_command "grim"
+
   if [ $# -gt 0 ]; then
     if [ -x "$(command -v "slurp")" ]; then
       grim -g "$(slurp)" -t jpeg -q 95 "${outputFile}"
