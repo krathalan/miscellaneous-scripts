@@ -198,6 +198,7 @@ install_package aspell
 install_package aspell-en
 install_package calc
 install_package dictd
+install_package epiphany
 install_package evince
 install_package firefox
 install_package firefox-developer-edition
