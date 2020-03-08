@@ -294,6 +294,7 @@ elif grep -q laptop /etc/hostname; then
   install_package grim
   install_package light
   install_package mako
+  install_package slurp
   install_package sway
   install_package swaylock
   install_package waybar
