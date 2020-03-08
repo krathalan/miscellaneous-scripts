@@ -98,7 +98,7 @@ sleep 3
 
 whileCounter=0
 
-while [[ "${whileCounter}" -lt 15 ]]; do
+while [[ "${whileCounter}" -lt 100 ]]; do
   startCommandTime=$(date +%s%N | cut -b1-13)
   ${command_to_time}
   endCommandTime=$(date +%s%N | cut -b1-13)
@@ -122,8 +122,12 @@ done
 # Get average execution time by dividing the total time elapsed by the number of executions
 # Currently in milliseconds
 averageExecutionTime=$(echo "${sum} ${#timeData[@]}" | awk '{printf "%.2f\n", $1/$2}')
+timeFormat="milliseconds"
 
-# Convert to seconds with a precision of 2 decimals
-averageExecutionTime=$(echo "${averageExecutionTime} 1000" | awk '{printf "%.2f\n", $1/$2}')
+if [[ "$(bc -l <<< "${averageExecutionTime} > 1000")" -eq 1 ]]; then
+  # Convert to seconds with a precision of 2 decimals
+  averageExecutionTime=$(echo "${averageExecutionTime} 1000" | awk '{printf "%.2f\n", $1/$2}')
+  timeFormat="seconds"
+fi
 
-printf "\n\n%s===> %sgather_time_data: %sAverage execution time: %s seconds %s<===%s\n" "${WHITE}" "${GREEN}" "${NC}" "${averageExecutionTime}" "${WHITE}" "${NC}"
+printf "\n\n%s===> %sgather_time_data: %sAverage execution time: %s %s %s<===%s\n" "${WHITE}" "${GREEN}" "${NC}" "${averageExecutionTime}" "${timeFormat}" "${WHITE}" "${NC}"
