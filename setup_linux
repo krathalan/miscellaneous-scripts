@@ -297,6 +297,7 @@ elif grep -q laptop /etc/hostname; then
   install_package mako
   install_package slurp
   install_package sway
+  install_package swayidle
   install_package swaylock
   install_package waybar
   install_package wl-clipboard
