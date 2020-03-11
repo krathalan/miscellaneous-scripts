@@ -110,7 +110,7 @@ A script that updates all your World of Warcraft addons. You will need to edit s
 
 As of September 29, 2019, due to Cloudflare restrictions, it is impossible to use `wget` or `curl` to download addons from the command line. Therefore the design of the script has changed. The script now opens your default browser, then opens a download link for each addon. Ensure your `~/Downloads` folder is empty of `*.zip` files before starting the script. 
 
-Tip: in Firefox's settings, under General > Files and Applications > Downloads, set Firefox to "Save files do Downloads" automatically so you don't have to click "Save" for each addon.
+Tip: in Firefox's settings, under General > Files and Applications > Downloads, set Firefox to "Save files to Downloads" automatically so you don't have to click "Save" for each addon.
 
 Click here for a video of the script in action: [https://peertube.social/videos/watch/3e2c4f6d-6d10-450b-997f-5d3b2f2d85fe](https://peertube.social/videos/watch/3e2c4f6d-6d10-450b-997f-5d3b2f2d85fe)
 
