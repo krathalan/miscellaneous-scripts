@@ -219,7 +219,6 @@ install_package lollypop
 install_package lynx
 install_package mosh
 install_package mpv
-install_package neofetch
 install_package notification-daemon
 install_package papirus-icon-theme
 install_package pass
@@ -254,7 +253,7 @@ if ! command -v aur > /dev/null 2> /dev/null; then
 fi
 
 printf "%s. Packages to build from AUR:\n" "${stepWithColor}"
-printf "aerc, aurutils, hardened-malloc-git, hashboot, pacaudit, plata-theme, polybar, simulationcraft-git, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wdisplays-git, wob, wtwitch\n"
+printf "aerc, aurutils, hardened-malloc-git, hashboot, pfetch, plata-theme, polybar, simulationcraft-git, sparse, redshift-wlr-gamma-control, ttf-material-design-icons-webfont, wdisplays-git, wob, wtwitch\n"
 print_done
 
 # Machine specific configuration
