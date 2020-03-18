@@ -134,6 +134,7 @@ install_package alsa-plugins
 install_package apparmor
 install_package arch-audit
 install_package bash-completion
+install_package bluez
 install_package bluez-utils
 install_package cups
 install_package cups-pdf
@@ -163,6 +164,7 @@ install_package pavucontrol
 install_package pigz
 install_package playerctl
 install_package pulseaudio-alsa
+install_package pulseaudio-bluetooth
 install_package reflector
 install_package rng-tools
 install_package sbsigntools
