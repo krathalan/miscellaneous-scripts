@@ -212,7 +212,6 @@ install_package imagemagick
 install_package imv
 install_package inkscape
 install_package irssi
-install_package jq
 install_package mediainfo
 install_package libreoffice-fresh
 install_package lollypop
@@ -224,7 +223,6 @@ install_package papirus-icon-theme
 install_package pass
 install_package pass-otp
 install_package perl-image-exiftool
-install_package streamlink
 install_package syncthing
 install_package termdown
 install_package transmission-cli
