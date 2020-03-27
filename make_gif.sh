@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # Description: Makes a looping .gif from a set of images.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019 krathalan
+# Copyright (C) 2019-2020 krathalan
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 # -------------- Guidelines ---------------
 # -----------------------------------------
 
-# This script follows the Google Shell Style Guide: 
+# This script follows the Google Shell Style Guide:
 # https://google.github.io/styleguide/shell.xml
 
 # This script uses shellcheck: https://www.shellcheck.net/
@@ -54,7 +54,7 @@ readonly WORKING_DIRECTORY="${PWD}"
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() 
+exit_script_on_failure()
 {
   printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
@@ -65,11 +65,6 @@ exit_script_on_failure()
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
-
-# Print intro
-printf "Starting %s Bash script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
-printf "This is free software: you are free to change and redistribute it.\n"
-printf "There is NO WARRANTY, to the extent permitted by law.\n"
 
 if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"

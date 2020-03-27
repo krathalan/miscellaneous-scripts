@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# Description: Installs various packages and performs configuration 
+# Description: Installs various packages and performs configuration
 #              on Arch Linux.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
@@ -24,7 +24,7 @@
 # -------------- Guidelines ---------------
 # -----------------------------------------
 
-# This script follows the Google Shell Style Guide: 
+# This script follows the Google Shell Style Guide:
 # https://google.github.io/styleguide/shell.xml
 
 # This script uses shellcheck: https://www.shellcheck.net/
@@ -78,7 +78,7 @@ install_package()
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() 
+exit_script_on_failure()
 {
   printf "\n[%s✖%s] Error: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s script.\n" "${SCRIPT_NAME}" >&2
@@ -95,7 +95,7 @@ exit_script_on_failure()
 # Returns:
 #   none
 #######################################
-print_done() 
+print_done()
 {
   stepCounter=$(( stepCounter + 1 ))
   stepWithColor="${PURPLE}${stepCounter}${NC}"
@@ -105,11 +105,6 @@ print_done()
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
-
-# Print intro
-printf "Starting %s script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
-printf "This is free software: you are free to change and redistribute it.\n"
-printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
 
 if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"

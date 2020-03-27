@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# Description: WARNING: WORK IN PROGRESS. Updates WoW addons. Inspired by 
+# Description: WARNING: WORK IN PROGRESS. Updates WoW addons. Inspired by
 # https://www.reddit.com/r/bash/comments/c7shdr/ugly_bastard_son_of_a_pwsh_and_bash/
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019 krathalan
+# Copyright (C) 2019-2020 krathalan
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 # -------------- Guidelines ---------------
 # -----------------------------------------
 
-# This script follows the Google Shell Style Guide: 
+# This script follows the Google Shell Style Guide:
 # https://google.github.io/styleguide/shell.xml
 
 # This script uses shellcheck: https://www.shellcheck.net/
@@ -81,7 +81,7 @@ readonly PATH_TO_WOW_ADDONS="${PATH_TO_WOW}/drive_c/Program Files (x86)/World of
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() 
+exit_script_on_failure()
 {
   printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
@@ -98,7 +98,7 @@ exit_script_on_failure()
 # Returns:
 #   none
 #######################################
-get_download_url() 
+get_download_url()
 {
   returnURL=$(wget -qO- "${CURSE_URL}/wow/addons/$1" \
   | grep "/wow/addons/$1/download/" \
@@ -107,7 +107,7 @@ get_download_url()
   | sed 's/\" class.*//' \
   | tail -n1 \
   | sed "s#files#download#")
-  
+
   printf "%s/file" "${returnURL}"
 }
 
@@ -146,7 +146,7 @@ printf "Done.\n\n%s==> Safely unzipping to temporary folder…%s\n" "${GREEN}" "
 for addonFile in "${TMP_DIR_DOWNLOAD}"/*; do
   printf "Unzipping %s…\n" "$(basename "${addonFile}")"
 
-  unzip "${addonFile}" -d "${TMP_DIR_EXTRACT}" > /dev/null 
+  unzip "${addonFile}" -d "${TMP_DIR_EXTRACT}" > /dev/null
 done
 
 wait
@@ -155,7 +155,7 @@ wait
 printf "Done.\n\n%s==> Creating compressed backup of old addon files…%s" "${GREEN}" "${NC}"
 
 if [[ -d "${PATH_TO_WOW_ADDONS}" ]]; then
-  tar -czf "${PATH_TO_WOW_ADDONS}_old_$(date +%s).tar.gz" "${PATH_TO_WOW_ADDONS}" &> /dev/null 
+  tar -czf "${PATH_TO_WOW_ADDONS}_old_$(date +%s).tar.gz" "${PATH_TO_WOW_ADDONS}" &> /dev/null
 
   rm -rf "${PATH_TO_WOW_ADDONS}"
 fi
@@ -165,6 +165,6 @@ printf "\nDone.\n\n%s==> Moving fresh addons to World of Warcraft directory…%s
 
 mkdir -p "${PATH_TO_WOW_ADDONS}"
 
-mv "${TMP_DIR_EXTRACT}"/* "${PATH_TO_WOW_ADDONS}" 
+mv "${TMP_DIR_EXTRACT}"/* "${PATH_TO_WOW_ADDONS}"
 
 printf "\nDone.\n\n%s==> Script finished with no errors.%s\n" "${GREEN}" "${NC}"

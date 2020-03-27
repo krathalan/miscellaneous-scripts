@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # Description: Takes a nice screenshot.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019 krathalan
+# Copyright (C) 2019-2020 krathalan
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 # -------------- Guidelines ---------------
 # -----------------------------------------
 
-# This script follows the Google Shell Style Guide: 
+# This script follows the Google Shell Style Guide:
 # https://google.github.io/styleguide/shell.xml
 
 # This script uses shellcheck: https://www.shellcheck.net/
@@ -86,11 +86,11 @@ check_command()
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() 
+exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-  
+
   notify-send -i "script-error" "${SCRIPT_NAME}" "Error: $1"
 
   exit 1

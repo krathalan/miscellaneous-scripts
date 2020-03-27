@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
-# Description: 
+# Description: Checks all sh and bash scripts in the current directory with
+#              shellcheck.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019 krathalan
+# Copyright (C) 2019-2020 krathalan
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +24,7 @@
 # -------------- Guidelines ---------------
 # -----------------------------------------
 
-# This script follows the Google Shell Style Guide: 
+# This script follows the Google Shell Style Guide:
 # https://google.github.io/styleguide/shell.xml
 
 # This script uses shellcheck: https://www.shellcheck.net/
@@ -31,7 +32,7 @@
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -u # (Eo pipefail) is Bash only!
 
-# No "set -e" because this script should continue if shellcheck "fails" when 
+# No "set -e" because this script should continue if shellcheck "fails" when
 # printing errors in a script
 
 # -----------------------------------------
@@ -69,7 +70,7 @@ stepCounter=1
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() 
+exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
@@ -95,11 +96,6 @@ print_step()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-# Print intro
-printf "Starting %s Bash script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
-printf "This is free software: you are free to change and redistribute it.\n"
-printf "There is NO WARRANTY, to the extent permitted by law.\n\n"
-
 if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
@@ -113,7 +109,7 @@ for file in "${PWD}"/*; do
   if [ ! -d "${file}" ] && head -n1 "${file}" | grep -q "\#\!/.*sh"; then
     fileName="$(realpath --relative-to="${PWD}" "${file}")"
     print_step "${fileName}"
-    
+
     shellcheck "${file}"
 
     printf "\n\n"
