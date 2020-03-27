@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # Description: Performs regular Arch Linux system maintenance procedures.
 #
@@ -23,7 +23,7 @@
 # -------------- Guidelines ---------------
 # -----------------------------------------
 
-# This script follows the Google Shell Style Guide: 
+# This script follows the Google Shell Style Guide:
 # https://google.github.io/styleguide/shell.xml
 
 # This script uses shellcheck: https://www.shellcheck.net/
@@ -68,7 +68,7 @@ regenerateMirrorlist="true"
 # Returns:
 #   none
 #######################################
-exit_script_on_failure() 
+exit_script_on_failure()
 {
   printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
@@ -122,11 +122,6 @@ while test $# -gt 0; do
   esac
 done
 
-# Print intro
-printf "Starting %s script; Copyright (C) 2019-%s krathalan\n" "${SCRIPT_NAME}" "$(date +%Y)"
-printf "This is free software: you are free to change and redistribute it.\n"
-printf "There is NO WARRANTY, to the extent permitted by law.\n"
-
 if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or ${rootCommand})!"
 fi
@@ -144,7 +139,7 @@ if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ];
   # 302400 = half the number of seconds in a week
   if [ -z "${mirrorListUpdateTime}" ] || [ $(( currentTime - mirrorListUpdateTime )) -gt 302400 ]; then
     printf "\n%s. Regenerating mirrorlist...\n" "${stepWithColor}"
-    ${rootCommand} reflector --latest 8 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 
+    ${rootCommand} reflector --latest 8 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
     complete_step
 
     printf "\nNew mirrorlist in /etc/pacman.d/mirrorlist:\n"
@@ -153,7 +148,7 @@ if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ];
     printf "\n%s. Updating packages...\n" "${stepWithColor}"
 
     # Two "y"s in -Syyu forces pacman to update the repos even if they appear to be up to date;
-    # this should be used only after updating the mirrorlist 
+    # this should be used only after updating the mirrorlist
     # https://wiki.archlinux.org/index.php/Mirrors#Force_pacman_to_refresh_the_package_lists
     ${rootCommand} pacman -Syyu
     complete_step
@@ -180,7 +175,8 @@ fi
 
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
 if pacman -Qtdq > /dev/null; then
-  ${rootCommand} pacman -Rs "$(pacman -Qtdq)"
+  # shellcheck disable=SC2046
+  ${rootCommand} pacman -Rs $(pacman -Qtdq)
 else
   printf "No packages to remove.\n"
 fi
@@ -213,7 +209,7 @@ complete_step
 
 if [ -x "$(command -v "version-check")" ]; then
   printf "\n%s. Checking AppArmor profile versions against installed package versions...\n" "${stepWithColor}"
-  version-check "/home/${LOGNAME}/git/apparmor-profiles" -q
+  version-check -q
   complete_step
 fi
 
