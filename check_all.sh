@@ -105,9 +105,9 @@ printf "Checking scripts in working directory...\n\n"
 # Get the file name without the full path
 fileName=""
 
-for file in "${PWD}"/*; do
+for file in ./*; do
   if [ ! -d "${file}" ] && head -n1 "${file}" | grep -q "\#\!/.*sh"; then
-    fileName="$(realpath --relative-to="${PWD}" "${file}")"
+    fileName="$(realpath --relative-to=. "${file}")"
     print_step "${fileName}"
 
     shellcheck "${file}"
