@@ -38,7 +38,6 @@ set -Eeu # (o pipefail) is Bash only!
 # -----------------------------------------
 
 readonly BASE_DIR="${HOME}/git"
-readonly SCRIPT_NAME=$(basename "$0")
 
 # Colors
 readonly PURPLE=$(tput bold && tput setaf 5)

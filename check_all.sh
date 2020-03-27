@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 #
-# Description: Checks all sh and bash scripts in the current directory with
-#              shellcheck.
+# Description: Checks all sh and bash scripts in the current directory
+#              with shellcheck.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
