@@ -70,11 +70,11 @@ print_done()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-printf "Updating git repos...\n"
+printf "Updating git repos...\n\n"
 
 for dir in "${BASE_DIR}"/*; do
   if [[ "${dir}" != *.git ]]; then
-    printf "\n%s. Updating %s..." "${stepWithColor}" "${dir}"
+    printf "%s. Updating %s..." "${stepWithColor}" "${dir}"
 
     (
       cd "${dir}" || exit
