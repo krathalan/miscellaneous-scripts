@@ -48,11 +48,9 @@ readonly SCRIPT_NAME=$(basename "$0")
 # Used to record time data
 timeData=()
 
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
-
-command_to_time="$1"
+# Number of times command shall be repeated
+# Default is 15
+repetitions=15
 
 # -----------------------------------------
 # --------------- Functions ---------------
@@ -77,6 +75,59 @@ exit_script_on_failure()
   exit 1
 }
 
+print_help()
+{
+  printf "\n%s - get an average execution time for a specified command\n\n" "${SCRIPT_NAME}"
+  printf "Usage:\n  %s [options] \"command to measure\"\n\n" "${SCRIPT_NAME}"
+  printf "Options:\n"
+  printf "  -h,--help      show this help\n"
+  printf "  -n,--number    specify number of times to repeat command\n"
+}
+
+# -----------------------------------------
+# ------------ Parse user input -----------
+# -----------------------------------------
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h)
+      print_help
+      exit 0
+      ;;
+    -n)
+      shift
+      if [[ $# -gt 0 ]]; then
+        repetitions="$1"
+      else
+        exit_script_on_failure "Number of repetitions not specified."
+      fi
+      shift
+      break
+      ;;
+    --number*)
+      if [[ $# -gt 1 ]]; then
+        shift
+      fi
+      if [[ $# -gt 0 ]]; then
+        repetitions="$(printf "%s" "$1" | sed -e "s/^[^=]*=//g")"
+      else
+        exit_script_on_failure "Number of repititions not specified."
+      fi
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ $# -gt 0 ]]; then
+  command_to_time="$*"
+else
+  exit_script_on_failure "No command to measure specified."
+fi
+
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
@@ -85,22 +136,27 @@ if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
+if ! command -v "$(echo "${command_to_time}" | awk '{printf $1}')" > /dev/null; then
+  exit_script_on_failure "Command $(echo "${command_to_time}" | awk '{printf $1}') cannot be found."
+fi
+
 # Record the execution time of the command 15 times
-printf "Running command 15 times, please be patient...\n"
+printf "Running command %s times, please be patient...\n" "${repetitions}"
 
 # Let user read message before potentially pages of output
 sleep 3
 
 whileCounter=0
 
-while [[ "${whileCounter}" -lt 15 ]]; do
+while [[ "${whileCounter}" -lt "${repetitions}" ]]; do
   startCommandTime=$(date +%s%N | cut -b1-13)
   ${command_to_time}
   endCommandTime=$(date +%s%N | cut -b1-13)
 
   timeData+=( $(( endCommandTime - startCommandTime )) )
 
-  printf "\n%s===> %sgather_time_data: %sExecution %s completed in %s milliseconds %s<===%s" "${WHITE}" "${GREEN}" "${NC}" $(( whileCounter + 1 )) "${timeData[${whileCounter}]}" "${WHITE}" "${NC}"
+  printf "\n%s===> %sgather_time_data: %sExecution %s completed in %s milliseconds %s<===%s" \
+    "${WHITE}" "${GREEN}" "${NC}" $(( whileCounter + 1 )) "${timeData[${whileCounter}]}" "${WHITE}" "${NC}"
 
   whileCounter=$(( whileCounter + 1 ))
 done
