@@ -70,6 +70,16 @@ exit_script_on_failure()
   exit 1
 }
 
+#######################################
+# Finds the result of a mathematical expression.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   none
+# Arguments:
+#   $1: expression to evaluate
+# Returns:
+#   evaluation of expression
+#######################################
 internalCalc() {
   bc <<< "$1"
 }
@@ -126,11 +136,12 @@ if [[ "${altStatus}" == "yes" ]]; then
     raiderIO="${mainRaiderIO}"
   fi
 
-  rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + (${raiderIO} * (${itemLevel} - 400) / (${mainItemLevel}-400))")
+  rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + (${raiderIO} * (${itemLevel} - 400) / (${mainItemLevel} - 400))")
 else
   readonly rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + ${raiderIO}")
 fi
 
 printf "%s -- %s, %s ilvl %s\n" "${rating}" "${characterName}" "${itemLevel}" "${characterClass}" | tee -a "${OUTPUT_FILE}"
 
+# Sort output from highest rating to lowest
 sort -r -n -o "${OUTPUT_FILE}" "${OUTPUT_FILE}"
