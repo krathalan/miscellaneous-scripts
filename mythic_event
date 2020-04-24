@@ -131,6 +131,6 @@ else
   readonly rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + ${raiderIO}")
 fi
 
-printf "%s -- %s (%s)\n" "${rating}" "${characterName}" "${characterClass}" | tee -a "${OUTPUT_FILE}"
+printf "%s -- %s (%s) %s ilvl\n" "${rating}" "${characterName}" "${characterClass}" "${itemLevel}" | tee -a "${OUTPUT_FILE}"
 
 sort -o "${OUTPUT_FILE}" "${OUTPUT_FILE}"
