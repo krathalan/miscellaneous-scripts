@@ -135,7 +135,8 @@ if [[ "${altStatus}" == "yes" ]]; then
     raiderIO="${mainRaiderIO}"
   fi
 
-  rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + (${raiderIO} * (${itemLevel} - 400) / (${mainItemLevel} - 400))")
+  # Adjust IO score for reduced ilvl of alt
+  readonly rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + (${raiderIO} * (${itemLevel} - 400) / (${mainItemLevel} - 400))")
 else
   readonly rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + ${raiderIO}")
 fi
