@@ -70,7 +70,7 @@ exit_script_on_failure()
   exit 1
 }
 
-internalCalc() { 
+internalCalc() {
   bc <<< "$1"
 }
 
@@ -88,7 +88,7 @@ fi
 
 read -r -p "Character name: " characterName
 
-if grep -q -i "${characterName}" "${OUTPUT_FILE}"; then 
+if grep -q -i "${characterName}" "${OUTPUT_FILE}"; then
   printf "\nThis character is already entered.\n"
   read -r -p "Overwrite? [y/N] " userResponse
   printf "\n"
@@ -112,7 +112,7 @@ read -r -p "Is this character an alt? [y/N] " altStatus
 printf "\n"
 
 case "${altStatus}" in
-  [Yy]* ) altStatus="yes";; 
+  [Yy]* ) altStatus="yes";;
   [Nn]* ) altStatus="no";;
 esac
 
@@ -133,4 +133,4 @@ fi
 
 printf "%s -- %s, %s ilvl %s\n" "${rating}" "${characterName}" "${itemLevel}" "${characterClass}" | tee -a "${OUTPUT_FILE}"
 
-sort -o "${OUTPUT_FILE}" "${OUTPUT_FILE}"
+sort -r -n -o "${OUTPUT_FILE}" "${OUTPUT_FILE}"
