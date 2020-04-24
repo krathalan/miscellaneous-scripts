@@ -99,6 +99,8 @@ if grep -q -i "${characterName}" "${OUTPUT_FILE}"; then
   esac
 fi
 
+read -r -p "Class: " characterClass
+
 read -r -p "Item level: " itemLevel
 
 read -r -p "Highest key level timed: " highestKey
@@ -129,6 +131,6 @@ else
   readonly rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + ${raiderIO}")
 fi
 
-printf "%s -- %s\n" "${rating}" "${characterName}" | tee -a "${OUTPUT_FILE}"
+printf "%s -- %s (%s)\n" "${rating}" "${characterName}" "${characterClass}" | tee -a "${OUTPUT_FILE}"
 
 sort -o "${OUTPUT_FILE}" "${OUTPUT_FILE}"
