@@ -72,7 +72,6 @@ exit_script_on_failure()
 
 #######################################
 # Finds the result of a mathematical expression.
-# Prints everything to >&2 (STDERR).
 # Globals:
 #   none
 # Arguments:
