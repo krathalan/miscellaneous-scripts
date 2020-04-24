@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+#
+# Description: Script for calculating Mythic+ Event ratings.
+#
+# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+#
+# Copyright (C) 2020 krathalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
+
+# This script follows the Google Shell Style Guide:
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
+
+# Colors
+readonly RED=$(tput bold && tput setaf 1)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+# Other
+readonly SCRIPT_NAME=$(basename "$0")
+readonly OUTPUT_FILE="character_list.txt"
+
+# -----------------------------------------
+# ------------- User variables ------------
+# -----------------------------------------
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure()
+{
+  printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
+
+internalCalc() { 
+  bc <<< "$1"
+}
+
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
+
+if [[ "$(whoami)" = "root" ]]; then
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+fi
+
+if [[ ! -f "${OUTPUT_FILE}" ]]; then
+  touch "${OUTPUT_FILE}"
+fi
+
+read -r -p "Character name: " characterName
+
+if grep -q -i "${characterName}" "${OUTPUT_FILE}"; then 
+  printf "\nThis character is already entered.\n"
+  read -r -p "Overwrite? [y/N] " userResponse
+  printf "\n"
+
+  case "${userResponse}" in
+    [Yy]* ) sed -i "/${characterName}*/d" "${OUTPUT_FILE}";;
+    [Nn]* ) exit;;
+  esac
+fi
+
+read -r -p "Item level: " itemLevel
+
+read -r -p "Highest key level timed: " highestKey
+
+read -r -p "Raider IO score: " raiderIO
+
+printf "\n"
+read -r -p "Is this character an alt? [y/N] " altStatus
+printf "\n"
+
+case "${altStatus}" in
+  [Yy]* ) altStatus="yes";; 
+  [Nn]* ) altStatus="no";;
+esac
+
+if [[ "${altStatus}" == "yes" ]]; then
+  read -r -p "Main's item level: " mainItemLevel
+  read -r -p "Main's Raider IO score: " mainRaiderIO
+  printf "\n"
+
+  # Determine highest IO
+  if [[ "${raiderIO}" -lt "${mainRaiderIO}" ]]; then
+    raiderIO="${mainRaiderIO}"
+  fi
+
+  rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + (${raiderIO} * (${itemLevel} - 400) / (${mainItemLevel}-400))")
+else
+  readonly rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + ${raiderIO}")
+fi
+
+printf "%s -- %s\n" "${rating}" "${characterName}" | tee -a "${OUTPUT_FILE}"
+
+sort -o "${OUTPUT_FILE}" "${OUTPUT_FILE}"
