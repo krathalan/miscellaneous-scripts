@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Description: Script for calculating Mythic+ Event ratings.
+# Description: Script for printing character info for Mythic+ Event.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
@@ -35,6 +35,9 @@
 
 # This script uses shellcheck: https://www.shellcheck.net/
 
+# Clean up if script is interrupted early
+trap "clean_up && kill 0" SIGINT
+
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -Eeuo pipefail
 
@@ -51,37 +54,19 @@ readonly SCRIPT_NAME=$(basename "$0")
 readonly INPUT_FILE="${1:-}"
 readonly OUTPUT_FILE="ratings.txt"
 
+
+readonly TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
+readonly DPS_FILE="${TMP_DIR}/dps.txt"
+readonly HEALER_FILE="${TMP_DIR}/healer.txt"
+readonly TANK_FILE="${TMP_DIR}/tank.txt"
+
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
 
-#######################################
-# Returns rating information for a given character.
-# Globals:
-#   RED, NC
-#   SCRIPT_NAME
-# Arguments:
-#   $1: realm/server, e.g. chogall
-#   $2: character name, e.g. Ahkenatan
-# Returns:
-#   rating
-#######################################
-resolve_character_score()
+clean_up()
 {
-  local -r raiderIOJson="$(wget -qO- --header "Accept: application/json" "https://raider.io/api/v1/characters/profile?region=us&realm=$1&name=$2&fields=gear%2Cmythic_plus_scores_by_season%3Acurrent%2Cmythic_plus_best_runs")"
-
-  mapfile -t parsedJson <<< "$(jq -r ".active_spec_role, .mythic_plus_scores_by_season[0].scores.all, .mythic_plus_best_runs[0].mythic_level, .gear.item_level_equipped, .class" <<< "${raiderIOJson}")"
-
-  # 0: active spec role
-  # 1: raider.io overall score
-  # 2: highest key score
-  # 3: equipped ilvl
-  # 4: class
-
-  # printf "%.0f" is used to round the number
-  local -r rating=$(printf "%.0f" "$(bc <<< "(${parsedJson[3]} / 10 * ${parsedJson[2]}) + ${parsedJson[1]}")")
-
-  printf "%s -- %s, %s %s %s\n" "${rating}" "$2" "${parsedJson[3]}" "${parsedJson[0]}" "${parsedJson[4]}" >> "${OUTPUT_FILE}"
+  rm -rf "${TMP_DIR}"
 }
 
 #######################################
@@ -103,6 +88,48 @@ exit_script_on_failure()
   exit 1
 }
 
+#######################################
+# Returns information for a given character.
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: realm/server, e.g. chogall
+#   $2: character name, e.g. Ahkenatan
+# Returns:
+#   character information
+#######################################
+resolve_character_info()
+{
+  local -r raiderIOJson="$(wget -qO- --header "Accept: application/json" "https://raider.io/api/v1/characters/profile?region=us&realm=$1&name=$2&fields=gear%2Cmythic_plus_scores_by_season%3Acurrent%2Cmythic_plus_best_runs")"
+
+  mapfile -t parsedJson <<< "$(jq -r ".active_spec_role, .mythic_plus_scores_by_season[0].scores.all, .mythic_plus_best_runs[0].mythic_level, .gear.item_level_equipped, .class" <<< "${raiderIOJson}")"
+
+  # 0: active spec role
+  # 1: raider.io overall score
+  # 2: highest key score
+  # 3: equipped ilvl
+  # 4: class
+
+  # printf "%.0f" is used to round the number
+  local -r output="$(printf "%s -- %s, %s %s\n" "$(printf "%.0f" "${parsedJson[1]}")" "$2" "${parsedJson[3]}" "${parsedJson[4]}")"
+
+  case "${parsedJson[0]}" in
+    DPS)
+      printf "%s\n" "${output}" >> "${DPS_FILE}"
+      return
+      ;;
+    HEALING)
+      printf "%s\n" "${output}" >> "${HEALER_FILE}"
+      return
+      ;;
+    TANK)
+      printf "%s\n" "${output}" >> "${TANK_FILE}"
+      return
+      ;;
+  esac
+}
+
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
@@ -112,6 +139,10 @@ if [[ "$(whoami)" = "root" ]]; then
 fi
 
 rm -f "${OUTPUT_FILE}"
+touch "${DPS_FILE}" "${HEALER_FILE}" "${TANK_FILE}"
+
+# Add header
+printf "======================================================\n|      Collector's Anonymous Mythic Plus Ratings     |\n|              Generated on %s             |\n| https://git.sr.ht/~krathalan/miscellaneous-scripts |\n======================================================\n\nIO Score -- Character, ilvl role class\n======================================\n" "$(date "+%b %d, %Y")" > "${OUTPUT_FILE}"
 
 if [[ ! -f "${INPUT_FILE}" ]]; then
   exit_script_on_failure "Please specify a file with a list of character names."
@@ -120,13 +151,25 @@ fi
 mapfile -t characters < "${INPUT_FILE}"
 
 for char in "${characters[@]}"; do
-  resolve_character_score "${char##* }" "${char%% *}" &
+  resolve_character_info "${char##* }" "${char%% *}" &
 done
 
 wait
 
-# Sort output from highest rating to lowest
-sort -r -n -o "${OUTPUT_FILE}" "${OUTPUT_FILE}"
+# Sort output from highest IO score to lowest
+sort -r -n -o "${DPS_FILE}" "${DPS_FILE}" &
+sort -r -n -o "${HEALER_FILE}" "${HEALER_FILE}" &
+sort -r -n -o "${TANK_FILE}" "${TANK_FILE}" &
 
-# Add header
-sed -i "1s#^#======================================================\n|      Collector's Anonymous Mythic Plus Ratings     |\n|              Generated on $(date "+%b %d, %Y")             |\n| https://git.sr.ht/~krathalan/miscellaneous-scripts |\n======================================================\n\nRating -- Character, ilvl role class\n=====================================\n#" "${OUTPUT_FILE}"
+wait
+
+{
+  printf "\nTanks:\n"
+  cat "${TANK_FILE}"
+  printf "\nHealers:\n"
+  cat "${HEALER_FILE}"
+  printf "\nDPS:\n"
+  cat "${DPS_FILE}"
+} >> "${OUTPUT_FILE}"
+
+clean_up
