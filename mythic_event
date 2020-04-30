@@ -107,18 +107,18 @@ resolve_character_info()
     exit_script_on_failure "Problem downloading information for $2-$1."
   fi
 
-  mapfile -t parsedJson <<< "$(jq -r ".active_spec_role, .mythic_plus_scores_by_season[0].scores.all, .mythic_plus_best_runs[0].mythic_level, .gear.item_level_equipped, .class" <<< "${raiderIOJson}")"
+  mapfile -t parsedJson <<< "$(jq -r ".mythic_plus_scores_by_season[0].scores.all, .gear.item_level_equipped, .class, .active_spec_role" <<< "${raiderIOJson}")"
 
-  # 0: active spec role
-  # 1: raider.io overall score
-  # 2: highest key score
-  # 3: equipped ilvl
-  # 4: class
+  # 0: raider.io overall score
+  # 1: equipped ilvl
+  # 2: class
+  # 3: role
 
   # printf "%.0f" is used to round the number
-  local -r output="$(printf "%s -- %s, %s %s\n" "$(printf "%.0f" "${parsedJson[1]}")" "$2" "${parsedJson[3]}" "${parsedJson[4]}")"
+  # IO Score -- Character, ilvl class
+  local -r output="$(printf "%s -- %s, %s %s\n" "$(printf "%.0f" "${parsedJson[0]}")" "$2" "${parsedJson[1]}" "${parsedJson[2]}")"
 
-  case "${parsedJson[0]}" in
+  case "${parsedJson[3]}" in
     DPS)
       printf "%s\n" "${output}" >> "${DPS_FILE}"
       return
