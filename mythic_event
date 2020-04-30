@@ -101,7 +101,7 @@ exit_script_on_failure()
 #######################################
 resolve_character_info()
 {
-  local -r raiderIOJson="$(wget -qO- --header "Accept: application/json" "https://raider.io/api/v1/characters/profile?region=us&realm=$1&name=$2&fields=gear%2Cmythic_plus_scores_by_season%3Acurrent%2Cmythic_plus_best_runs")"
+  local -r raiderIOJson="$(wget -qO- --header "Accept: application/json" "https://raider.io/api/v1/characters/profile?region=us&realm=$1&name=$2&fields=gear%2Cmythic_plus_scores_by_season%3Acurrent")"
 
   if [[ -z "${raiderIOJson}" ]]; then
     exit_script_on_failure "Problem downloading information for $2-$1."
