@@ -19,6 +19,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# EXPECTED INPUT -- example file:
+# $ cat example_input
+# Ahkenatan chogall
+# Morisong chogall
+# Tireiron laughing-skull
+# Euphoric chogall
+
 # -----------------------------------------
 # -------------- Guidelines ---------------
 # -----------------------------------------
@@ -41,15 +48,41 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
 readonly SCRIPT_NAME=$(basename "$0")
-readonly OUTPUT_FILE="character_list.txt"
-
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
+readonly INPUT_FILE="${1:-}"
+readonly OUTPUT_FILE="ratings.txt"
 
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
+
+#######################################
+# Returns rating information for a given character.
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: realm/server, e.g. chogall
+#   $2: character name, e.g. Ahkenatan
+# Returns:
+#   rating
+#######################################
+resolve_character_score()
+{
+  local -r raiderIOJson="$(wget -qO- --header "Accept: application/json" "https://raider.io/api/v1/characters/profile?region=us&realm=$1&name=$2&fields=gear%2Cmythic_plus_scores_by_season%3Acurrent%2Cmythic_plus_best_runs")"
+
+  mapfile -t parsedJson <<< "$(jq -r ".active_spec_role, .mythic_plus_scores_by_season[0].scores.all, .mythic_plus_best_runs[0].mythic_level, .gear.item_level_equipped, .class" <<< "${raiderIOJson}")"
+
+  # 0: active spec role
+  # 1: raider.io overall score
+  # 2: highest key score
+  # 3: equipped ilvl
+  # 4: class
+
+  # printf "%.0f" is used to round the number
+  local -r rating=$(printf "%.0f" "$(bc <<< "(${parsedJson[3]} / 10 * ${parsedJson[2]}) + ${parsedJson[1]}")")
+
+  printf "%s -- %s, %s %s %s\n" "${rating}" "$2" "${parsedJson[3]}" "${parsedJson[0]}" "${parsedJson[4]}" >> "${OUTPUT_FILE}"
+}
 
 #######################################
 # Prints passed error message before premature exit.
@@ -70,19 +103,6 @@ exit_script_on_failure()
   exit 1
 }
 
-#######################################
-# Finds the result of a mathematical expression.
-# Globals:
-#   none
-# Arguments:
-#   $1: expression to evaluate
-# Returns:
-#   evaluation of expression
-#######################################
-internalCalc() {
-  bc <<< "$1"
-}
-
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
@@ -91,57 +111,22 @@ if [[ "$(whoami)" = "root" ]]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
-if [[ ! -f "${OUTPUT_FILE}" ]]; then
-  touch "${OUTPUT_FILE}"
+rm -f "${OUTPUT_FILE}"
+
+if [[ ! -f "${INPUT_FILE}" ]]; then
+  exit_script_on_failure "Please specify a file with a list of character names."
 fi
 
-read -r -p "Character name: " characterName
+mapfile -t characters < "${INPUT_FILE}"
 
-if grep -q -i "${characterName}" "${OUTPUT_FILE}"; then
-  printf "\nThis character is already entered.\n"
-  read -r -p "Overwrite? [y/N] " userResponse
-  printf "\n"
+for char in "${characters[@]}"; do
+  resolve_character_score "${char##* }" "${char%% *}" &
+done
 
-  case "${userResponse}" in
-    [Yy]* ) sed -i "/${characterName}*/d" "${OUTPUT_FILE}";;
-    [Nn]* ) exit;;
-  esac
-fi
-
-read -r -p "Class: " characterClass
-
-read -r -p "Item level: " itemLevel
-
-read -r -p "Highest key level timed: " highestKey
-
-read -r -p "Raider IO score: " raiderIO
-
-printf "\n"
-read -r -p "Is this character an alt? [y/N] " altStatus
-printf "\n"
-
-case "${altStatus}" in
-  [Yy]* ) altStatus="yes";;
-  [Nn]* ) altStatus="no";;
-esac
-
-if [[ "${altStatus}" == "yes" ]]; then
-  read -r -p "Main's item level: " mainItemLevel
-  read -r -p "Main's Raider IO score: " mainRaiderIO
-  printf "\n"
-
-  # Determine highest IO
-  if [[ "${raiderIO}" -lt "${mainRaiderIO}" ]]; then
-    raiderIO="${mainRaiderIO}"
-  fi
-
-  # Adjust IO score for reduced ilvl of alt
-  readonly rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + (${raiderIO} * (${itemLevel} - 400) / (${mainItemLevel} - 400))")
-else
-  readonly rating=$(internalCalc "(${itemLevel} / 10 * ${highestKey}) + ${raiderIO}")
-fi
-
-printf "%s -- %s, %s ilvl %s\n" "${rating}" "${characterName}" "${itemLevel}" "${characterClass}" | tee -a "${OUTPUT_FILE}"
+wait
 
 # Sort output from highest rating to lowest
 sort -r -n -o "${OUTPUT_FILE}" "${OUTPUT_FILE}"
+
+# Add header
+sed -i "1s#^#======================================================\n|      Collector's Anonymous Mythic Plus Ratings     |\n|              Generated on $(date "+%b %d, %Y")             |\n| https://git.sr.ht/~krathalan/miscellaneous-scripts |\n======================================================\n\nRating -- Character, ilvl role class\n=====================================\n#" "${OUTPUT_FILE}"
