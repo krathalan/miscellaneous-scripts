@@ -142,7 +142,7 @@ rm -f "${OUTPUT_FILE}"
 touch "${DPS_FILE}" "${HEALER_FILE}" "${TANK_FILE}"
 
 # Add header
-printf "======================================================\n|      Collector's Anonymous Mythic Plus Ratings     |\n|              Generated on %s             |\n| https://git.sr.ht/~krathalan/miscellaneous-scripts |\n======================================================\n\nIO Score -- Character, ilvl role class\n======================================\n" "$(date "+%b %d, %Y")" > "${OUTPUT_FILE}"
+printf "======================================================\n|      Collector's Anonymous Mythic Plus Ratings     |\n|              Generated on %s             |\n| https://git.sr.ht/~krathalan/miscellaneous-scripts |\n======================================================\n\nIO Score -- Character, ilvl class\n=================================\n" "$(date "+%b %d, %Y")" > "${OUTPUT_FILE}"
 
 if [[ ! -f "${INPUT_FILE}" ]]; then
   exit_script_on_failure "Please specify a file with a list of character names."
