@@ -154,6 +154,7 @@ install_package ncdu
 install_package ntfs-3g
 install_package openresolv
 install_package openvpn
+install_package pacman-contrib
 install_package pamixer
 install_package pavucontrol
 install_package pigz
