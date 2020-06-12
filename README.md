@@ -3,7 +3,7 @@ This repository is a collection of scripts I wrote and use/update regularly. The
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Six POSIX-compliant sh scripts, six Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
+Six POSIX-compliant sh scripts, eight Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
 
 ## `audio_to_opus` (bash)
 Simply specify an audio type (e.g. "mp3", "flac") and this script will convert all audio files in that directory to the opus format. 
@@ -50,8 +50,45 @@ Here's an example gif of my cat I made with make_gif:
 
 ![Example](https://i.imgur.com/V63J3UY.gif)
 
+## mythic_event
+A script I made for my World of Warcraft guild's Mythic+ dungeon event. Supply a list of characters, like so:
+
+```
+$ cat example_input
+  Ahkenatan chogall
+  Morisong chogall
+  Tireiron laughing-skull
+  Euphoric chogall
+```
+
+And the script will output a file `ratings.txt`, with Raider.IO information for each character in the list:
+
+```
+$ cat ratings.txt
+  ======================================================
+  |      Collector's Anonymous Mythic Plus Ratings     |
+  |              Generated on Jun 11, 2020             |
+  | https://git.sr.ht/~krathalan/miscellaneous-scripts |
+  ======================================================
+
+  IO Score -- Character, ilvl class
+  =================================
+
+  Tanks:
+  1713 -- Tireiron, 475 Paladin
+
+  Healers:
+  1793 -- Euphoric, 479 Monk
+
+  DPS:
+  2136 -- Ahkenatan, 476 Mage
+  1993 -- Morisong, 474 Mage
+```
+
 ## `prntscrn.sh`
 Takes a nice screenshot after the specified seconds and saves it to `${XDG_PICTURES_DIR}/screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 or sway config. Uses `scrot` for i3/Xorg and `grim` for sway/Wayland. Provides nice errors via desktop notifications as well if you don't have the proper package installed.
+
+On sway/Wayland, invoking `prntscrn.sh` with any argument, like `prntscrn.sh slurp`, will allow you to select an area of the screen and will copy the selected jpeg to your clipboard.
 
 ## `remove_from_name` (bash)
 This script will rename all files in the current working directory by removing a specified string from their file names.
@@ -75,11 +112,11 @@ test-5.txt
 Files renamed.
 ```
 
+## `scramble_photos.sh`
+Deletes the exif data on all photos in the current directory and attempts to restore the "datetimeoriginal" (date taken) value from the photo's file name. Then moves them to `${HOME}/pictures/$(date +%Y)`, e.g. `~/pictures/2020`; creating the folder if it doesn't exist. Pass `--no-copy` to keep them in the current directory.
+
 ## `script_template.sh`
 A simple POSIX-compliant script template I use. Easy to use as a Bash script template as well.
-
-## `setup_linux` (bash)
-This script sets up Arch Linux with the programs I use and configures a few things for me automatically. This script is meant to be run *after installation*, NOT as an installation script. You don't want to run this script without reading through it and changing it to your liking. 
 
 ## `system_maintenance.sh`
 This script will perform system maintenance on an Arch Linux system. It will:
