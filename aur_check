@@ -41,6 +41,7 @@ trap "clean_up" EXIT
 
 # Colors
 readonly GREEN=$(tput setaf 10)
+readonly PURPLE=$(tput setaf 5)
 readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
@@ -107,7 +108,7 @@ process_package()
   local -r aurVersion="$(jq -r ".results[] | select(.Name == \"$1\").Version" "${AUR_JSON}")"
 
   if [[ "${aurVersion}" == "" ]]; then
-    printf "%s%s not on AUR%s\n" "${GREEN}" "$1" "${NC}" >> "${OUTPUTFILEGOOD}"
+    printf "%s%s not on AUR%s\n" "${PURPLE}" "$1" "${NC}" >> "${OUTPUTFILEGOOD}"
   elif [[ "${aurVersion}" != "$2" ]]; then
     printf "%s%s %s installed; %s available%s\n" "${RED}" "$1" "$2" "${aurVersion}" "${NC}" >> "${OUTPUTFILEBAD}"
   else
