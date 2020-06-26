@@ -173,6 +173,12 @@ if [ -x "$(command -v "aur")" ]; then
   complete_step
 fi
 
+if [ -x "$(command -v "aur_check")" ]; then
+  printf "\n%s. Checking for local package updates from the AUR...\n" "${stepWithColor}"
+  aur_check --quiet
+  complete_step
+fi
+
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
 if pacman -Qtdq > /dev/null; then
   # shellcheck disable=SC2046
