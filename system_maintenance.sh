@@ -182,7 +182,7 @@ fi
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
 if pacman -Qtdq > /dev/null; then
   # shellcheck disable=SC2046
-  ${rootCommand} pacman -Rs $(pacman -Qtdq)
+  ${rootCommand} pacman -Rs $(pacman -Qttdq)
 else
   printf "No packages to remove.\n"
 fi
