@@ -180,7 +180,7 @@ if [ -x "$(command -v "aur_check")" ]; then
 fi
 
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
-if pacman -Qtdq > /dev/null; then
+if pacman -Qttdq > /dev/null; then
   # shellcheck disable=SC2046
   ${rootCommand} pacman -Rs $(pacman -Qttdq)
 else
