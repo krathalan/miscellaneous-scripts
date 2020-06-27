@@ -31,13 +31,13 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeu # (o pipefail) is Bash only!
+set -Eeuo pipefail
 
 # -----------------------------------------
 # ----------- Program variables -----------
 # -----------------------------------------
 
-readonly BASE_DIR="${HOME}/git"
+readonly BASE_DIR="${PWD}"
 
 # Colors
 readonly PURPLE=$(tput bold && tput setaf 5)
@@ -74,13 +74,15 @@ printf "Updating git repos...\n\n"
 
 for dir in "${BASE_DIR}"/*; do
   if [[ "${dir}" != *.git ]]; then
-    printf "%s. Updating %s..." "${stepWithColor}" "${dir}"
+    printf "%s. Updating %s...\n" "${stepWithColor}" "${dir}"
 
-    (
-      cd "${dir}" || exit
-      git pull && git fetch --prune
-      echo ""
-    )
+    if [[ -d "${dir}" ]]; then
+      cd "${dir}" || continue
+      git pull --prune || printf "%s is not a git repository\n\n" "${dir##*/}"
+      printf "\n"
+    else
+      printf "%s is not a directory\n\n" "${dir##*/}"
+    fi
 
     print_done
   fi

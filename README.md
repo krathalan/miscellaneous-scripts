@@ -141,9 +141,7 @@ This script will perform system maintenance on an Arch Linux system. It will:
   - This functionality requires the [neofetch](https://www.archlinux.org/packages/community/any/neofetch/) package to be installed
 
 ## `update_git_repos` (bash)
-This script will `git pull` inside every Git repository in `~/git`. The script will automatically determine whatever branch the repository is on and pull that branch. For example, if I had a Git repository at `~/git/miscellaneous-scripts` on the branch "testing", and I ran the `update_git_repos` script, the script would run `git pull origin testing` in the `~/git/miscellaneous-scripts` directory.
-
-This script will skip any directory ending in ".git".
+This script will run `git pull --prune` inside every Git repository in the current directory.
 
 ## `update_wow_addons` (bash)
 I no longer recommend using this script. Instead I recommend using Cursebreaker, as it's very well polished: https://github.com/AcidWeb/CurseBreaker
