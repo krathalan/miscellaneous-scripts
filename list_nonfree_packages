@@ -87,7 +87,7 @@ if [[ "$(whoami)" == "root" ]]; then
 fi
 
 printf "Downloading blacklist...\n"
-wget -q -O "${TMP_DIR}/blacklist.txt" --show-progress "https://git.parabola.nu/blacklist.git/plain/blacklist.txt"
+curl --silent -o "${TMP_DIR}/blacklist.txt" "https://git.parabola.nu/blacklist.git/plain/blacklist.txt"
 printf "Done.\n\n"
 
 printf "Nonfree packages:\n"
