@@ -36,7 +36,8 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # Clean up if script is interrupted early
-trap "clean_up && kill 0" SIGINT
+trap "kill 0" SIGINT
+trap "clean_up" EXIT
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -Eeuo pipefail
@@ -175,5 +176,3 @@ wait
   printf "\nDPS:\n"
   cat "${DPS_FILE}"
 } >> "${OUTPUT_FILE}"
-
-clean_up

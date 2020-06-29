@@ -32,7 +32,8 @@
 set -Eeuo pipefail
 
 # Clean up if script is interrupted early
-trap "clean_up && kill 0" SIGINT
+trap "kill 0" SIGINT
+trap "clean_up" EXIT
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -108,5 +109,3 @@ for package in "${nonfree_packages[@]}"; do
   printf "%s%s.%s " "${RED}" "${counter}" "${NC}"
   grep "^${package}:" "${TMP_DIR}/blacklist_no_branding.txt"
 done
-
-clean_up

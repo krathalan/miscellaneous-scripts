@@ -147,9 +147,11 @@ curl -o "${AUR_JSON}" --silent "${requestURL}"
 whileCounter=0
 
 while [[ "${whileCounter}" -lt "${#packages[@]}" ]]; do
-  process_package "${packages[${whileCounter}]}" "${packageVersions[${whileCounter}]}"
+  process_package "${packages[${whileCounter}]}" "${packageVersions[${whileCounter}]}" &
   whileCounter="$(( whileCounter + 1 ))"
 done
+
+wait
 
 if [[ "${quiet}" == "true" ]]; then
   sort "${OUTPUTFILEBAD}"
