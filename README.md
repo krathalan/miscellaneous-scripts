@@ -10,8 +10,19 @@ Simply specify an audio type (e.g. "mp3", "flac") and this script will convert a
 
 For example, if you execute `bash audio_to_opus flac`: all "\*.flac" files in the working directory will be converted to "\*.opus" files, all "\*.flac" files will be placed into a new "flac/" directory, again in the working directory.
 
-## `aur_check` (bash)
-Checks all installed "foreign" package versions against the versions on the AUR.
+## `aur` (bash)
+Miniscule AUR helper.
+
+Four functions:
+```
+=> [c]heck           - Check local package versions against those on the AUR.
+                       Pass --quiet/-q flag to print only non-matching versions.
+=> [f]etch [name(s)] - Clone git repository of [name] package(s) from the AUR.
+=> [i]nfo [name]     - Show full information for a package from the AUR.
+=> [s]earch [name]   - Search for packages on the AUR.
+```
+
+Note that though `aur` is licensed under the GPLv3 license, the script incorporates work Copyright (C) 2016-2019 Dylan Araps originally from MIT-licensed code from [pash](https://github.com/dylanaraps/pash). See [Maintaining Permissive-Licensed Files in a GPL-Licensed Project: Guidelines for Developers](https://softwarefreedom.org/resources/2007/gpl-non-gpl-collaboration.html) by the Software Freedom Law Center for more information.
 
 ## `check_all.sh`
 Checks all shell scripts in the current directory with shellcheck.

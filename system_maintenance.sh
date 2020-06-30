@@ -173,9 +173,9 @@ if [ -x "$(command -v "aur")" ]; then
   complete_step
 fi
 
-if [ -x "$(command -v "aur_check")" ]; then
+if [ -x "$(command -v "aur")" ]; then
   printf "\n%s. Checking for local package updates from the AUR...\n" "${stepWithColor}"
-  aur_check --quiet
+  aur check --quiet
   complete_step
 fi
 

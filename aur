@@ -1,0 +1,473 @@
+#!/usr/bin/env bash
+#
+# Description: Checks for package updates from the AUR.
+#
+# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+#
+# Copyright (C) 2020 krathalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# This file incorporates work from https://github.com/dylanaraps/pash,
+# covered by the following copyright and permission notice:
+#
+#     Copyright (c) 2016-2019, Dylan Araps
+#
+#     Permission is hereby granted, free of charge, to any person obtaining a copy
+#     of this software and associated documentation files (the "Software"), to deal
+#     in the Software without restriction, including without limitation the rights
+#     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#     copies of the Software, and to permit persons to whom the Software is
+#     furnished to do so, subject to the following conditions:
+#
+#     The above copyright notice and this permission notice shall be included in all
+#     copies or substantial portions of the Software.
+#
+#     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#     SOFTWARE.
+
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
+
+# This script follows the Google Shell Style Guide:
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# Clean up if script is interrupted early
+trap "kill 0" SIGINT
+trap "clean_up" EXIT
+
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
+
+# Colors
+readonly BLUE=$(tput sgr0 && tput setaf 4)
+readonly GREEN=$(tput setaf 10)
+readonly PURPLE=$(tput bold && tput setaf 5)
+readonly RED=$(tput bold && tput setaf 1)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+# Other
+readonly AUR_BASE_URL="https://aur.archlinux.org"
+readonly AUR_RPC_URL="${AUR_BASE_URL}/rpc/?v=5&type="
+readonly SCRIPT_NAME=$(basename "$0")
+
+# -----------------------------------------
+# ------------- User variables ------------
+# -----------------------------------------
+
+QUIET="false"
+
+# -----------------------------------------
+# --------------- "Library" ---------------
+# -----------------------------------------
+
+#######################################
+# Cleans up temporary files if they exist.
+# Globals:
+#   TMP_DIR
+# Arguments:
+#   none
+# Returns:
+#   none
+#######################################
+clean_up()
+{
+  if [[ -d "${TMP_DIR:-}" ]]; then
+    rm -rf "${TMP_DIR}"
+  fi
+}
+
+#######################################
+# Downloads json from the Aurweb RPC interface.
+# Docs: https://wiki.archlinux.org/index.php/Aurweb_RPC_interface
+# Globals:
+#   AUR_JSON
+# Arguments:
+#   $1: URL to download
+# Returns:
+#   none
+#######################################
+download_file()
+{
+  readonly AUR_JSON="${TMP_DIR}/aur.json"
+
+  curl -o "${AUR_JSON}" --silent "$1"
+
+  if [[ "$(jq -r .type "${AUR_JSON}")" == "error" ]]; then
+    exit_script_on_failure "$(jq -r .error "${AUR_JSON}")"
+  fi
+}
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure()
+{
+  printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
+
+#######################################
+# This is a simple wrapper around a case statement to allow
+# for simple string comparisons against globs.
+# Copyright (C) 2016-2019 Dylan Araps
+# Globals:
+#   none
+# Arguments:
+#   $1: string to check against glob
+#   $2: glob
+# Returns:
+#   true or false
+#######################################
+glob() {
+  # Disable this warning as it is the intended behavior.
+  # shellcheck disable=2254
+  case $1 in $2) return 0; esac; return 1
+}
+
+#######################################
+# Makes a temporary directory for the script to use.
+# Globals:
+#   SCRIPT_NAME
+# Arguments:
+#   none
+# Returns:
+#   none
+#######################################
+make_tmp()
+{
+  readonly TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
+}
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+#######################################
+# Checks all foreign packages for updates on the AUR.
+# Globals:
+#   AUR_RPC_URL
+#   AUR_JSON
+#   OUTPUTFILEBAD
+#   OUTPUTFILEGOOD
+#   QUIET
+# Arguments:
+#   none
+# Returns:
+#   none
+#######################################
+check()
+{
+  make_tmp
+  readonly OUTPUTFILEBAD="${TMP_DIR}/${SCRIPT_NAME}-bad.txt"
+  readonly OUTPUTFILEGOOD="${TMP_DIR}/${SCRIPT_NAME}-good.txt"
+
+  # Ensure both output files get written to
+  touch "${OUTPUTFILEBAD}" "${OUTPUTFILEGOOD}" &
+
+  mapfile -t packages <<< "$(pacman -Qmq)"
+  mapfile -t packageVersions <<< "$(pacman -Qm | cut -d' ' -f2-)"
+
+  requestURL="${AUR_RPC_URL}info"
+
+  for package in "${packages[@]}"; do
+    requestURL+="&arg[]=${package}"
+  done
+
+  download_file "${requestURL}"
+
+  whileCounter=0
+
+  while [[ "${whileCounter}" -lt "${#packages[@]}" ]]; do
+    check_print_entry "${packages[${whileCounter}]}" "${packageVersions[${whileCounter}]}" &
+    whileCounter="$(( whileCounter + 1 ))"
+  done
+
+  wait
+
+  if [[ "${QUIET}" == "true" ]]; then
+    sort "${OUTPUTFILEBAD}"
+  else
+    sort "${OUTPUTFILEBAD}" "${OUTPUTFILEGOOD}"
+  fi
+}
+
+#######################################
+# Used to facilitate multiprocess comparison of installed
+# foreign package version to AUR package version.
+# Globals:
+#   GREEN, PURPLE, RED, NC
+#   AUR_JSON
+#   OUTPUTFILEBAD
+#   OUTPUTFILEGOOD
+# Arguments:
+#   $1: package name
+#   $2: installed package version
+# Returns:
+#   none
+#######################################
+check_print_entry()
+{
+  # Extract version from AUR json
+
+  local -r aurVersion="$(jq -r ".results[] | select(.Name == \"$1\").Version" "${AUR_JSON}")"
+
+  if [[ "${aurVersion}" == "" ]]; then
+    printf "%s%s not on AUR%s\n" "${PURPLE}" "$1" "${NC}" >> "${OUTPUTFILEGOOD}"
+  elif [[ "${aurVersion}" != "$2" ]]; then
+    printf "%s%s %s installed; %s available%s\n" "${RED}" "$1" "$2" "${aurVersion}" "${NC}" >> "${OUTPUTFILEBAD}"
+  else
+    printf "%s%s up to date%s\n" "${GREEN}" "$1" "${NC}" >> "${OUTPUTFILEGOOD}"
+  fi
+}
+
+#######################################
+# Fetches a git repo of a given package from the AUR.
+# Globals:
+#   AUR_BASE_URL
+# Arguments:
+#   $@: package name(s)
+# Returns:
+#   none
+#######################################
+fetch()
+{
+  # Skip f/fetch command
+  shift
+
+  while [[ $# -gt 0 ]]; do
+    git clone "${AUR_BASE_URL}/$1.git"
+    shift
+  done
+}
+
+info()
+{
+  make_tmp
+
+  download_file "${AUR_RPC_URL}info&arg[]=$1"
+
+  mapfile -t packageData <<< "$(jq -r ".results[].Name, .results[].Version, .results[].Description, .results[].URL, .results[].NumVotes, .results[].Maintainer, .results[].FirstSubmitted, .results[].LastModified" "${AUR_JSON}")"
+
+  local -r LICENSES_FILE="${TMP_DIR}/licenses"
+  local -r DEPENDS_FILE="${TMP_DIR}/depends"
+  local -r MAKE_DEPENDS_FILE="${TMP_DIR}/make_depends"
+  local -r OPT_DEPENDS_FILE="${TMP_DIR}/opt_depends"
+  local -r CONFLICTS_FILE="${TMP_DIR}/conflicts"
+  local -r PROVIDES_FILE="${TMP_DIR}/provides"
+  local -r REPLACES_FILE="${TMP_DIR}/replaces"
+
+  info_helper "License" "${LICENSES_FILE}" &
+  info_helper "Depends" "${DEPENDS_FILE}" &
+  info_helper "MakeDepends" "${MAKE_DEPENDS_FILE}" &
+  info_helper "OptDepends" "${OPT_DEPENDS_FILE}" &
+  info_helper "Conflicts" "${CONFLICTS_FILE}" &
+  info_helper "Provides" "${PROVIDES_FILE}" &
+  info_helper "Replaces" "${REPLACES_FILE}" &
+
+  wait
+
+  printf "%s" "\
+Repository      : aur
+Name            : ${packageData[0]}
+Version         : ${packageData[1]}
+Description     : ${packageData[2]}
+URL             : ${packageData[3]}
+Licenses        :$(<"${LICENSES_FILE}")
+Depends On      :$(<"${DEPENDS_FILE}")
+Make Depends    :$(<"${MAKE_DEPENDS_FILE}")
+Optional Deps   :$(<"${OPT_DEPENDS_FILE}")
+Conflicts With  :$(<"${CONFLICTS_FILE}")
+Provides        :$(<"${PROVIDES_FILE}")
+Replaces        :$(<"${REPLACES_FILE}")
+Votes           : ${packageData[4]}
+Maintainer      : ${packageData[5]}
+First Submitted : $(date -d "@${packageData[6]}" "+%a %d %B %Y %r %Z")
+Last Modified   : $(date -d "@${packageData[7]}" "+%a %d %B %Y %r %Z")
+"
+}
+
+#######################################
+# Used to facilitate multiprocess parsing of json arrays
+# containing information about a package.
+# Globals:
+#   AUR_JSON
+# Arguments:
+#   $1: jq value to parse
+#   $2: file to output to
+# Returns:
+#   none
+#######################################
+info_helper()
+{
+  local whileCounter=0
+  local output=""
+  local parser
+  parser="$(jq -r ".results[].$1[${whileCounter}]" "${AUR_JSON}")"
+
+  while [[ "${parser}" != "null" ]]; do
+    output+=" ${parser}"
+
+    # Refresh data
+    whileCounter="$(( whileCounter + 1 ))"
+    parser="$(jq -r ".results[].$1[${whileCounter}]" "${AUR_JSON}")"
+  done
+
+  printf "%s" "${output:- None}" > "$2"
+}
+
+#######################################
+# Searches on the AUR for a search term.
+# Globals:
+#   AUR_RPC_URL
+# Arguments:
+#   $1: search term
+# Returns:
+#   none
+#######################################
+search()
+{
+  make_tmp
+
+  download_file "${AUR_RPC_URL}search&arg=$1"
+
+  readonly TERMINAL_WIDTH="$(( $(tput cols) - 9 ))"
+  readonly OUTPUT_FILE="${TMP_DIR}/search_output"
+
+  local whileCounter=0
+  local output=""
+  local parser
+  parser="$(jq -r ".results[${whileCounter}]" "${AUR_JSON}")"
+
+  while [[ "${parser}" != "null" ]]; do
+    search_print_entry "${parser}" &
+
+    # Refresh data
+    whileCounter="$(( whileCounter + 1 ))"
+    parser="$(jq -r ".results[${whileCounter}]" "${AUR_JSON}")"
+  done
+
+  wait
+
+  sort -g "${OUTPUT_FILE}"
+
+  printf "\n%s results, sorted by votes\n" "$(wc -l "${OUTPUT_FILE}" | cut -d' ' -f1)"
+}
+
+#######################################
+# Prints information for package from a search query.
+# Globals:
+#   BLUE, PURPLE, GREEN, NC
+#   TERMINAL_WIDTH
+#   OUTPUT_FILE
+# Arguments:
+#   $1: json information for a package
+# Returns:
+#   none
+#######################################
+search_print_entry()
+{
+  mapfile -t packageData <<< "$(jq -r ".Name, .Version, .NumVotes, .Description" <<< "$1")"
+
+  local packageVotes="${packageData[2]}"
+
+  if [[ "${packageVotes}" -lt 10 ]]; then
+    packageVotes="000${packageVotes}"
+  elif [[ "${packageVotes}" -lt 100 ]]; then
+    packageVotes="00${packageVotes}"
+  elif [[ "${packageVotes}" -lt 1000 ]]; then
+    packageVotes="0${packageVotes}"
+  fi
+
+  local maxDescriptionLength="$(( TERMINAL_WIDTH - ${#packageData[0]} - ${#packageData[1]} ))"
+
+  local packageDescription="${packageData[3]:0:${maxDescriptionLength}}"
+
+  if [[ "${#packageDescription}" == "${maxDescriptionLength}" ]]; then
+    packageDescription+="…"
+  fi
+
+  printf "%s%s %s%s %s%s%s: %s\n" "${BLUE}" "${packageVotes}" "${PURPLE}" "${packageData[0]}" "${GREEN}" "${packageData[1]}" "${NC}" "${packageDescription}" >> "${OUTPUT_FILE}"
+}
+
+#######################################
+# Prints usage information about the script.
+# Copyright (C) 2016-2019 Dylan Araps
+# Globals:
+#   SCRIPT_NAME
+# Arguments:
+#   $1: none
+# Returns:
+#   none
+#######################################
+usage() { printf "%s" "\
+${SCRIPT_NAME} - helps you manage AUR packages
+
+=> [c]heck           - Check local package versions against those on the AUR.
+                       Pass --quiet/-q flag to print only non-matching versions.
+=> [f]etch [name(s)] - Clone git repository of [name] package(s) on the AUR.
+=> [i]nfo [name]     - Show full information for a package on the AUR.
+=> [s]earch [name]   - Search for packages on the AUR.
+"
+exit 0
+}
+
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
+
+if [[ "$(whoami)" = "root" ]]; then
+  exit_script_on_failure "${SCRIPT_NAME} should NOT be run as root (or sudo)!"
+fi
+
+if [[ $# -gt 0 ]]; then
+  if [[ "$*" == *"--quiet"* ]] || [[ "$*" == *"-q"* ]]; then
+    QUIET="true"
+  fi
+fi
+
+[[ -z "${1:-}" ]] && usage
+
+glob "$1" '[fis]*' && [[ -z "${2:-}" ]] &&
+  exit_script_on_failure "Missing [name] argument"
+
+case $1 in
+  c*) check ;;
+  f*) fetch "$@" ;;
+  i*) info "$2" ;;
+  s*) search "$2" ;;
+  *)  usage
+esac
