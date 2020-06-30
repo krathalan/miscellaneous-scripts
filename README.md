@@ -14,6 +14,7 @@ For example, if you execute `bash audio_to_opus flac`: all "\*.flac" files in th
 Miniscule AUR helper.
 
 Four functions:
+
 ```
 => [c]heck           - Check local package versions against those on the AUR.
                        Pass --quiet/-q flag to print only non-matching versions.
