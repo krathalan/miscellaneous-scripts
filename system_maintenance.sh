@@ -164,16 +164,6 @@ else
 fi
 
 if [ -x "$(command -v "aur")" ]; then
-  printf "\n%s. Checking local AUR repo for updates...\n" "${stepWithColor}"
-  aur sync -scu -M /etc/makepkg.conf
-  complete_step
-
-  printf "\n%s. Checking for local AUR repo updates...\n" "${stepWithColor}"
-  ${rootCommand} pacman -Syu
-  complete_step
-fi
-
-if [ -x "$(command -v "aur")" ]; then
   printf "\n%s. Checking for local package updates from the AUR...\n" "${stepWithColor}"
   aur check --quiet
   complete_step
