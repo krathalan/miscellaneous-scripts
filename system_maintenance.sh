@@ -171,6 +171,7 @@ fi
 
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
 if pacman -Qttdq > /dev/null; then
+  # Disable this shellcheck as we want words to split here
   # shellcheck disable=SC2046
   ${rootCommand} pacman -Rs $(pacman -Qttdq)
 else
@@ -209,8 +210,11 @@ if [ -x "$(command -v "version-check")" ]; then
   complete_step
 fi
 
-if [ -x "$(command -v "neofetch")" ]; then
-  printf "\n%s. Printing disk usage...\n" "${stepWithColor}"
-  neofetch disk
-  complete_step
-fi
+printf "\n%s. Printing root disk usage...\n" "${stepWithColor}"
+
+# Get root partition info
+rootPartitionInfo="$(df -h | grep -G ".*/$")"
+
+printf "%s/%s, %s full\n" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f6)" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f3)" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f10)"
+
+complete_step
