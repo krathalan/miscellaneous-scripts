@@ -382,6 +382,9 @@ search()
 
   wait
 
+  [[ ! -f "${OUTPUT_FILE}" ]] &&
+    printf "\nNo results\n" && exit 0
+
   sort -g "${OUTPUT_FILE}"
 
   printf "\n%s results, sorted by votes\n" "$(wc -l "${OUTPUT_FILE}" | cut -d' ' -f1)"
