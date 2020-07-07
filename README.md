@@ -3,7 +3,7 @@ This repository is a collection of scripts I wrote and use/update regularly. The
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Six POSIX-compliant sh scripts, seven Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
+Seven POSIX-compliant sh scripts, seven Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
 
 ## `audio_to_opus` (bash)
 Simply specify an audio type (e.g. "mp3", "flac") and this script will convert all audio files in that directory to the opus format.
@@ -33,24 +33,38 @@ This Bash script will gather execution time data for a specified command and ret
 
 ```
 Running command 15 times, please be patient...
+...
+===> gather_time_data: Execution 1 completed in 939 milliseconds <===
+...
+===> gather_time_data: Execution 2 completed in 904 milliseconds <===
+...
+===> gather_time_data: Execution 3 completed in 912 milliseconds <===
+...
+===> gather_time_data: Execution 4 completed in 897 milliseconds <===
+...
+===> gather_time_data: Execution 5 completed in 930 milliseconds <===
+...
+===> gather_time_data: Execution 6 completed in 930 milliseconds <===
+...
+===> gather_time_data: Execution 7 completed in 924 milliseconds <===
+...
+===> gather_time_data: Execution 8 completed in 916 milliseconds <===
+...
+===> gather_time_data: Execution 9 completed in 922 milliseconds <===
+...
+===> gather_time_data: Execution 10 completed in 913 milliseconds <===
+...
+===> gather_time_data: Execution 11 completed in 916 milliseconds <===
+...
+===> gather_time_data: Execution 12 completed in 922 milliseconds <===
+...
+===> gather_time_data: Execution 13 completed in 1030 milliseconds <===
+...
+===> gather_time_data: Execution 14 completed in 984 milliseconds <===
+...
+===> gather_time_data: Execution 15 completed in 972 milliseconds <===
 
-Execution 1 completed in 4201 milliseconds
-Execution 2 completed in 3511 milliseconds
-Execution 3 completed in 3339 milliseconds
-Execution 4 completed in 3400 milliseconds
-Execution 5 completed in 3517 milliseconds
-Execution 6 completed in 3692 milliseconds
-Execution 7 completed in 3177 milliseconds
-Execution 8 completed in 3770 milliseconds
-Execution 9 completed in 3118 milliseconds
-Execution 10 completed in 3864 milliseconds
-Execution 11 completed in 3962 milliseconds
-Execution 12 completed in 3332 milliseconds
-Execution 13 completed in 3213 milliseconds
-Execution 14 completed in 3255 milliseconds
-Execution 15 completed in 3363 milliseconds
-
-Average execution time: 3.51 seconds
+===> gather_time_data: Average execution time: 934.07 milliseconds <===
 ```
 
 ## `list_nonfree_packages` (bash)
@@ -140,17 +154,22 @@ This script will perform system maintenance on an Arch Linux system. It will:
 - Update `/etc/pacman.d/mirrorlist` if it hasn't been updated in more than 3.5 days
   - This functionality requires the [reflector](https://www.archlinux.org/packages/community/any/reflector/) package to be installed
 - Update installed packages
-- Check for local AUR repo updates
-  - This functionality requires the [aurutils](https://aur.archlinux.org/packages/aurutils) package to be installed
+- Check for AUR package updates
+  - This functionality requires the `aur` script from this repo to be in your `$PATH`
 - Remove unused packages
-- Remove old journald entries
+- Remove journald entries older than 1 day
 - Update installed flatpaks and remove unused flatpaks
   - This functionality requires the [flatpak](https://www.archlinux.org/packages/extra/x86_64/flatpak/) package to be installed
 - Check your pacman database for errors
 - List failed systemd units
 - List `*.pacsave` and `*.pacnew` files in `/etc`
 - Print disk usage
-  - This functionality requires the [neofetch](https://www.archlinux.org/packages/community/any/neofetch/) package to be installed
+
+## `timer.sh`
+
+Requires the `termdown` and `mpv` packages to be installed.
+
+Specify a termdown timer, e.g. `timer.sh 5m`, and this script will play a sound file on repeat when the termdown timer is finished. Specify which sound file to play by setting the `$TIMER_SOUND_FILE` environment variable to a valid sound file path.
 
 ## `update_git_repos` (bash)
 This script will run `git pull --prune` inside every Git repository in the current directory.
