@@ -385,9 +385,16 @@ search()
   [[ ! -f "${OUTPUT_FILE}" ]] &&
     printf "\nNo results\n" && exit 0
 
+  local -r numberOfResults="$(wc -l "${OUTPUT_FILE}" | cut -d' ' -f1)"
+  local pluralSuffix=""
+
+  if [[ "${numberOfResults}" -gt 1 ]]; then
+    pluralSuffix="s, sorted by votes"
+  fi
+
   sort -g "${OUTPUT_FILE}"
 
-  printf "\n%s results, sorted by votes\n" "$(wc -l "${OUTPUT_FILE}" | cut -d' ' -f1)"
+  printf "\n%s result%s\n" "${numberOfResults}" "${pluralSuffix}"
 }
 
 #######################################
