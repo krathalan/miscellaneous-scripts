@@ -204,6 +204,10 @@ check()
   requestURL="${AUR_RPC_URL}info"
 
   for package in "${packages[@]}"; do
+    if [[ "${package}" == *"git" ]]; then
+      continue
+    fi
+
     requestURL+="&arg[]=${package}"
   done
 
