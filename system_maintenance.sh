@@ -256,10 +256,6 @@ printf "\n%s. Printing root disk usage...\n" "${stepWithColor}"
 # Get root partition info
 rootPartitionInfo="$(df -h | grep -G ".*/$")"
 
-if glob "${rootPartitionInfo}" "/dev/mapper*"; then
-  printf "%s/%s, %s full\n" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f6)" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f3)" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f10)"
-else
-  printf "%s/%s, %s full\n" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f12)" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f10)" "$(printf "%s" "${rootPartitionInfo}" | cut -d' ' -f17)"
-fi
+printf "%s/%s, %s full\n" "$(printf "%s" "${rootPartitionInfo}" | awk '{printf $3}')" "$(printf "%s" "${rootPartitionInfo}" | awk '{printf $2}')" "$(printf "%s" "${rootPartitionInfo}" | awk '{printf $5}')"
 
 complete_step
