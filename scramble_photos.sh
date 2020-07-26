@@ -96,7 +96,7 @@ scramble_it()
 
   # Delete original
   rm -f "${photo}_original"
-  
+
   # Move to appropriate folder
   if [ "${toCopy}" = "true" ]; then
     mv "${photo}" "${TARGET_DIRECTORY}"
@@ -128,7 +128,7 @@ fi
 
 for photo in "${PWD}"/*; do
   case "${photo}" in
-    *.png|*.jpg)
+    *.png|*.jpg|*.jpeg)
       scramble_it "${photo}" &
       ;;
     *)
