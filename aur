@@ -67,6 +67,7 @@ readonly BLUE=$(tput sgr0 && tput setaf 4)
 readonly GREEN=$(tput setaf 10)
 readonly PURPLE=$(tput bold && tput setaf 5)
 readonly RED=$(tput bold && tput setaf 1)
+readonly YELLOW=$(tput sgr0 && tput setaf 3)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
@@ -115,6 +116,11 @@ download_file()
   readonly AUR_JSON="${TMP_DIR}/aur.json"
 
   curl -o "${AUR_JSON}" --silent "$1"
+
+  if grep -q -i "service unavailable" "${AUR_JSON}"; then
+    printf "%sWarning%s: %s\n" "${YELLOW}" "${NC}" "AUR service unavailable. Probably down for maintenance." >&2
+    exit 0
+  fi
 
   if [[ "$(jq -r .type "${AUR_JSON}")" == "error" ]]; then
     exit_script_on_failure "$(jq -r .error "${AUR_JSON}")"
