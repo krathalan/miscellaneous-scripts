@@ -222,6 +222,12 @@ check()
   whileCounter=0
 
   while [[ "${whileCounter}" -lt "${#packages[@]}" ]]; do
+    if [[ "${packages[${whileCounter}]}" == *"git" ]]; then
+      printf "%s%s is a -git package; skipping%s\n" "${YELLOW}" "${packages[${whileCounter}]}" "${NC}" >> "${OUTPUTFILEGOOD}"
+      whileCounter="$(( whileCounter + 1 ))"
+      continue
+    fi
+
     check_print_entry "${packages[${whileCounter}]}" "${packageVersions[${whileCounter}]}" &
     whileCounter="$(( whileCounter + 1 ))"
   done
