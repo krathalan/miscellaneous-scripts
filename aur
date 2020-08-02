@@ -297,7 +297,7 @@ info()
   download_file "${AUR_RPC_URL}info&arg[]=$1"
 
   [[ -z "$(jq -r .results[] "${AUR_JSON}")" ]] &&
-    printf "\n%s not found on AUR\n" "$1" && exit 0
+    printf "\n\"%s\" not found on AUR\n" "$1" && exit 0
 
   mapfile -t packageData <<< "$(jq -r ".results[].Name, .results[].Version, .results[].Description, .results[].URL, .results[].NumVotes, .results[].Maintainer, .results[].FirstSubmitted, .results[].LastModified" "${AUR_JSON}")"
 
