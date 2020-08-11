@@ -31,17 +31,42 @@
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -eu # (Eo pipefail) is Bash only!
 
+# Clean up tmp dir on exit
+trap "clean_up" INT EXIT
+
 # -----------------------------------------
 # ----------- Program variables -----------
 # -----------------------------------------
 
 readonly SCRIPT_NAME=$(basename "$0")
-readonly TEMP_DIRECTORY="/tmp/.make_gif"
-readonly WORKING_DIRECTORY="${PWD}"
+readonly TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
+
+# Colors
+readonly RED=$(tput bold && tput setaf 1)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
+
+clean_up()
+{
+  rm -rf "${TMP_DIR}"
+}
+
+downsize_image()
+{
+  if printf "%s" "$1" | grep -q ".*\.gif$"; then
+    printf "%s is a gif, skipping\n" "$1"
+    return
+  fi
+
+  if identify "$1" > /dev/null 2>&1; then
+    convert "$1" -resize 13% "${TMP_DIR}/$1"
+  else
+    printf "%s is not an image file, skipping\n" "$1"
+  fi
+}
 
 #######################################
 # Prints passed error message before premature exit.
@@ -70,23 +95,31 @@ if [ "$(whoami)" = "root" ]; then
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
-rm -rf "${TEMP_DIRECTORY}"
-mkdir "${TEMP_DIRECTORY}"
+printf "\nResizing images...\n"
 
-printf "\nResizing images..."
-
-for image in ./*.png; do
-  convert "${image}" -resize 13% "${TEMP_DIRECTORY}/${image}" &
+for image in ./*; do
+  downsize_image "${image}" &
 done
 
 wait
 
-printf " done.\n\n"
+printf "Done.\n\n"
 
-printf "Making gif..."
+[ -z "$(find "${TMP_DIR}" -type f)" ] &&
+  exit_script_on_failure "No image files found"
 
-convert -delay 13 -loop 0 "${TEMP_DIRECTORY}"/*.png "${WORKING_DIRECTORY}/result.gif"
+printf "Making gif...\n"
 
-printf " done.\n"
+readonly OUTPUT_FILE_BASE="result"
+outputFile="result"
+whileCounter=1
 
-rm -rf "${TEMP_DIRECTORY}" &
+while [ -f "${outputFile}.gif" ]; do
+  outputFile="${OUTPUT_FILE_BASE}${whileCounter}"
+  whileCounter="$(( whileCounter + 1 ))"
+done
+
+outputFile="${outputFile}.gif"
+convert -delay 13 -loop 0 "${TMP_DIR}"/* "${PWD}/${outputFile}"
+
+printf "Done. Output file %s\n" "${outputFile}"

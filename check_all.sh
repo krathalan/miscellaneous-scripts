@@ -30,10 +30,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -u # (Eo pipefail) is Bash only!
-
-# No "set -e" because this script should continue if shellcheck "fails" when
-# printing errors in a script
+set -eu # (Eo pipefail) is Bash only!
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -110,7 +107,9 @@ for file in ./*; do
     fileName="$(realpath --relative-to=. "${file}")"
     print_step "${fileName}"
 
-    shellcheck "${file}"
+    # Don't fail out of script if shellcheck "fails" due to errors
+    # in checked file
+    shellcheck "${file}" || :
 
     printf "\n\n"
     stepCounter=$(( stepCounter + 1 ))

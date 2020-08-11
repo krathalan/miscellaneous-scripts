@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Description: Updates git repos in the user's ~/Git directory.
+# Description: Updates git repos in the current directory.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
