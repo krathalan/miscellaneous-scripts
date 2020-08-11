@@ -43,13 +43,14 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 readonly SCRIPT_NAME="$(basename "$0")"
 
 # Determine pictures directory
-USER_PICTURES_DIR="${HOME}/pictures"
-
 if [ "$(command -v xdg-user-dir)" ]; then
-  USER_PICTURES_DIR="$(xdg-user-dir PICTURES)"
+  readonly SCREENSHOTS_DIR="$(xdg-user-dir PICTURES)/screenshots"
+else
+  readonly SCREENSHOTS_DIR="${HOME}/pictures/screenshots"
 fi
 
-readonly SCREENSHOTS_DIR="${USER_PICTURES_DIR}/screenshots"
+# Convert output file name to lowercase for easier tab completion
+readonly OUTPUT_FILE="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
 
 # -----------------------------------------
 # ------------- User variables ------------
@@ -70,7 +71,7 @@ readonly SCREENSHOTS_DIR="${USER_PICTURES_DIR}/screenshots"
 #######################################
 check_command()
 {
-  if [ ! -x "$(command -v "$1")" ]; then
+  if ! command -v "$1" > /dev/null 2>&1; then
     exit_script_on_failure "Package $1 is required and is not installed."
   fi
 }
@@ -105,32 +106,27 @@ if [ "$(whoami)" = "root" ]; then
 fi
 
 # Make screenshots directory if it does not exist yet
-mkdir -p "${SCREENSHOTS_DIR}"
+if [ ! -d "${SCREENSHOTS_DIR}" ]; then
+  mkdir -p "${SCREENSHOTS_DIR}"
+fi
 
 notificationMessage="Saved screenshot to ${SCREENSHOTS_DIR}."
 
-# Convert output file name to lowercase for easier tab completion
-outputFile="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
-
-if [ ! "${SWAYSOCK:-x}" = "x" ]; then
+if [ -n "${SWAYSOCK:-}" ]; then
   check_command "grim"
 
   if [ $# -gt 0 ]; then
-    if [ -x "$(command -v "slurp")" ]; then
-      grim -g "$(slurp)" -t jpeg -q 95 "${outputFile}"
+    check_command "slurp"
+    check_command "wl-copy"
 
-      if [ -x "$(command -v "wl-copy")" ]; then
-        wl-copy < "${outputFile}"
-        rm -f "${outputFile}"
-        notificationMessage="Copied selection to clipboard."
-      fi
-    fi
+    grim -g "$(slurp)" -t jpeg -q 95 - | wl-copy
+    notificationMessage="Copied selection to clipboard."
   else
-    grim -t jpeg -q 95 "${outputFile}"
+    grim -t jpeg -q 95 "${OUTPUT_FILE}"
   fi
 else
   check_command "scrot"
-  scrot -q 95 "${outputFile}"
+  scrot -q 95 "${OUTPUT_FILE}"
 fi
 
 notify-send -i "folder-pictures-open" "${SCRIPT_NAME}" "${notificationMessage}"
