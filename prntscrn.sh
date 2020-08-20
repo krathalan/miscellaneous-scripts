@@ -46,14 +46,19 @@ readonly SCRIPT_NAME="${0##*/}"
 # Don't use check_command() here because the script should NOT fail if
 # xdg-user-dir isn't available
 if [ -n "$(command -v xdg-user-dir)" ]; then
-  readonly USER_PICTURES_DIR="$(xdg-user-dir PICTURES)"
+  readonly SCREENSHOTS_DIR="$(xdg-user-dir PICTURES)/screenshots"
 elif [ -d "${HOME}/Pictures" ]; then
-  readonly USER_PICTURES_DIR="${HOME}/Pictures"
+  readonly SCREENSHOTS_DIR="${HOME}/Pictures/screenshots"
 else
-  readonly USER_PICTURES_DIR="${HOME}/pictures"
+  readonly SCREENSHOTS_DIR="${HOME}/pictures/screenshots"
 fi
 
-readonly SCREENSHOTS_DIR="${USER_PICTURES_DIR}/screenshots"
+# Convert output file name to lowercase for easier tab completion
+readonly OUTPUT_FILE="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
+
+# -----------------------------------------
+# ------------- User variables ------------
+# -----------------------------------------
 
 # -----------------------------------------
 # --------------- Functions ---------------
@@ -106,26 +111,21 @@ if [ "$(whoami)" = "root" ]; then
 fi
 
 # Make screenshots directory if it does not exist yet
-mkdir -p "${SCREENSHOTS_DIR}"
+if [ ! -d "${SCREENSHOTS_DIR}" ]; then
+  mkdir -p "${SCREENSHOTS_DIR}"
+fi
 
 notificationMessage="Saved screenshot to ${SCREENSHOTS_DIR}."
 
-# Convert output file name to lowercase for easier tab completion
-readonly OUTPUT_FILE="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
-
-if [ ! "${SWAYSOCK:-x}" = "x" ]; then
+if [ -n "${SWAYSOCK:-}" ]; then
   check_command "grim"
 
   if [ $# -gt 0 ]; then
-    if check_command slurp; then
-      grim -g "$(slurp)" -t jpeg -q 95 "${OUTPUT_FILE}"
+    check_command "slurp"
+    check_command "wl-copy"
 
-      if check_command wl-copy; then
-        wl-copy < "${OUTPUT_FILE}"
-        rm -f "${OUTPUT_FILE}"
-        notificationMessage="Copied selection to clipboard."
-      fi
-    fi
+    grim -g "$(slurp)" -t jpeg -q 95 - | wl-copy
+    notificationMessage="Copied selection to clipboard."
   else
     grim -t jpeg -q 95 "${OUTPUT_FILE}"
   fi

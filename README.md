@@ -3,7 +3,7 @@ This repository is a collection of scripts I wrote and use/update regularly. The
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Seven POSIX-compliant sh scripts, seven Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
+Seven POSIX-compliant sh scripts, six Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
 
 ## `audio_to_opus` (bash)
 Simply specify an audio type (e.g. "mp3", "flac") and this script will convert all audio files in that directory to the opus format.
@@ -29,43 +29,7 @@ Note that though `aur` is licensed under the GPLv3 license, the script incorpora
 Checks all shell scripts in the current directory with shellcheck.
 
 ## `gather_time_data` (bash)
-This Bash script will gather execution time data for a specified command and return the average execution time. Helpful for testing optimizations in other scripts. For example, testing [wtwitch](https://git.sr.ht/~krathalan/wtwitch) optimizations with `gather_time_data "wtwitch -g overwatch"` would print out:
-
-```
-Running command 15 times, please be patient...
-...
-===> gather_time_data: Execution 1 completed in 939 milliseconds <===
-...
-===> gather_time_data: Execution 2 completed in 904 milliseconds <===
-...
-===> gather_time_data: Execution 3 completed in 912 milliseconds <===
-...
-===> gather_time_data: Execution 4 completed in 897 milliseconds <===
-...
-===> gather_time_data: Execution 5 completed in 930 milliseconds <===
-...
-===> gather_time_data: Execution 6 completed in 930 milliseconds <===
-...
-===> gather_time_data: Execution 7 completed in 924 milliseconds <===
-...
-===> gather_time_data: Execution 8 completed in 916 milliseconds <===
-...
-===> gather_time_data: Execution 9 completed in 922 milliseconds <===
-...
-===> gather_time_data: Execution 10 completed in 913 milliseconds <===
-...
-===> gather_time_data: Execution 11 completed in 916 milliseconds <===
-...
-===> gather_time_data: Execution 12 completed in 922 milliseconds <===
-...
-===> gather_time_data: Execution 13 completed in 1030 milliseconds <===
-...
-===> gather_time_data: Execution 14 completed in 984 milliseconds <===
-...
-===> gather_time_data: Execution 15 completed in 972 milliseconds <===
-
-===> gather_time_data: Average execution time: 934.07 milliseconds <===
-```
+I no longer recommend using this script. Instead I recommend using `hyperfine`: https://github.com/sharkdp/hyperfine
 
 ## `list_nonfree_packages` (bash)
 Lists nonfree packages installed on Arch Linux according to Parabola's blacklist. Ignores packages that are blacklisted for "branding" or "technical" reasons; that is, they are not necessarily nonfree, but may conflict with Parabola's rebuilds of certain packages.
@@ -175,4 +139,4 @@ Specify a termdown timer, e.g. `timer.sh 5m`, and this script will play a sound 
 This script will run `git pull --prune` inside every Git repository in the current directory.
 
 ## `update_wow_addons` (bash)
-I no longer recommend using this script. Instead I recommend using Cursebreaker, as it's very well polished: https://github.com/AcidWeb/CurseBreaker
+I no longer recommend using this script. Instead I recommend using Cursebreaker: https://github.com/AcidWeb/CurseBreaker
