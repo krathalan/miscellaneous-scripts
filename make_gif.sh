@@ -35,7 +35,7 @@ set -eu # (Eo pipefail) is Bash only!
 # ----------- Program variables -----------
 # -----------------------------------------
 
-readonly SCRIPT_NAME=$(basename "$0")
+readonly SCRIPT_NAME="${0##*/}"
 readonly TEMP_DIRECTORY="/tmp/.make_gif"
 readonly WORKING_DIRECTORY="${PWD}"
 

@@ -46,7 +46,7 @@ readonly WHITE=$(tput sgr0 && tput bold)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
-readonly SCRIPT_NAME=$(basename "$0")
+readonly SCRIPT_NAME="${0##*/}"
 
 # Step variables
 stepCounter=1

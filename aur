@@ -73,7 +73,7 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 # Other
 readonly AUR_BASE_URL="https://aur.archlinux.org"
 readonly AUR_RPC_URL="${AUR_BASE_URL}/rpc/?v=5&type="
-readonly SCRIPT_NAME=$(basename "$0")
+readonly SCRIPT_NAME="${0##*/}"
 
 # -----------------------------------------
 # ------------- User variables ------------

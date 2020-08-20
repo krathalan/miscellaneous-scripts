@@ -40,27 +40,28 @@ readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
-readonly SCRIPT_NAME="$(basename "$0")"
+readonly SCRIPT_NAME="${0##*/}"
 
 # Determine pictures directory
-USER_PICTURES_DIR="${HOME}/pictures"
-
-if [ "$(command -v xdg-user-dir)" ]; then
-  USER_PICTURES_DIR="$(xdg-user-dir PICTURES)"
+# Don't use check_command() here because the script should NOT fail if
+# xdg-user-dir isn't available
+if [ -n "$(command -v xdg-user-dir)" ]; then
+  readonly USER_PICTURES_DIR="$(xdg-user-dir PICTURES)"
+elif [ -d "${HOME}/Pictures" ]; then
+  readonly USER_PICTURES_DIR="${HOME}/Pictures"
+else
+  readonly USER_PICTURES_DIR="${HOME}/pictures"
 fi
 
 readonly SCREENSHOTS_DIR="${USER_PICTURES_DIR}/screenshots"
-
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
 
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
 
 #######################################
-# Checks to see if a specified command is available and exits the script if the command is not available.
+# Checks to see if a specified command is available and 
+# exits the script if the command is not available.
 # Globals:
 #   none
 # Arguments:
@@ -70,7 +71,7 @@ readonly SCREENSHOTS_DIR="${USER_PICTURES_DIR}/screenshots"
 #######################################
 check_command()
 {
-  if [ ! -x "$(command -v "$1")" ]; then
+  if [ -z "$(command -v "$1")" ]; then
     exit_script_on_failure "Package $1 is required and is not installed."
   fi
 }
@@ -110,27 +111,27 @@ mkdir -p "${SCREENSHOTS_DIR}"
 notificationMessage="Saved screenshot to ${SCREENSHOTS_DIR}."
 
 # Convert output file name to lowercase for easier tab completion
-outputFile="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
+readonly OUTPUT_FILE="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
 
 if [ ! "${SWAYSOCK:-x}" = "x" ]; then
   check_command "grim"
 
   if [ $# -gt 0 ]; then
-    if [ -x "$(command -v "slurp")" ]; then
-      grim -g "$(slurp)" -t jpeg -q 95 "${outputFile}"
+    if check_command slurp; then
+      grim -g "$(slurp)" -t jpeg -q 95 "${OUTPUT_FILE}"
 
-      if [ -x "$(command -v "wl-copy")" ]; then
-        wl-copy < "${outputFile}"
-        rm -f "${outputFile}"
+      if check_command wl-copy; then
+        wl-copy < "${OUTPUT_FILE}"
+        rm -f "${OUTPUT_FILE}"
         notificationMessage="Copied selection to clipboard."
       fi
     fi
   else
-    grim -t jpeg -q 95 "${outputFile}"
+    grim -t jpeg -q 95 "${OUTPUT_FILE}"
   fi
 else
   check_command "scrot"
-  scrot -q 95 "${outputFile}"
+  scrot -q 95 "${OUTPUT_FILE}"
 fi
 
 notify-send -i "folder-pictures-open" "${SCRIPT_NAME}" "${notificationMessage}"

@@ -68,17 +68,29 @@ stepCounter=1
 stepWithColor="${PURPLE}${stepCounter}${NC}"
 
 # Other
-readonly SCRIPT_NAME=$(basename "$0")
-
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
-
-regenerateMirrorlist="true"
+readonly SCRIPT_NAME="${0##*/}"
 
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
+
+#######################################
+# Checks to see if a specified command is available.
+# Globals:
+#   none
+# Arguments:
+#   $1: command to test
+# Returns:
+#   none
+#######################################
+check_command()
+{
+  if [ -z "$(command -v "$1")" ]; then
+    return 1
+  else
+    return 0
+  fi
+}
 
 #######################################
 # Prints passed error message before premature exit.
@@ -136,26 +148,15 @@ complete_step()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-# Use doas if sudo is not present
-rootCommand="sudo"
-
-if [ ! -x "$(command -v "sudo")" ]; then
-  rootCommand="doas --"
-fi
-
 # Parse flags. From:
 # https://stackoverflow.com/questions/7069682/how-to-get-arguments-with-flags-in-bash/7069755#7069755
 while test $# -gt 0; do
   case "$1" in
     -c|--clean)
       printf "\n%s. Cleaning pacman caches...\n" "${stepWithColor}"
-      ${rootCommand} pacman -Sc --noconfirm || exit_script_on_failure "Problem cleaning pacman caches with command \"pacman -Sc --noconfirm\""
+      sudo pacman -Sc --noconfirm
       printf "Done.\n"
       exit 0
-      ;;
-    -n|--no-mirrorlist-refresh)
-      export regenerateMirrorlist="false"
-      shift
       ;;
     *)
       break
@@ -164,47 +165,14 @@ while test $# -gt 0; do
 done
 
 if [ "$(whoami)" = "root" ]; then
-  exit_script_on_failure "This script should NOT be run as root (or ${rootCommand})!"
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 fi
 
-if [ "${regenerateMirrorlist}" = "true" ] && [ -x "$(command -v "reflector")" ]; then
-  # Check last mirror list update time
-  mirrorListUpdateTime=$(grep "Last Check" /etc/pacman.d/mirrorlist | awk '{printf $4}')
+printf "\n%s. Updating packages...\n" "${stepWithColor}"
+sudo pacman -Syu
+complete_step
 
-  if [ -n "${mirrorListUpdateTime}" ]; then
-    mirrorListUpdateTime=$(date +%s -d "${mirrorListUpdateTime}") # Convert to Unix time
-  fi
-
-  readonly currentTime=$(date +%s -d now) # Get current time as Unix time
-
-  # 302400 = half the number of seconds in a week
-  if [ -z "${mirrorListUpdateTime}" ] || [ $(( currentTime - mirrorListUpdateTime )) -gt 302400 ]; then
-    printf "\n%s. Regenerating mirrorlist...\n" "${stepWithColor}"
-    ${rootCommand} reflector --latest 8 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-    complete_step
-
-    printf "\nNew mirrorlist in /etc/pacman.d/mirrorlist:\n"
-    grep "Server" /etc/pacman.d/mirrorlist
-
-    printf "\n%s. Updating packages...\n" "${stepWithColor}"
-
-    # Two "y"s in -Syyu forces pacman to update the repos even if they appear to be up to date;
-    # this should be used only after updating the mirrorlist
-    # https://wiki.archlinux.org/index.php/Mirrors#Force_pacman_to_refresh_the_package_lists
-    ${rootCommand} pacman -Syyu
-    complete_step
-  else
-    printf "\n%s. Updating packages...\n" "${stepWithColor}"
-    ${rootCommand} pacman -Syu
-    complete_step
-  fi
-else
-  printf "\n%s. Updating packages...\n" "${stepWithColor}"
-  ${rootCommand} pacman -Syu
-  complete_step
-fi
-
-if [ -x "$(command -v "aur")" ]; then
+if check_command aur; then
   printf "\n%s. Checking for local package updates from the AUR...\n" "${stepWithColor}"
   aur check --quiet
   complete_step
@@ -214,24 +182,24 @@ printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
 if pacman -Qttdq > /dev/null; then
   # Disable this shellcheck as we want words to split here
   # shellcheck disable=SC2046
-  ${rootCommand} pacman -Rs $(pacman -Qttdq)
+  sudo pacman -Rs $(pacman -Qttdq)
 else
   printf "No packages to remove.\n"
 fi
 complete_step
 
 printf "\n%s. Removing system journal entries older than one day...\n" "${stepWithColor}"
-${rootCommand} journalctl --vacuum-time=1d
+sudo journalctl --vacuum-time=1d
 complete_step
 
-if [ -x "$(command -v "flatpak")" ]; then
+if check_command flatpak; then
   printf "\n%s. Updating Flatpaks...\n" "${stepWithColor}"
   flatpak update -y
   complete_step
 fi
 
 printf "\n%s. Checking pacman database...\n" "${stepWithColor}"
-${rootCommand} pacman -Dk
+sudo pacman -Dk
 complete_step
 
 printf "\n%s. Listing failed systemd units...\n" "${stepWithColor}"
@@ -245,7 +213,7 @@ find /etc -name "*.pacnew" 2> /dev/null || true
 printf "%s" "${NC}"
 complete_step
 
-if [ -x "$(command -v "version-check")" ]; then
+if check_command version-check; then
   printf "\n%s. Checking AppArmor profile versions against installed package versions...\n" "${stepWithColor}"
   version-check -q
   complete_step
