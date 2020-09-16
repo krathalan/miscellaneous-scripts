@@ -502,9 +502,9 @@ print_pkgbuild()
 #######################################
 grep_command()
 {
-  if grep -Pq " *$1 +" "$2"; then
+  if grep -Pq "(^| +)$1 +" "$2"; then
     printf "\n%s===> Warning! PKBUILD potentially contains \`%s\` command:\n%s" "${YELLOW}" "$1" "${NC}"
-    grep -Pn --color=always " *$1 +" "$2"
+    grep -Pn --color=always "(^| +)$1 +" "$2"
   fi
 }
 
