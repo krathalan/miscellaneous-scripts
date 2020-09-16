@@ -75,6 +75,7 @@ readonly AUR_BASE_URL="https://aur.archlinux.org"
 readonly AUR_RPC_URL="${AUR_BASE_URL}/rpc/?v=5&type="
 readonly AUR_PKGBUILD_URL="${AUR_BASE_URL}/cgit/aur.git/plain/PKGBUILD?h="
 readonly SCRIPT_NAME="${0##*/}"
+readonly DANGEROUS_COMMANDS=("rm" "mount" "mkfs")
 
 # -----------------------------------------
 # ------------- User variables ------------
@@ -482,8 +483,7 @@ print_pkgbuild()
 
   ${print_file_cmd} "${pkgbuild_file}"
 
-  local -r dangerous_commands=("rm" "mount" "mkfs")
-  for cmd in "${dangerous_commands[@]}"; do
+  for cmd in "${DANGEROUS_COMMANDS[@]}"; do
     grep_command "${cmd}" "${pkgbuild_file}"
   done
 }
@@ -508,6 +508,25 @@ grep_command()
   fi
 }
 
+analyze()
+{
+  if [[ $# -gt 1 ]]; then
+    [[ ! -f "$2" ]] &&
+      exit_script_on_failure "File $2 not found."
+    
+    for cmd in "${DANGEROUS_COMMANDS[@]}"; do
+      grep_command "${cmd}" "$2"
+    done
+  else
+    [[ ! -f PKGBUILD ]] &&
+      exit_script_on_failure "PKGBUILD file not found."
+    
+    for cmd in "${DANGEROUS_COMMANDS[@]}"; do
+      grep_command "${cmd}" "${PWD}/PKGBUILD"
+    done
+  fi
+}
+
 #######################################
 # Prints usage information about the script.
 # Copyright (C) 2016-2019 Dylan Araps
@@ -521,12 +540,14 @@ grep_command()
 usage() { printf "%s" "\
 ${SCRIPT_NAME} - helps you manage AUR packages
 
-=> [c]heck           - Check local package versions against those on the AUR.
-                       Pass --quiet/-q flag to print only non-matching versions.
-=> [f]etch [name(s)] - Clone git repository of [name] package(s) on the AUR.
-=> [p]kgbuild [name] - Print the PKGBUILD for [name] package
-=> [i]nfo [name]     - Show full information for [name] package on the AUR.
-=> [s]earch [name]   - Search for [name] on the AUR.
+=> [c]heck            - Check local package versions against those on the AUR.
+                        Pass --quiet/-q flag to print only non-matching versions.
+=> [f]etch [name(s)]  - Clone git repository of [name] package(s) on the AUR.
+=> [i]nfo [name]      - Show full information for [name] package on the AUR.
+=> [p]kgbuild [name]  - Print the PKGBUILD for [name] package
+=> [a]nalyze ([name]) - Analyze [name] file for dangerous commands, or if no
+                        [name] is given, analyze 'PKGBUILD' in the current dir.
+=> [s]earch [name]    - Search for [name] on the AUR.
 "
 exit 0
 }
@@ -551,6 +572,7 @@ glob "$1" '[fis]*' && [[ -z "${2:-}" ]] &&
   exit_script_on_failure "Missing [name] argument"
 
 case $1 in
+  a*) analyze "$@" ;;
   c*) check ;;
   f*) fetch "$@" ;;
   i*) info "$2" ;;
