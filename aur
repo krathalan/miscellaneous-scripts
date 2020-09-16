@@ -116,7 +116,7 @@ download_file()
 {
   readonly AUR_JSON="${TMP_DIR}/aur.json"
 
-  curl -o "${AUR_JSON}" --silent "$1"
+  curl --silent -o "${AUR_JSON}" "$1"
 
   if grep -q -i "service unavailable" "${AUR_JSON}"; then
     printf "%sWarning%s: %s\n" "${YELLOW}" "${NC}" "AUR service unavailable. Probably down for maintenance." >&2
@@ -469,16 +469,18 @@ print_pkgbuild()
 {
   make_tmp
   local -r pkgbuild_file="${TMP_DIR}/PKGBUILD"
-  curl -o "${pkgbuild_file}" "${AUR_PKGBUILD_URL}$1"
+
+  printf "Downloading PKGBUILD...\n"
+  curl --silent -o "${pkgbuild_file}" "${AUR_PKGBUILD_URL}$1"
 
   # Use bat if present for line numbering and syntax highlighting
   if [[ -n "$(command -v bat)" ]]; then
-    local -r print_file_cmd="bat"
+    local -r print_file_cmd="bat --paging=never"
   else
     local -r print_file_cmd="cat"
   fi
 
-  "${print_file_cmd}" "${pkgbuild_file}"
+  ${print_file_cmd} "${pkgbuild_file}"
 
   local -r dangerous_commands=("rm" "mount" "mkfs")
   for cmd in "${dangerous_commands[@]}"; do
@@ -500,9 +502,9 @@ print_pkgbuild()
 #######################################
 grep_command()
 {
-  if grep -Gq " *$1.*" "$2"; then
-    printf "\n%s===> Warning! PKBUILD potentially contains \`%s\` command:\n%s" "${RED}" "$1" "${NC}"
-    grep -Gn " *$1.*" "$2"
+  if grep -Pq " *$1 +" "$2"; then
+    printf "\n%s===> Warning! PKBUILD potentially contains \`%s\` command:\n%s" "${YELLOW}" "$1" "${NC}"
+    grep -Pn --color=always " *$1 +" "$2"
   fi
 }
 
