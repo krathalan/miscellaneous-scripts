@@ -18,9 +18,10 @@ Four functions:
 ```
 => [c]heck           - Check local package versions against those on the AUR.
                        Pass --quiet/-q flag to print only non-matching versions.
-=> [f]etch [name(s)] - Clone git repository of [name] package(s) from the AUR.
-=> [i]nfo [name]     - Show full information for a package from the AUR.
-=> [s]earch [name]   - Search for packages on the AUR.
+=> [f]etch [name(s)] - Clone git repository of [name] package(s) on the AUR.
+=> [p]kgbuild [name] - Print the PKGBUILD for [name] package
+=> [i]nfo [name]     - Show full information for [name] package on the AUR.
+=> [s]earch [name]   - Search for [name] on the AUR.
 ```
 
 Note that though `aur` is licensed under the GPLv3 license, the script incorporates work Copyright (C) 2016-2019 Dylan Araps originally from MIT-licensed code from [pash](https://github.com/dylanaraps/pash). See [Maintaining Permissive-Licensed Files in a GPL-Licensed Project: Guidelines for Developers](https://softwarefreedom.org/resources/2007/gpl-non-gpl-collaboration.html) by the Software Freedom Law Center for more information.
