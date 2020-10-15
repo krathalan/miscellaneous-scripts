@@ -209,6 +209,19 @@ check()
   mapfile -t packages <<< "$(pacman -Qmq)"
   mapfile -t packageVersions <<< "$(pacman -Qm | cut -d' ' -f2-)"
 
+  # Add krathalan repo packages if krathalan repo is present
+  if pacman-conf -l | grep -q krathalan; then
+    mapfile -t krathalanPackages <<< "$(comm -12 <(pacman -Qq | sort) <(pacman -Slq "krathalan" | sort))"
+
+    for package in "${krathalanPackages[@]}"; do
+      packages+=("${package}")
+    done
+
+    for package in "${krathalanPackages[@]}"; do
+      packageVersions+=("$(pacman -Qi "${package}" | grep Version | awk '{printf $3}')")
+    done
+  fi
+
   requestURL="${AUR_RPC_URL}info"
 
   for package in "${packages[@]}"; do
