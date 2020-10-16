@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+#
+# Description:
+#
+# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+#
+# Copyright (C) 2020 krathalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
+
+# This script follows the Google Shell Style Guide:
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
+
+# Colors
+readonly GREEN=$(tput bold && tput setaf 2)
+readonly RED=$(tput bold && tput setaf 1)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+# Other
+readonly SCRIPT_NAME="${0##*/}"
+readonly TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
+trap 'rm -rf "${TMP_DIR}"' EXIT SIGINT
+readonly ASSETS_JSON_URL="https://raw.githubusercontent.com/gorhill/uBlock/master/assets/assets.json"
+readonly ASSETS_JSON_FILE="${TMP_DIR}/ublock-filters-assets.json"
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+download_file()
+{
+  printf "Downloading %s...\n" "$1"
+  cd "${TMP_DIR}" && { curl --silent -O "$1"; cd - &> /dev/null; }
+}
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure()
+{
+  printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
+
+  exit 1
+}
+
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
+
+if [[ "$(whoami)" = "root" ]]; then
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+fi
+
+[[ $# -lt 1 ]] &&
+  exit_script_on_failure "Please specify a path to the ruleset_converter binary, or download it from: https://github.com/bromite/filters/releases/"
+
+readonly PATH_TO_RULESET_BIN="$1"
+
+printf "Downloading newest uBlock assets json...\n"
+curl --silent -o "${ASSETS_JSON_FILE}" "${ASSETS_JSON_URL}"
+
+readonly URL_LIST_FILE="${TMP_DIR}/url_list"
+jq -r ".[].contentURL" "${ASSETS_JSON_FILE}" > "${URL_LIST_FILE}"
+
+# Let's add some custom filters
+printf "https://raw.githubusercontent.com/yourduskquibbles/webannoyances/master/ultralist.txt
+https://git.sr.ht/~krathalan/firefox-complement/blob/master/uBlock_Filters/krathalans-annoyances.txt
+https://fanboy.co.nz/fanboy-antifonts.txt
+https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt
+https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt
+https://raw.githubusercontent.com/anudeepND/blacklist/master/facebook.txt
+https://raw.githubusercontent.com/lightswitch05/hosts/master/docs/lists/facebook-extended.txt
+https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-malware.txt
+https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-blocklist.txt
+https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+https://v.firebog.net/hosts/static/w3kbl.txt" >> "${URL_LIST_FILE}"
+
+while read -r line; do
+  distilled_url="${line}"
+  if [[ "${line}" != *"["* ]] && [[ "${line}" != *"]"* ]]; then
+    if [[ "${line}" == *"\""* ]]; then
+      distilled_url="$(tr -d '\040\011\012\015,' <<< "${line}")"
+      distilled_url="${distilled_url//\"/}"
+    fi
+
+    if [[ "${line}" != *"http"* ]]; then
+      continue
+    fi
+
+    download_file "${distilled_url}" &
+  fi
+done < "${URL_LIST_FILE}"
+
+wait
+
+# Build input file list for ruleset_converter
+# It expects each file name to be separated by a comma
+input_file_list=""
+for file in "${TMP_DIR}"/*.txt; do
+  input_file_list+="${file},"
+done
+
+# Remove trailing comma :)
+input_file_list="${input_file_list%,}"
+
+current_dir="${PWD}"
+output_file="${current_dir}/filters.dat"
+cd "${TMP_DIR}" && { "${PATH_TO_RULESET_BIN}" --input_format=filter-list --output_format=unindexed-ruleset --input_files="${input_file_list}" --output_file="${output_file}" &> /dev/null; cd "${current_dir}" &> /dev/null; }
+
+printf "\n%sOutput %s.%s\n" "${GREEN}" "${output_file}" "${NC}"
