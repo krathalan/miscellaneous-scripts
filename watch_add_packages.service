@@ -1,0 +1,29 @@
+[Unit]
+Description=Watches /home/admin/package-dropbox for packages to add to /var/www/builds/x86_64
+Documentation=less /usr/bin/watch_add_packages
+
+[Service]
+ExecStart=/usr/bin/watch_add_packages
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+PrivateNetwork=yes
+IPAddressDeny=any
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectHostname=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=default.target
