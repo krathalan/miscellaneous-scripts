@@ -54,6 +54,9 @@ readonly REPO_ROOT="/var/www/builds/x86_64"
 
 add_packages()
 {
+  # Wait for the package to get here (rsync)...
+  sleep 20
+
   (
   cd "${REPO_ROOT}" || exit_script_on_failure "Failure to \`cd\` into ${REPO_ROOT}"
 
