@@ -62,7 +62,7 @@ add_packages()
 
   while [[ "${check_passed}" == "false" ]]; do
     for file in "${check_files[@]}"; do
-      if [[ "${file}" == ".pkg.tar.zst" ]] || [[ "${file}" == ".pkg.tar.zst.sig" ]]; then
+      if [[ "${file}" == *".pkg.tar.zst" ]] || [[ "${file}" == *".pkg.tar.zst.sig" ]]; then
         check_passed="true"
       else
         check_passed="false"
@@ -74,10 +74,6 @@ add_packages()
     local check_files=("${DROPBOX_PATH}"/*)
     sleep 7
   done
-
-  # Check for empty files using arrays
-  local -r chk_files=("${DROPBOX_PATH}"/*)
-  [[ "${#chk_files[@]}" -eq 0 ]] && return
 
   (
   cd "${REPO_ROOT}" || exit_script_on_failure "Failure to \`cd\` into ${REPO_ROOT}"
