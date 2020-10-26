@@ -1,6 +1,5 @@
 [Unit]
 Description=Watches /home/admin/package-dropbox for packages to add to /var/www/builds/x86_64
-Documentation=less /usr/bin/watch_add_packages
 
 [Service]
 ExecStart=/usr/bin/watch_add_packages
