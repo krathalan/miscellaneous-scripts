@@ -55,7 +55,24 @@ readonly REPO_ROOT="/var/www/builds/x86_64"
 add_packages()
 {
   # Wait for the package to get here (rsync)...
-  sleep 20
+  # We have to check to make sure that all files in the directory
+  # end in .pkg.tar.zst or .pkg.tar.zst.sig
+  local check_files=("${DROPBOX_PATH}"/*)
+  local check_passed="false"
+
+  while [[ "${check_passed}" == "false" ]]; do
+    check_passed="true"
+
+    for file in "${check_files[@]}"; do
+      if [[ "${file}" != *".pkg.tar.zst" ]] || [[ "${file}" != *".pkg.tar.zst.sig" ]]; then
+        check_passed="false"
+      fi
+    done
+
+    # Refresh data and take a lil nap :)
+    local check_files=("${DROPBOX_PATH}"/*)
+    sleep 7
+  done
 
   # Check for empty files using arrays
   local -r chk_files=("${DROPBOX_PATH}"/*)
