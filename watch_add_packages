@@ -64,7 +64,7 @@ add_packages()
     check_passed="true"
 
     for file in "${check_files[@]}"; do
-      if [[ "${file}" != *".pkg.tar.zst" ]] || [[ "${file}" != *".pkg.tar.zst.sig" ]]; then
+      if [[ "${file}" == ".*" ]]; then
         check_passed="false"
       fi
     done
