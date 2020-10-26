@@ -61,11 +61,12 @@ add_packages()
   local check_passed="false"
 
   while [[ "${check_passed}" == "false" ]]; do
-    check_passed="true"
-
     for file in "${check_files[@]}"; do
-      if [[ "${file}" == ".*" ]]; then
+      if [[ "${file}" == ".pkg.tar.zst" ]] || [[ "${file}" == ".pkg.tar.zst.sig" ]]; then
+        check_passed="true"
+      else
         check_passed="false"
+        break
       fi
     done
 
