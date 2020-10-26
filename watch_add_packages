@@ -57,6 +57,10 @@ add_packages()
   # Wait for the package to get here (rsync)...
   sleep 20
 
+  # Check for empty files using arrays
+  local -r chk_files=("${DROPBOX_PATH}"/*)
+  [[ "${#chk_files[@]}" -eq 0 ]] && return
+
   (
   cd "${REPO_ROOT}" || exit_script_on_failure "Failure to \`cd\` into ${REPO_ROOT}"
 
