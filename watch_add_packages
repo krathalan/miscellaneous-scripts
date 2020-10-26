@@ -63,7 +63,7 @@ add_packages()
   for package in "${DROPBOX_PATH}"/*.pkg.tar.zst; do
     mv "${package}" "${package}.sig" .
     chown root:root "${package##${DROPBOX_PATH}/}" "${package##${DROPBOX_PATH}/}.sig"
-    repo-add -n krathalan.db.tar "${package##${DROPBOX_PATH}/}"
+    repo-add -R -n krathalan.db.tar "${package##${DROPBOX_PATH}/}"
   done
   )
 }
