@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Description:
+# Description: Watches a specified directory for new packages and
+#              moves them to a specified pacman repo.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
@@ -29,7 +30,7 @@
 # This script uses shellcheck: https://www.shellcheck.net/
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -Eeuxo pipefail
+set -Eeuo pipefail
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -38,15 +39,6 @@ set -Eeuxo pipefail
 # Colors
 readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
-
-# Other
-readonly SCRIPT_NAME="${0##*/}"
-readonly DROPBOX_PATH="/home/admin/package-dropbox"
-readonly REPO_ROOT="/var/www/builds/x86_64"
-
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
 
 # -----------------------------------------
 # --------------- Functions ---------------
@@ -61,19 +53,25 @@ add_packages()
   local check_passed="false"
 
   while [[ "${check_passed}" == "false" ]]; do
+    print_info "Scanning ${DROPBOX_PATH} for complete packages..."
+
     for file in "${check_files[@]}"; do
       if [[ "${file}" == *".pkg.tar.zst" ]] || [[ "${file}" == *".pkg.tar.zst.sig" ]]; then
         check_passed="true"
       else
         check_passed="false"
+        print_info "Package files still loading. Napping..."
         break
       fi
     done
 
-    # Refresh data and take a lil nap :)
-    local check_files=("${DROPBOX_PATH}"/*)
+    # Take a lil nap :)
     sleep 7
+    # Refresh data
+    local check_files=("${DROPBOX_PATH}"/*)
   done
+
+  print_info "Loading finished. Adding packages to repo ${REPO_ROOT}..."
 
   (
   cd "${REPO_ROOT}" || exit_script_on_failure "Failure to \`cd\` into ${REPO_ROOT}"
@@ -84,6 +82,8 @@ add_packages()
     repo-add -R -n krathalan.db.tar "${package##${DROPBOX_PATH}/}"
   done
   )
+
+  print_info "Done adding packages."
 }
 
 #######################################
@@ -104,10 +104,31 @@ exit_script_on_failure()
   exit 1
 }
 
+#######################################
+# Prints an info message.
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+print_info()
+{
+  printf "Info: %s\n" "$1"
+}
+
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
 
-while inotifywait -re modify "${DROPBOX_PATH}"; do
+[[ -z "${REPO_ROOT:-}" ]] &&
+  exit_script_on_failure "Please specify an environment variable \$REPO_ROOT defining the target repository directory (e.g. /var/www/builds/x86_64)."
+
+[[ -z "${DROPBOX_PATH:-}" ]] &&
+  exit_script_on_failure "Please specify an environment variable \$DROPBOX_PATH defining the directory to watch for new packages (e.g. /home/drop/packages)."
+
+while inotifywait -e modify "${DROPBOX_PATH}"; do
   add_packages
 done
