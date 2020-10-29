@@ -124,10 +124,12 @@ print_info()
 # -----------------------------------------
 
 [[ -z "${REPO_ROOT:-}" ]] &&
-  exit_script_on_failure "Please specify an environment variable \$REPO_ROOT defining the target repository directory (e.g. /var/www/builds/x86_64)."
+  exit_script_on_failure "Please set an environment variable \$REPO_ROOT defining the target repository directory (e.g. /var/www/builds/x86_64)."
 
 [[ -z "${DROPBOX_PATH:-}" ]] &&
-  exit_script_on_failure "Please specify an environment variable \$DROPBOX_PATH defining the directory to watch for new packages (e.g. /home/drop/packages)."
+  exit_script_on_failure "Please set an environment variable \$DROPBOX_PATH defining the directory to watch for new packages (e.g. /home/drop/packages)."
+
+print_info "Watching ${DROPBOX_PATH} for packages to add to ${REPO_ROOT}..."
 
 while inotifywait -e modify "${DROPBOX_PATH}"; do
   add_packages

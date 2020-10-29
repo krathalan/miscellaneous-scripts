@@ -3,7 +3,7 @@ This repository is a collection of scripts I wrote and use/update regularly. The
 
 Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
 
-Seven POSIX-compliant sh scripts, six Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
+Seven POSIX-compliant sh scripts, seven Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
 
 ## `audio_to_opus` (bash)
 Simply specify an audio type (e.g. "mp3", "flac") and this script will convert all audio files in that directory to the opus format.
@@ -141,3 +141,24 @@ This script will run `git pull --prune` inside every Git repository in the curre
 
 ## `update_wow_addons` (bash)
 I no longer recommend using this script. Instead I recommend using Cursebreaker: https://github.com/AcidWeb/CurseBreaker
+
+## `watch_add_packages` (bash)
+Watches a specified directory (`$DROPBOX_PATH` in your env) for new packages and moves them to a specified pacman repo (`$REPO_ROOT` in your env).
+
+Comes with `watch_add_packages.service`. To add your own enviroment variables to a server environment, first create the override directory:
+
+> `$ sudo mkdir /etc/systemd/system/watch_add_packages.service.d`
+
+Then save an override file (for example `/etc/systemd/system/watch_add_packages.service.d/env-vars.conf`) with the following contents (**change the actual paths to match your own setup**):
+
+```
+[Service]
+Environment="DROPBOX_PATH=/home/admin/package-dropbox"
+Environment="REPO_ROOT=/var/www/builds/x86_64"
+```
+
+Finally, reload systemd and restart the service:
+
+> `$ sudo systemctl daemon-reload && sudo systemctl restart watch_add_packages.service`
+
+Now whenever you `rsync` files to the `$DROPBOX_PATH` on the remote, `watch_add_packages` will pick them up and move them to your `$REPO_ROOT`, `chown root:root` them, and add them to the pacman repo package database.
