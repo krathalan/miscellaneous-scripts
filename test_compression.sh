@@ -36,30 +36,32 @@ set -Eeuo pipefail
 # -----------------------------------------
 
 # Colors
+readonly GREEN=$(tput setaf 2)
 readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
-readonly RESULTS_FILE="${PWD}/results.json"
-readonly SCRIPT_NAME="${0##*/}"
 readonly SCRIPT_START_TIME="$(date +%s)"
+readonly RESULTS_FILE="${PWD}/results-${SCRIPT_START_TIME}.txt"
+readonly SCRIPT_NAME="${0##*/}"
+readonly SCRIPT_URL="https://git.sr.ht/~krathalan/miscellaneous-scripts"
 
 # ---------> Edit this! <---------
 readonly COMPRESSION_CONFIGS_TO_TEST=(
+  "lzop -1" "lzop -3"
+  "xz -3" "xz -6" "xz -9"
   "lz4 -1" "lz4 -3" "lz4 -5"
-  "pzstd -3" "pzstd -6" "pzstd -9"
-  "xz -2" "xz -4" "xz -6"
+  "pigz -3" "pigz -6" "pigz -9"
+  "brotli -1" "brotli -3" "brotli -5" "brotli -7"
+  "pzstd -10" "pzstd -12" "pzstd -15" "pzstd -17" "pzstd -19"
 )
-
-# Used when displaying calculations at the end.
-# Adjust this lower to value time (e.g. a value of 2), or higher to value
-# compression (e.g. a value of 20).
-readonly WR_EXPONENT=10
 
 # Also used for displaying calculations.
 readonly TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}.XXXXXXXX")"
-readonly TMP_FILE="${TMP_DIR}/out.txt"
-touch "${TMP_FILE}"
+readonly TMP_FILE_FFS="${TMP_DIR}/finalfilesize.txt"
+readonly TMP_FILE_SPPC="${TMP_DIR}/secondsperpointofcompression.txt"
+readonly TMP_FILE_DECOMP="${TMP_DIR}/decompression.txt"
+touch "${TMP_FILE_FFS}" "${TMP_FILE_SPPC}" "${TMP_FILE_DECOMP}"
 trap 'rm -rf "${TMP_DIR}"' EXIT SIGINT
 
 # -----------------------------------------
@@ -84,43 +86,147 @@ exit_script_on_failure()
   exit 1
 }
 
+round_to_two_decimals()
+{
+  printf "%.2f" "$1"
+}
+
+round_to_three_decimals()
+{
+  printf "%.3f" "$1"
+}
+
+# $1: file
+# $2: message
+rank_results()
+{
+  local -r file="$1"
+  local -r message="$2"
+
+  sort --output="${file}" --numeric-sort "${file}"
+  mapfile -t fileContents < "${file}"
+
+  printf "\nResults, ranked by %s (lower is better):\n" "${message}" | tee -a "${RESULTS_FILE}"
+
+  local counter=0
+  for line in "${fileContents[@]}"; do
+    counter=$(( counter + 1 ))
+    printf "%s. %s\n" "${counter}" "${line}" | tee -a "${RESULTS_FILE}"
+  done
+}
+
 test_compression()
 {
-  local compression_program="$1"
-  if [[ "${compression_program}" == "xz"* ]]; then 
-    compression_program="${compression_program} -k --threads=0"
-  fi
-  
+  local compressionProgram="$1"
+
   # Get 'base' command; e.g. 'xz -1 -k --threads=0' becomes just 'xz'
-  local file_ext="${compression_program%% *}"
-  if [[ "${file_ext}" == *"zstd" ]]; then
-    file_ext="zst"
-  fi
+  local fileExt="${compressionProgram%% *}"
 
-  printf "Running: %s\n" "${compression_program} ${TAR_FILE}"
+  # Correct some fileExt;
+  # keep the original file when using xz, pigz, and gzip;
+  # and turn on multithreading for xz
+  case "${fileExt}" in
+    brotli)
+      fileExt="br"
+      ;;
+    gzip|pigz)
+      fileExt="gz"
+      compressionProgram="${compressionProgram} -k"
+      ;;
+    lzop)
+      fileExt="lzo"
+      ;;
+    xz*)
+      compressionProgram="${compressionProgram} -k --threads=0"
+      ;;
+    *zstd)
+      fileExt="zst"
+      ;;
+    *)
+      ;;
+  esac
 
-  # Leftovers from previous compressions....
-  [[ -f "${TAR_FILE}.${file_ext}" ]] &&
-    rm -f "${TAR_FILE}.${file_ext}"
+  printf "Executing: %s\n" "${compressionProgram} ${TAR_FILE}"
 
-  local -r start_time="$(date +%s)"
-  ${compression_program} "${TAR_FILE}"
-  local -r end_time="$(date +%s)"
-  local -r time="$(( end_time - start_time ))"
-  local -r ratio="$(echo "$(du -sc "${TAR_FILE}.${file_ext}" | tail -n1 | awk '{printf $1}') / $(du -sc "${TAR_FILE}" | tail -n1 | awk '{printf $1}')" | bc -l)"
+  # Leftovers?
+  [[ -f "${TAR_FILE}.${fileExt}" ]] &&
+    rm -f "${TAR_FILE}.${fileExt}"
 
-  # Calculate weighted rating
-  local -r weighted_rating="$(echo "1/(${time}*(${ratio}^${WR_EXPONENT}))" | bc -l)"
+  # Execute and measure execution time in milliseconds
+  local startTime
+  startTime="$(date +%s%N | cut -b1-13)"
 
-  # Lets write some json.... -:|
-  local -r tmpJson="$(jq ".results[.results | length] |= . + {\"program\":\"${compression_program}\",\"time\":\"${time}\",\"ratio\":\"${ratio}\",\"weighted_rating\":\"${weighted_rating}\"}" "${RESULTS_FILE}")"
-  printf "%s" "${tmpJson}" > "${RESULTS_FILE}"
+  ${compressionProgram} "${TAR_FILE}"
 
-  printf "%.2f \`%s\` (CR: %.2f; T: %ss)\n" "${weighted_rating}" "${compression_program}" "${ratio}" "${time}" >> "${TMP_FILE}"
+  local endTime
+  endTime="$(date +%s%N | cut -b1-13)"
+  local time="$(( endTime - startTime ))"
 
-  printf "\n%s compression ratio: %.2f\nTime to compress: %s seconds\n\n" "$1" "${ratio}" "${time}"
+  # Change time to seconds (two decimal places) for nice printing
+  time="$(echo "${time}/1000" | bc -l)"
+  time="$(round_to_two_decimals "${time}")"
 
-  rm -rf "${TAR_FILE}.${file_ext}"
+  # Get final file size in bytes
+  local -r finalFileSize="$(du -scb "${TAR_FILE}.${fileExt}" | head -n1 | awk '{printf $1}')"
+
+  # Calculate compression ratio as a percentage value for nice printing
+  local ratio
+  ratio="$(echo "(${finalFileSize} / ${ORIGINAL_FILE_SIZE}) * 100" | bc -l)"
+  ratio="$(round_to_two_decimals "${ratio}")"
+
+  # Get final file size in MB for nice printing
+  local finalFileSizeInMB
+  finalFileSizeInMB="$(echo "${finalFileSize} / 1000000" | bc -l)"
+  finalFileSizeInMB="$(round_to_two_decimals "${finalFileSizeInMB}")"
+
+  # Calculate seconds spent per point of compression
+  # First, calculate how much of the file was "removed" in percentage
+  percentageRemoved="$(echo "100 - ${ratio}" | bc -l)"
+  # Then divide time by the percentage removed
+  secondsPerPointOfCompression="$(echo "${time} / ${percentageRemoved}" | bc -l)"
+  secondsPerPointOfCompression="$(round_to_three_decimals "${secondsPerPointOfCompression}") s/pc"
+
+  # Label units :)
+  time="${time}s"
+
+  # Print result to terminal during testing
+  printf "\nFinal file size: %s MB\nCompression ratio: %s\nTime to compress: %s\nSeconds per point of compression: %s\n" "${finalFileSizeInMB}" "${ratio}%" "${time}" "${secondsPerPointOfCompression}"
+
+  # Print result to $TMP_FILEs for final summary
+  # Sorted by final file size
+  printf "%s MB \`%s\` (CR: %s; T: %s; SPPC: %s)\n" "${finalFileSizeInMB}" "${compressionProgram}" "${ratio}%" "${time}" "${secondsPerPointOfCompression}" >> "${TMP_FILE_FFS}"
+  # Sorted by seconds per point of compression
+  printf "%s \`%s\` (CR: %s; T: %s; FFS: %s MB)\n" "${secondsPerPointOfCompression}" "${compressionProgram}" "${ratio}%" "${time}" "${finalFileSizeInMB}" >> "${TMP_FILE_SPPC}"
+
+  # Measure decompression
+  printf "\nExecuting: %s\n" "${compressionProgram// *} -d ${TAR_FILE}.${fileExt}"
+
+  # Delete original file, some programs will "fail" if there is already
+  # a .tar present
+  rm -rf "${TAR_FILE}"
+
+  # Execute and measure execution time in milliseconds
+  startTime="$(date +%s%N | cut -b1-13)"
+
+  ${compressionProgram// *} -d "${TAR_FILE}.${fileExt}"
+
+  endTime="$(date +%s%N | cut -b1-13)"
+  time="$(( endTime - startTime ))"
+
+  # Change time to seconds (two decimal places) for nice printing
+  time="$(echo "${time}/1000" | bc -l)"
+  time="$(round_to_two_decimals "${time}")"
+  # Label units :)
+  time="${time}s"
+
+  # Print result to terminal during testing
+  printf "\nDecompression time: %s\n" "${time}"
+
+  # Print result to $TMP_FILEs for final summary
+  printf "%s \`%s\`\n" "${time}" "${compressionProgram}" >> "${TMP_FILE_DECOMP}"
+
+  # Delete output file
+  rm -rf "${TAR_FILE}.${fileExt}"
 }
 
 # -----------------------------------------
@@ -134,47 +240,73 @@ fi
 [[ $# -eq 0 ]] &&
   exit_script_on_failure "Please specify a folder to benchmark compression of."
 
-[[ -f "${RESULTS_FILE}" ]] &&
-  exit_script_on_failure "${RESULTS_FILE##*/} file already found. Please rename it or delete it."
-
-# Create skeleton RESULTS_FILE
-printf "{\"results\":[]}" > "${RESULTS_FILE}"
-
-if [[ "$1" == *".tar" ]]; then
-  readonly TAR_FILE="$1"
-else
-  readonly FOLDER="$1"
-  readonly TAR_FILE="$(basename "$1").tar"
-  printf "Tarring...\n"
+if [[ -d "$1" ]]; then
+  # Get base path of folder; e.g. /home/user/folder/xxx/ becomes xxx
+  FOLDER="${1%/}"
+  readonly TAR_FILE="${FOLDER##*/}.tar"
+  printf "Tarring directory %s...\n" "${FOLDER}"
   tar -cf "${TAR_FILE}" "${FOLDER}"
+else
+  readonly TAR_FILE="$1"
 fi
 
-for config in "${COMPRESSION_CONFIGS_TO_TEST[@]}"; do
-  test_compression "${config}"
+# Get original file size so we don't have to keep recalculating it
+readonly ORIGINAL_FILE_SIZE="$(du -scb "${TAR_FILE}" | tail -n1 | awk '{printf $1}')"
+
+# Test all configs
+counter=0
+while [[ "${counter}" -lt "${#COMPRESSION_CONFIGS_TO_TEST[@]}" ]]; do
+  printf "\n%sRunning test %s/%s%s\n" "${GREEN}" "$(( counter + 1 ))" "${#COMPRESSION_CONFIGS_TO_TEST[@]}" "${NC}"
+  test_compression "${COMPRESSION_CONFIGS_TO_TEST[counter]}"
+
+  counter="$(( counter + 1 ))"
 done
 
+# Done testing :)
+# Get original file size in MB for nice printing
+originalFileSizeInMB="$(echo "${ORIGINAL_FILE_SIZE} / 1000000" | bc -l)"
+originalFileSizeInMB="$(round_to_two_decimals "${originalFileSizeInMB}")"
+
+# Print test info to $RESULTS_FILE
+printf "Compression testing for %s\nOriginal file size: %s MB\nDate: %s\nCompleted by %s\n%s\n" "${TAR_FILE}" "${originalFileSizeInMB}" "$(date "+%b %d %Y %I:%M%P")" "${SCRIPT_NAME}" "${SCRIPT_URL}" > "${RESULTS_FILE}"
+
+# Print final summary
 readonly SCRIPT_END_TIME="$(date +%s)"
+readonly SCRIPT_TOTAL_TIME="$(( SCRIPT_END_TIME - SCRIPT_START_TIME ))"
 
-if [[ "${#COMPRESSION_CONFIGS_TO_TEST[@]}" -gt 1 ]]; then
-  readonly SCRIPT_TOTAL_TIME="$(( SCRIPT_END_TIME - SCRIPT_START_TIME ))"
-  printf "\n\n----------------------------------------\nTotal time to complete all tests: %s seconds\n\n" "${SCRIPT_TOTAL_TIME}"
-  printf "%s" "\
-How to interpret results:
-Lower compression ratios (CR) and lower (faster) times (T) are better.
-Weighted rating (WR) favors compression program/levels that are on the faster
-side but still maintain a good compression ratio. You should not compare WR or
-compression ratios across files; they should only be compared to each other
-when they are calculated from compressing the same original file.
-"
+printf "\n-------------------------------------------"
+printf "\nTotal time to complete all tests: %s seconds\n" "${SCRIPT_TOTAL_TIME}" | tee -a "${RESULTS_FILE}"
 
-  # Rank results by their WR
-  sort -o "${TMP_FILE}" -n -r "${TMP_FILE}"
-  mapfile -t toPrint < "${TMP_FILE}"
-  counter=0
+rank_results "${TMP_FILE_FFS}" "final file size"
+rank_results "${TMP_FILE_SPPC}" "seconds per point of compression"
+rank_results "${TMP_FILE_DECOMP}" "decompression time"
 
-  printf "\nResults, ranked by WR:\n"
-  for line in "${toPrint[@]}"; do
-    counter=$(( counter + 1 ))
-    printf "%s. %s\n" "${counter}" "${line}"
+# Find best
+best=""
+bestRank="$(( $(wc -l "${TMP_FILE_FFS}" | cut -d' ' -f1) * 2 ))"
+currentRank=0
+
+for config in "${COMPRESSION_CONFIGS_TO_TEST[@]}"; do
+  # Grep each compression config from the $RESULTS_FILE into an array
+  mapfile -t lineArray <<< "$(grep "${config}" "${RESULTS_FILE}")"
+
+  # Just get the rank of the compression config from each file
+  for line in "${lineArray[@]}"; do
+    # e.g. "12. 128.14 MB `pigz -6 -k` (CR: 26.18%; T: 3.01s; SPPC: 0.041 s/pc)"
+    # becomes "12"
+    tmpVal="${line%%.*}"
+
+    # then add it to the currentRank
+    currentRank=$(( currentRank + tmpVal ))
   done
-fi
+
+  if [[ "${currentRank}" -lt "${bestRank}" ]]; then
+    bestRank="${currentRank}"
+    best="${config}"
+  fi
+
+  # Reset rank
+  currentRank=0
+done
+
+printf "\nBest config for this data: %s\n" "${best}" | tee -a "${RESULTS_FILE}"
