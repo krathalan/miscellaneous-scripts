@@ -50,9 +50,9 @@ readonly SCRIPT_URL="https://git.sr.ht/~krathalan/miscellaneous-scripts"
 readonly COMPRESSION_CONFIGS_TO_TEST=(
   "lzop -1" "lzop -3"
   "xz -3" "xz -6" "xz -9"
-  "lz4 -1" "lz4 -3" "lz4 -5"
   "pigz -3" "pigz -6" "pigz -9"
-  "brotli -1" "brotli -3" "brotli -5" "brotli -7"
+  "lz4 -1" "lz4 -3" "lz4 -5" "lz4 -9"
+  "brotli -1" "brotli -3" "brotli -5" "brotli -7" "brotli -9"
   "pzstd -10" "pzstd -12" "pzstd -15" "pzstd -17" "pzstd -19"
 )
 
@@ -84,6 +84,36 @@ exit_script_on_failure()
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
 
   exit 1
+}
+
+find_best()
+{
+  local best=""
+  local bestRank="$(( $(wc -l "${TMP_FILE_FFS}" | cut -d' ' -f1) * 2 ))"
+  local currentRank=0
+  local lineArray=()
+
+  for config in "${COMPRESSION_CONFIGS_TO_TEST[@]}"; do
+    # Grep each compression config from the $RESULTS_FILE into an array
+    mapfile -t lineArray <<< "$(grep "${config}" "${RESULTS_FILE}")"
+
+    # Just get the rank of the compression config from each file
+    for line in "${lineArray[@]}"; do
+      # e.g. "12. 128.14 MB `pigz -6 -k` (CR: 26.18%; T: 3.01s; SPPC: 0.041 s/pc)"
+      # becomes "12". then add it to the currentRank
+      currentRank=$(( currentRank + ${line%%.*} ))
+    done
+
+    if [[ "${currentRank}" -lt "${bestRank}" ]]; then
+      bestRank="${currentRank}"
+      best="${config}"
+    fi
+
+    # Reset rank
+    currentRank=0
+  done
+
+  printf "%s" "${best}"
 }
 
 round_to_two_decimals()
@@ -279,34 +309,13 @@ printf "\nTotal time to complete all tests: %s seconds\n" "${SCRIPT_TOTAL_TIME}"
 
 rank_results "${TMP_FILE_FFS}" "final file size"
 rank_results "${TMP_FILE_SPPC}" "seconds per point of compression"
+
+bestCompression="$(find_best)"
+
 rank_results "${TMP_FILE_DECOMP}" "decompression time"
 
-# Find best
-best=""
-bestRank="$(( $(wc -l "${TMP_FILE_FFS}" | cut -d' ' -f1) * 2 ))"
-currentRank=0
+bestCompressionAndDecompression="$(find_best)"
 
-for config in "${COMPRESSION_CONFIGS_TO_TEST[@]}"; do
-  # Grep each compression config from the $RESULTS_FILE into an array
-  mapfile -t lineArray <<< "$(grep "${config}" "${RESULTS_FILE}")"
+printf "\nBest config for frequent compression and infrequent decompression: %s\n" "${bestCompression}" | tee -a "${RESULTS_FILE}"
 
-  # Just get the rank of the compression config from each file
-  for line in "${lineArray[@]}"; do
-    # e.g. "12. 128.14 MB `pigz -6 -k` (CR: 26.18%; T: 3.01s; SPPC: 0.041 s/pc)"
-    # becomes "12"
-    tmpVal="${line%%.*}"
-
-    # then add it to the currentRank
-    currentRank=$(( currentRank + tmpVal ))
-  done
-
-  if [[ "${currentRank}" -lt "${bestRank}" ]]; then
-    bestRank="${currentRank}"
-    best="${config}"
-  fi
-
-  # Reset rank
-  currentRank=0
-done
-
-printf "\nBest config for this data: %s\n" "${best}" | tee -a "${RESULTS_FILE}"
+printf "\nBest config for frequent compression and frequent decompression: %s\n" "${bestCompressionAndDecompression}" | tee -a "${RESULTS_FILE}"
