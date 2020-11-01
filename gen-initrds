@@ -67,33 +67,38 @@ readonly SCRIPT_NAME="${0##*/}"
 #######################################
 extension()
 {
+  local toPrint=""
+
   case "$1" in
     *arch*)
-      printf ""
+      # Do nothing
       ;;
     *clear*)
-      printf -- "-clear"
+      toPrint+="-clear"
       ;;
     *hardened*)
-      printf -- "-hardened"
+      toPrint+="-hardened"
       ;;
     *lts*)
-      printf -- "-lts"
+      toPrint+="-lts"
       ;;
     *mainline*)
-      printf -- "-mainline"
+      toPrint+="-mainline"
       ;;
     *next*)
-      printf -- "-next"
+      toPrint+="-next"
       ;;
     *zen*)
-      printf -- "-zen"
+      toPrint+="-zen"
       ;;
   esac
 
+  # If hostname contains "games", append "-gaming" to file extension
   if [[ "${HOSTNAME}" == *"games"* ]]; then
-    printf -- "-gaming"
+    toPrint+="-gaming"
   fi
+
+  printf -- "%s" "${toPrint}"
 }
 
 #######################################
@@ -209,8 +214,13 @@ while read -r line; do
   # I use these for building various linux-next-${section}-git packages
   sectionsToRemove=("generic" "krathalan" "ryzen2" "skylake")
   for section in "${sectionsToRemove[@]}"; do
-    pkgbase="${pkgbase//${section}-}"
+    pkgbase="${pkgbase//-${section}}"
   done
+
+  # If hostname contains "games", append "-gaming" to /boot/vmlinuz-$pkgbase filename
+  if [[ "${HOSTNAME}" == *"games"* ]]; then
+    pkgbase+="-gaming"
+  fi
 
   print_message "copying ${CYAN}${pkgbase}${GREEN} (${pretty_kernel_version}) kernel to ${BOOTDIR}"
   install -Dm644 "${line}" "${BOOTDIR}/vmlinuz-${pkgbase}"
