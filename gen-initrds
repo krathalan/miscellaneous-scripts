@@ -91,7 +91,7 @@ extension()
       ;;
   esac
 
-  [[ "${HOSTNAME}" == "games" ]] &&
+  [[ "${HOSTNAME}" == *"games"* ]] &&
     printf -- "-gaming"
 }
 
