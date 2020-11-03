@@ -143,7 +143,7 @@ This script will run `git pull --prune` inside every Git repository in the curre
 I no longer recommend using this script. Instead I recommend using Cursebreaker: https://github.com/AcidWeb/CurseBreaker
 
 ## `watch_add_packages` (bash)
-Watches a specified directory (`$DROPBOX_PATH` in your env) for new packages and moves them to a specified pacman repo (`$REPO_ROOT` in your env).
+Watches a specified directory (`$DROPBOX_PATH` in your env) for new packages and moves them to a specified pacman repo (`$REPO_ROOT` in your env). Adds them to a specified pacman repo database file (`$REPO_DB_FILE` in your env).
 
 Comes with `watch_add_packages.service`. To add your own enviroment variables to a server environment, first create the override directory:
 
@@ -153,12 +153,13 @@ Then save an override file (for example `/etc/systemd/system/watch_add_packages.
 
 ```
 [Service]
-Environment="DROPBOX_PATH=/home/admin/package-dropbox"
 Environment="REPO_ROOT=/var/www/builds/x86_64"
+Environment="REPO_DB_FILE=krathalan.db.tar"
+Environment="DROPBOX_PATH=/home/admin/package-dropbox"
 ```
 
 Finally, reload systemd and restart the service:
 
 > `$ sudo systemctl daemon-reload && sudo systemctl restart watch_add_packages.service`
 
-Now whenever you `rsync` files to the `$DROPBOX_PATH` on the remote, `watch_add_packages` will pick them up and move them to your `$REPO_ROOT`, `chown root:root` them, and add them to the pacman repo package database.
+Now whenever you `rsync` packages to the `$DROPBOX_PATH` on the remote, `watch_add_packages` will pick them up and move them to `$REPO_ROOT`, `chown root:root` them, and add them to the `$REPO_DB_FILE`.

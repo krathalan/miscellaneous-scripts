@@ -5,7 +5,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 krathalan
+# Copyright (C) 2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ add_packages()
   for package in "${DROPBOX_PATH}"/*.pkg.tar.zst; do
     mv "${package}" "${package}.sig" .
     chown root:root "${package##${DROPBOX_PATH}/}" "${package##${DROPBOX_PATH}/}.sig"
-    repo-add -R -n krathalan.db.tar "${package##${DROPBOX_PATH}/}"
+    repo-add -R -n "${REPO_DB_FILE}" "${package##${DROPBOX_PATH}/}"
   done
   )
 
@@ -123,10 +123,13 @@ print_info()
 # -----------------------------------------
 
 [[ -z "${REPO_ROOT:-}" ]] &&
-  exit_script_on_failure "Please set an environment variable \$REPO_ROOT defining the target repository directory (e.g. /var/www/builds/x86_64)."
+  exit_script_on_failure "Please set an environment variable \$REPO_ROOT defining the target repository directory (e.g. \"/var/www/builds/x86_64\")."
+
+[[ -z "${REPO_DB_FILE:-}" ]] &&
+  exit_script_on_failure "Please set an environment variable \$REPO_DB_FILE defining the directory to watch for new packages (e.g. \"myserver.db.tar\")."
 
 [[ -z "${DROPBOX_PATH:-}" ]] &&
-  exit_script_on_failure "Please set an environment variable \$DROPBOX_PATH defining the directory to watch for new packages (e.g. /home/drop/packages)."
+  exit_script_on_failure "Please set an environment variable \$DROPBOX_PATH defining the directory to watch for new packages (e.g. \"/home/drop/packages\")."
 
 print_info "Watching ${DROPBOX_PATH} for packages to add to ${REPO_ROOT}..."
 
