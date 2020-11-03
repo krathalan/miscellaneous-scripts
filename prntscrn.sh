@@ -4,7 +4,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019-2020 krathalan
+# Copyright (C) 2019-2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -57,10 +57,6 @@ fi
 readonly OUTPUT_FILE="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
 
 # -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
-
-# -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
 
@@ -95,10 +91,8 @@ check_command()
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   notify-send -i "script-error" "${SCRIPT_NAME}" "Error: $1"
-
+  
   exit 1
 }
 
@@ -106,14 +100,12 @@ exit_script_on_failure()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [ "$(whoami)" = "root" ]; then
+[ "$(whoami)" = "root" ] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
 # Make screenshots directory if it does not exist yet
-if [ ! -d "${SCREENSHOTS_DIR}" ]; then
+[ ! -d "${SCREENSHOTS_DIR}" ] &&
   mkdir -p "${SCREENSHOTS_DIR}"
-fi
 
 notificationMessage="Saved screenshot to ${SCREENSHOTS_DIR}."
 

@@ -4,7 +4,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 krathalan
+# Copyright (C) 2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -84,8 +84,6 @@ clean_up()
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -139,9 +137,11 @@ resolve_character_info()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [[ "$(whoami)" = "root" ]]; then
+[[ "$(whoami)" = "root" ]] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
+
+[[ ! -f "${INPUT_FILE}" ]] &&
+  exit_script_on_failure "Please specify a file with a list of character names."
 
 rm -f "${OUTPUT_FILE}"
 touch "${DPS_FILE}" "${HEALER_FILE}" "${TANK_FILE}"
@@ -149,10 +149,7 @@ touch "${DPS_FILE}" "${HEALER_FILE}" "${TANK_FILE}"
 # Add header
 printf "======================================================\n|      Collector's Anonymous Mythic Plus Ratings     |\n|              Generated on %s             |\n| https://git.sr.ht/~krathalan/miscellaneous-scripts |\n======================================================\n\nIO Score -- Character, ilvl class\n=================================\n" "$(date "+%b %d, %Y")" > "${OUTPUT_FILE}"
 
-if [[ ! -f "${INPUT_FILE}" ]]; then
-  exit_script_on_failure "Please specify a file with a list of character names."
-fi
-
+# Get IO scores
 mapfile -t characters < "${INPUT_FILE}"
 
 for char in "${characters[@]}"; do

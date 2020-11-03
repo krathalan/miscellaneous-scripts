@@ -5,7 +5,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019-2020 krathalan
+# Copyright (C) 2019-2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,9 +42,6 @@ readonly RED=$(tput bold && tput setaf 1)
 readonly WHITE=$(tput bold)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
-# Other
-readonly SCRIPT_NAME="${0##*/}"
-
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
@@ -63,8 +60,6 @@ readonly SCRIPT_NAME="${0##*/}"
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -72,13 +67,11 @@ exit_script_on_failure()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [[ "$(whoami)" = "root" ]]; then
+[[ "$(whoami)" = "root" ]] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
-if [[ ! $# -gt 0 ]]; then
+[[ ! $# -gt 0 ]] &&
   exit_script_on_failure "You must specify a string to be removed from the filenames."
-fi
 
 printf "%s==>%s %sThis is what the files will be renamed to:%s\n" "${GREEN}" "${NC}" "${WHITE}" "${NC}"
 for file in *; do

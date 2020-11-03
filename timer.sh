@@ -4,7 +4,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 krathalan
+# Copyright (C) 2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -57,7 +57,6 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-
   exit 1
 }
 

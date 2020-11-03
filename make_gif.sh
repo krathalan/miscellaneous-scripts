@@ -4,7 +4,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019-2020 krathalan
+# Copyright (C) 2019-2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -82,8 +82,6 @@ downsize_image()
 exit_script_on_failure()
 {
   printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -91,9 +89,8 @@ exit_script_on_failure()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [ "$(whoami)" = "root" ]; then
+[ "$(whoami)" = "root" ] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
 printf "\nResizing images...\n"
 

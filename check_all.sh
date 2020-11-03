@@ -5,7 +5,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019-2020 krathalan
+# Copyright (C) 2019-2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,15 +42,8 @@ readonly GREEN=$(tput bold && tput setaf 2)
 readonly WHITE=$(tput sgr0 && tput bold)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
-# Other
-readonly SCRIPT_NAME="${0##*/}"
-
 # Step variables
 stepCounter=1
-
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
 
 # -----------------------------------------
 # --------------- Functions ---------------
@@ -70,8 +63,6 @@ stepCounter=1
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -93,9 +84,8 @@ print_step()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [ "$(whoami)" = "root" ]; then
+[ "$(whoami)" = "root" ] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
 printf "Checking scripts in working directory...\n\n"
 

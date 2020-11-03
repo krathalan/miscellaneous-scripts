@@ -100,7 +100,6 @@ add_packages()
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-
   exit 1
 }
 

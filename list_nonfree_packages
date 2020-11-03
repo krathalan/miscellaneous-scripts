@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 #
 # Description: Lists installed nonfree packages on Arch Linux systems.
+#              Uses the Parabola GNU/Linux-libre blacklist.
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019-2020 krathalan
+# Copyright (C) 2019-2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,12 +45,9 @@ readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
+readonly BLACKLIST_URL="https://git.parabola.nu/blacklist.git/plain/blacklist.txt"
 readonly SCRIPT_NAME="${0##*/}"
 readonly TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
-
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
 
 # -----------------------------------------
 # --------------- Functions ---------------
@@ -74,8 +72,6 @@ clean_up()
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -83,12 +79,11 @@ exit_script_on_failure()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [[ "$(whoami)" == "root" ]]; then
+[[ "$(whoami)" == "root" ]] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
 printf "Downloading blacklist...\n"
-curl --silent -o "${TMP_DIR}/blacklist.txt" "https://git.parabola.nu/blacklist.git/plain/blacklist.txt"
+curl --silent -o "${TMP_DIR}/blacklist.txt" "${BLACKLIST_URL}"
 printf "Done.\n\n"
 
 printf "Nonfree packages:\n"

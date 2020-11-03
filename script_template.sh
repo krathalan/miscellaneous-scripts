@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 #
-# Description:
+# Description: Simple Bash/sh script template for new scripts :)
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 krathalan
+# Copyright (C) 2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 
 # See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -eu # (Eo pipefail) is Bash only!
+# set -Eeuo pipefail
 
 # -----------------------------------------
 # ----------- Program variables -----------
@@ -64,8 +65,6 @@ readonly SCRIPT_NAME="${0##*/}"
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -73,6 +72,5 @@ exit_script_on_failure()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [ "$(whoami)" = "root" ]; then
+[ "$(whoami)" = "root" ] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi

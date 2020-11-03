@@ -4,7 +4,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019-2020 krathalan
+# Copyright (C) 2019-2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,9 +67,6 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 stepCounter=1
 stepWithColor="${PURPLE}${stepCounter}${NC}"
 
-# Other
-readonly SCRIPT_NAME="${0##*/}"
-
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
@@ -106,8 +103,6 @@ check_command()
 exit_script_on_failure()
 {
   printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -164,15 +159,16 @@ while test $# -gt 0; do
   esac
 done
 
-if [ "$(whoami)" = "root" ]; then
+[ "$(whoami)" = "root" ] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
 printf "\n%s. Updating packages...\n" "${stepWithColor}"
 sudo pacman -Syu
 complete_step
 
-if check_command aur; then
+# The reason I grep for krathalan here is because the popular aurutils
+# project also contains a /usr/bin/aur
+if check_command aur && grep -q krathalan /usr/bin/aur; then
   printf "\n%s. Checking for local package updates from the AUR...\n" "${stepWithColor}"
   aur check --quiet
   complete_step

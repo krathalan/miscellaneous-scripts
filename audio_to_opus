@@ -4,7 +4,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2019-2020 krathalan
+# Copyright (C) 2019-2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,13 +42,6 @@ trap 'killall background' SIGINT
 readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
-# Other
-readonly SCRIPT_NAME="${0##*/}"
-
-# -----------------------------------------
-# ------------- User variables ------------
-# -----------------------------------------
-
 # -----------------------------------------
 # --------------- Functions ---------------
 # -----------------------------------------
@@ -85,8 +78,6 @@ convert_file()
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -94,15 +85,13 @@ exit_script_on_failure()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [[ $# -lt 1 ]]; then
+[[ "$(whoami)" = "root" ]] &&
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+
+[[ $# -lt 1 ]] &&
   exit_script_on_failure "Please specify an origin format (e.g. flac)."
-fi
 
 readonly ORIGINFORMAT="$1"
-
-if [[ "$(whoami)" = "root" ]]; then
-  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
 fileName=""
 

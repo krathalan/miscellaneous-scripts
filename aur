@@ -4,7 +4,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 krathalan
+# Copyright (C) 2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -143,8 +143,6 @@ download_file()
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -210,9 +208,12 @@ check()
   mapfile -t packageVersions <<< "$(pacman -Qm | cut -d' ' -f2-)"
 
   # Add krathalan repo packages if krathalan repo is present
+  # First check if we have the repo enabled
   if pacman-conf -l | grep -q krathalan; then
+    # Then map all packages from [krathalan] into an array
     mapfile -t krathalanPackages <<< "$(comm -12 <(pacman -Qq | sort) <(pacman -Slq "krathalan" | sort))"
 
+    # Add them and their versions to the foreign package arrays
     for package in "${krathalanPackages[@]}"; do
       packages+=("${package}")
     done
@@ -286,25 +287,32 @@ check_print_entry()
 }
 
 #######################################
-# Fetches a git repo of a given package from the AUR.
+# Fetches package(s) from the AUR.
 # Globals:
 #   AUR_BASE_URL
 # Arguments:
-#   $@: package name(s)
+#   $@: package name(s) to fetch
 # Returns:
 #   none
 #######################################
 fetch()
 {
-  # Skip f/fetch command
-  shift
-
   while [[ $# -gt 0 ]]; do
     git clone "${AUR_BASE_URL}/$1.git"
     shift
   done
 }
 
+#######################################
+# Prints information about a package on the AUR in the
+# style of `pacman -Qi`.
+# Globals:
+#   AUR_RPC_URL
+# Arguments:
+#   $1: package name to print info of
+# Returns:
+#   none
+#######################################
 info()
 {
   make_tmp
@@ -314,8 +322,11 @@ info()
   [[ -z "$(jq -r .results[] "${AUR_JSON}")" ]] &&
     printf "\n\"%s\" not found on AUR\n" "$1" && exit 0
 
+  # Map simple json values to an array
   mapfile -t packageData <<< "$(jq -r ".results[].Name, .results[].Version, .results[].Description, .results[].URL, .results[].NumVotes, .results[].Maintainer, .results[].FirstSubmitted, .results[].LastModified" "${AUR_JSON}")"
 
+  # Use a bunch of subprocesses to process each array in the json
+  # that can't be mapped easily
   local -r LICENSES_FILE="${TMP_DIR}/licenses"
   local -r DEPENDS_FILE="${TMP_DIR}/depends"
   local -r MAKE_DEPENDS_FILE="${TMP_DIR}/make_depends"
@@ -496,9 +507,7 @@ print_pkgbuild()
 
   ${print_file_cmd} "${pkgbuild_file}"
 
-  for cmd in "${DANGEROUS_COMMANDS[@]}"; do
-    grep_command "${cmd}" "${pkgbuild_file}"
-  done
+  analyze "${pkgbuild_file}"
 }
 
 #######################################
@@ -516,19 +525,30 @@ print_pkgbuild()
 grep_command()
 {
   if grep -Pq "(^| +)$1 +" "$2"; then
-    printf "\n%s===> Warning! PKBUILD potentially contains \`%s\` command:\n%s" "${YELLOW}" "$1" "${NC}"
+    printf "\n%s===> Warning! %s potentially contains \`%s\` command:\n%s" "${YELLOW}" "${2##*/}" "$1" "${NC}"
     grep -Pn --color=always "(^| +)$1 +" "$2"
   fi
 }
 
+#######################################
+# Analyzes a (presumably Bash script) file for potentially
+# dangerous commands. You should still read the whole thing anyways!
+# Globals:
+#   DANGEROUS_COMMANDS
+# Arguments:
+#   $1: file name to analyze; defaults to "${PWD}/PKGBUILD" 
+#       if none specified
+# Returns:
+#   none
+#######################################
 analyze()
 {
-  if [[ $# -gt 1 ]]; then
-    [[ ! -f "$2" ]] &&
-      exit_script_on_failure "File $2 not found."
+  if [[ $# -gt 0 ]]; then
+    [[ ! -f "$1" ]] &&
+      exit_script_on_failure "File $1 not found."
     
     for cmd in "${DANGEROUS_COMMANDS[@]}"; do
-      grep_command "${cmd}" "$2"
+      grep_command "${cmd}" "$1"
     done
   else
     [[ ! -f PKGBUILD ]] &&
@@ -538,6 +558,8 @@ analyze()
       grep_command "${cmd}" "${PWD}/PKGBUILD"
     done
   fi
+
+  printf "\nPlease make sure to read through the whole PKGBUILD anyways.\nThis is just a supplementary tool to help you identify areas\nto look at more closely.\n"
 }
 
 #######################################
@@ -569,9 +591,10 @@ exit 0
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [[ "$(whoami)" = "root" ]]; then
+[[ "$(whoami)" = "root" ]] &&
   exit_script_on_failure "${SCRIPT_NAME} should NOT be run as root (or sudo)!"
-fi
+
+[[ -z "${1:-}" ]] && usage
 
 if [[ $# -gt 0 ]]; then
   if [[ "$*" == *"--quiet"* ]] || [[ "$*" == *"-q"* ]]; then
@@ -579,15 +602,13 @@ if [[ $# -gt 0 ]]; then
   fi
 fi
 
-[[ -z "${1:-}" ]] && usage
-
-glob "$1" '[fis]*' && [[ -z "${2:-}" ]] &&
+glob "$1" '[fips]*' && [[ -z "${2:-}" ]] &&
   exit_script_on_failure "Missing [name] argument"
 
 case $1 in
-  a*) analyze "$@" ;;
+  a*) shift; analyze "$@" ;;
   c*) check ;;
-  f*) fetch "$@" ;;
+  f*) shift; fetch "$@" ;;
   i*) info "$2" ;;
   p*) print_pkgbuild "$2" ;;
   s*) search "$2" ;;

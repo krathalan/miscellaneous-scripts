@@ -4,7 +4,7 @@
 #
 # Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 krathalan
+# Copyright (C) 2020 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@ readonly RED=$(tput bold && tput setaf 1)
 readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 
 # Other
-readonly SCRIPT_NAME="${0##*/}"
 readonly TARGET_DIRECTORY="${HOME}/pictures/$(date +%Y)"
 
 # -----------------------------------------
@@ -70,8 +69,6 @@ toCopy="true"
 exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
-  printf "Exiting %s Bash script.\n" "${SCRIPT_NAME}" >&2
-
   exit 1
 }
 
@@ -109,14 +106,12 @@ scramble_it()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [ "$(whoami)" = "root" ]; then
+[ "$(whoami)" = "root" ] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
 # Check for exiftool binary
-if [ -z "$(command -v exiftool)" ]; then
+[ -z "$(command -v exiftool)" ] &&
   exit_script_on_failure "Exiftool binary not found."
-fi
 
 if [ $# -gt 0 ] && [ "$1" = "--no-copy" ]; then
   toCopy="false"
