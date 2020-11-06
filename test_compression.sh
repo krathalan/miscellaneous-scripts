@@ -92,10 +92,17 @@ find_best()
   local bestRank="$(( $(wc -l "${TMP_FILE_FFS}" | cut -d' ' -f1) * 2 ))"
   local currentRank=0
   local lineArray=()
+  local decompressionResult=""
 
   for config in "${COMPRESSION_CONFIGS_TO_TEST[@]}"; do
     # Grep each compression config from the $RESULTS_FILE into an array
     mapfile -t lineArray <<< "$(grep "${config}" "${RESULTS_FILE}")"
+
+    # Add decompression results if present
+    if grep -q "decompression" "${RESULTS_FILE}"; then
+      decompressionResult="$(grep "${config// *}" "${RESULTS_FILE}" | tail -n1)"
+      lineArray+=("${decompressionResult}")
+    fi
 
     # Just get the rank of the compression config from each file
     for line in "${lineArray[@]}"; do
@@ -229,31 +236,34 @@ test_compression()
   printf "%s \`%s\` (CR: %s; T: %s; FFS: %s MB)\n" "${secondsPerPointOfCompression}" "${compressionProgram}" "${ratio}%" "${time}" "${finalFileSizeInMB}" >> "${TMP_FILE_SPPC}"
 
   # Measure decompression
-  printf "\nExecuting: %s\n" "${compressionProgram// *} -d ${TAR_FILE}.${fileExt}"
+  baseCompressionProgram="${compressionProgram// *}"
+  if ! grep -q "${baseCompressionProgram}" "${TMP_FILE_DECOMP}"; then
+    printf "\nExecuting: %s\n" "${baseCompressionProgram} -d ${TAR_FILE}.${fileExt}"
 
-  # Delete original file, some programs will "fail" if there is already
-  # a .tar present
-  rm -rf "${TAR_FILE}"
+    # Delete original file, some programs will "fail" if there is already
+    # a .tar present
+    rm -rf "${TAR_FILE}"
 
-  # Execute and measure execution time in milliseconds
-  startTime="$(date +%s%N | cut -b1-13)"
+    # Execute and measure execution time in milliseconds
+    startTime="$(date +%s%N | cut -b1-13)"
 
-  ${compressionProgram// *} -d "${TAR_FILE}.${fileExt}"
+    ${baseCompressionProgram} -d "${TAR_FILE}.${fileExt}"
 
-  endTime="$(date +%s%N | cut -b1-13)"
-  time="$(( endTime - startTime ))"
+    endTime="$(date +%s%N | cut -b1-13)"
+    time="$(( endTime - startTime ))"
 
-  # Change time to seconds (two decimal places) for nice printing
-  time="$(echo "${time}/1000" | bc -l)"
-  time="$(round_to_two_decimals "${time}")"
-  # Label units :)
-  time="${time}s"
+    # Change time to seconds (two decimal places) for nice printing
+    time="$(echo "${time}/1000" | bc -l)"
+    time="$(round_to_two_decimals "${time}")"
+    # Label units :)
+    time="${time}s"
 
-  # Print result to terminal during testing
-  printf "\nDecompression time: %s\n" "${time}"
+    # Print result to terminal during testing
+    printf "\nDecompression time: %s\n" "${time}"
 
-  # Print result to $TMP_FILEs for final summary
-  printf "%s \`%s\`\n" "${time}" "${compressionProgram}" >> "${TMP_FILE_DECOMP}"
+    # Print result to $TMP_FILEs for final summary
+    printf "%s \`%s\`\n" "${time}" "${baseCompressionProgram}" >> "${TMP_FILE_DECOMP}"
+  fi
 
   # Delete output file
   rm -rf "${TAR_FILE}.${fileExt}"
@@ -263,9 +273,8 @@ test_compression()
 # ---------------- Script -----------------
 # -----------------------------------------
 
-if [[ "$(whoami)" = "root" ]]; then
+[[ "$(whoami)" = "root" ]] &&
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
-fi
 
 [[ $# -eq 0 ]] &&
   exit_script_on_failure "Please specify a folder to benchmark compression of."
