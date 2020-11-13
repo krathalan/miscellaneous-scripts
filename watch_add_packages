@@ -126,7 +126,7 @@ print_info()
   exit_script_on_failure "Please set an environment variable \$REPO_ROOT defining the target repository directory (e.g. \"/var/www/builds/x86_64\")."
 
 [[ -z "${REPO_DB_FILE:-}" ]] &&
-  exit_script_on_failure "Please set an environment variable \$REPO_DB_FILE defining the directory to watch for new packages (e.g. \"myserver.db.tar\")."
+  exit_script_on_failure "Please set an environment variable \$REPO_DB_FILE defining the repo database tar file name (e.g. \"myserver.db.tar\")."
 
 [[ -z "${DROPBOX_PATH:-}" ]] &&
   exit_script_on_failure "Please set an environment variable \$DROPBOX_PATH defining the directory to watch for new packages (e.g. \"/home/drop/packages\")."
