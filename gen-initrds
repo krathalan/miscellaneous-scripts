@@ -94,9 +94,12 @@ extension()
       ;;
   esac
 
-  # If hostname contains "games", append "-gaming" to file extension
+  # Personal file renaming
   if [[ "${HOSTNAME}" == *"games"* ]]; then
     toPrint+="-gaming"
+  fi
+  if [[ "${HOSTNAME}" == *"alt"* ]]; then
+    toPrint+="-alt"
   fi
 
   printf -- "%s" "${toPrint}"
@@ -218,9 +221,12 @@ while read -r line; do
     pkgbase="${pkgbase//-${section}}"
   done
 
-  # If hostname contains "games", append "-gaming" to /boot/vmlinuz-$pkgbase filename
+  # Personal file renaming
   if [[ "${HOSTNAME}" == *"games"* ]]; then
     pkgbase+="-gaming"
+  fi
+  if [[ "${HOSTNAME}" == *"alt"* ]]; then
+    pkgbase+="-alt"
   fi
 
   print_message "copying ${CYAN}${pkgbase}${GREEN} (${pretty_kernel_version}) kernel to ${BOOTDIR}"
