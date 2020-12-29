@@ -77,6 +77,10 @@ add_packages()
   cd "${REPO_ROOT}" || exit_script_on_failure "Failure to \`cd\` into ${REPO_ROOT}"
 
   for package in "${DROPBOX_PATH}"/*.pkg.tar.zst; do
+    if [[ -f "${PWD}/${package##*/}" ]]; then
+      print_info "Package with that version already exists. Skipping ${package##*/}"
+      continue
+    fi
     mv "${package}" "${package}.sig" .
     chown root:root "${package##${DROPBOX_PATH}/}" "${package##${DROPBOX_PATH}/}.sig"
     repo-add -R -n "${REPO_DB_FILE}" "${package##${DROPBOX_PATH}/}"
