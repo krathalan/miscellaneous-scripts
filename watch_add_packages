@@ -78,7 +78,8 @@ add_packages()
 
   for package in "${DROPBOX_PATH}"/*.pkg.tar.zst; do
     if [[ -f "${PWD}/${package##*/}" ]]; then
-      print_info "Package with that version already exists. Skipping ${package##*/}"
+      print_info "Package with that version already exists. Removing ${package##*/} from ${DROPBOX_DIR}"
+      rm -f "${package}"
       continue
     fi
     mv "${package}" "${package}.sig" .
