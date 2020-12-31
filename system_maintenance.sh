@@ -190,7 +190,7 @@ complete_step
 
 if check_command flatpak; then
   printf "\n%s. Updating Flatpaks...\n" "${stepWithColor}"
-  flatpak update -y
+  sudo flatpak update -y
   complete_step
 fi
 
