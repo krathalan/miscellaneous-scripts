@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+#
+# Description: Copy a directory or file to a specified location,
+#              compressing it in the process.
+#
+# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+#
+# Copyright (C) 2020 Hunter Peavey
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
+
+# This script follows the Google Shell Style Guide:
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
+
+# Colors
+readonly GREEN=$(tput bold && tput setaf 2)
+readonly RED=$(tput bold && tput setaf 1)
+readonly BLUE=$(tput sgr0 && tput setaf 4)
+readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+# Used to set default commands to others/enable other functionality
+check_command() {
+  if [[ -n "$(command -v "$1")" ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+#######################################
+# Prints passed error message before premature exit.
+# Prints everything to >&2 (STDERR).
+# Globals:
+#   RED, NC
+#   SCRIPT_NAME
+# Arguments:
+#   $1: error message to print
+# Returns:
+#   none
+#######################################
+exit_script_on_failure()
+{
+  printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  exit 1
+}
+
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
+
+if [[ $# -lt 2 ]]; then
+  exit_script_on_failure "Please specify (1) a directory to compress and (2) the target directory."
+fi
+
+# Get full paths
+directoryToCompress="$1"
+targetDirectory="$2"
+
+directoryToCompress="$(readlink -f "${directoryToCompress}")"
+targetDirectory="$(readlink -f "${targetDirectory}")"
+
+printf "\nWhat kind of compression?"
+printf "\n [1] zstd (default)"
+printf "\n [2] lz4"
+printf "\n [3] xz"
+printf "\n [4] gzip\n\n"
+read -r -p "> " response
+case "${response}" in
+  2)
+    compression_program="lz4"
+    compression_file_ext="lz4"
+    ;;
+  3)
+    compression_program="xz"
+    compression_file_ext="xz"
+    ;;
+  4)
+    if check_command "pigz"; then
+      compression_program="pigz"
+    else
+      compression_program="gzip"
+    fi
+    compression_file_ext="gz"
+    ;;
+  *)
+    # Default
+    if check_command "pzstd"; then
+      compression_program="pzstd"
+    else
+      compression_program="zstd"
+    fi
+    compression_file_ext="zst"
+    ;;
+esac
+
+# Target output file name
+targetOutput="${directoryToCompress##*/}.tar.${compression_file_ext}"
+
+printf "\nSign and encrypt with key %s? " "${GPG_KEY_ID}"
+read -r -p "[y/N] " response
+start_time="$(date +%s)"
+case "${response}" in
+  [yY][eE][sS]|[yY])
+    targetOutput="${targetOutput}.gpg"
+    tar -I "${compression_program}" -cf - "${directoryToCompress}" | gpg2 -z 0 --default-key "${GPG_KEY_ID}" --recipient "${GPG_KEY_ID}" --sign --encrypt > "${targetDirectory}/${targetOutput}"
+    ;;
+  *)
+    tar -I "${compression_program}" -cf "${targetDirectory}/${targetOutput}" "${directoryToCompress}"
+    ;;
+esac
+end_time="$(date +%s)"
+
+printf "\nOutput compressed archive %s%s/%s%s%s" "${BLUE}" "${targetDirectory}" "${GREEN}" "${targetOutput}" "${NC}"
+# Get the size of the directoryToCompress and the targetOutput file and divide them to get a compression ratio,
+# rounded to the nearest hundredth, e.g. 0.91
+printf "\nCompression ratio: %.2f" "$(echo "$(du -sc "${targetDirectory}/${targetOutput}" | tail -n1 | awk '{printf $1}') / $(du -sc "${directoryToCompress}" | tail -n1 | awk '{printf $1}')" | bc -l)"
+printf "\nTime to compress: %s seconds\n" "$(( end_time - start_time ))"
