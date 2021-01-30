@@ -168,9 +168,9 @@ complete_step
 
 # The reason I grep for krathalan here is because the popular aurutils
 # project also contains a /usr/bin/aur
-if check_command aur && grep -q krathalan /usr/bin/aur; then
+if check_command kaur; then
   printf "\n%s. Checking for local package updates from the AUR...\n" "${stepWithColor}"
-  aur check --quiet
+  kaur check --quiet
   complete_step
 fi
 
