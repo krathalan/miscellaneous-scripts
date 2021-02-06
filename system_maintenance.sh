@@ -166,14 +166,6 @@ printf "\n%s. Updating packages...\n" "${stepWithColor}"
 sudo pacman -Syu
 complete_step
 
-# The reason I grep for krathalan here is because the popular aurutils
-# project also contains a /usr/bin/aur
-if check_command kaur; then
-  printf "\n%s. Checking for local package updates from the AUR...\n" "${stepWithColor}"
-  kaur check --quiet
-  complete_step
-fi
-
 printf "\n%s. Removing unused packages...\n" "${stepWithColor}"
 if pacman -Qttdq > /dev/null; then
   # Disable this shellcheck as we want words to split here
