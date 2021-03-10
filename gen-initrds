@@ -89,6 +89,9 @@ extension()
     *next*)
       toPrint+="-next"
       ;;
+    *tkg*)
+      toPrint+="-tkg"
+      ;;
     *zen*)
       toPrint+="-zen"
       ;;
@@ -216,7 +219,7 @@ while read -r line; do
 
   # Remove personal sections in pkgbase
   # I use these for building various linux-next-${section}-git packages
-  sectionsToRemove=("generic" "krathalan" "ryzen2" "skylake")
+  sectionsToRemove=("generic" "krathalan" "ryzen2" "znver2" "skylake")
   for section in "${sectionsToRemove[@]}"; do
     pkgbase="${pkgbase//-${section}}"
   done
