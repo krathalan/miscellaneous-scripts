@@ -70,13 +70,13 @@ exit_script_on_failure()
 [ -z "${1:-}" ] &&
   exit_script_on_failure "Missing argument: time (e.g. 5m)"
 
-[ -z "${TIMER_SOUND_FILE:-}" ] && 
+[ -z "${TIMER_SOUND_FILE:-}" ] &&
   exit_script_on_failure "Please set the environment variable TIMER_SOUND_FILE"
 
 [ ! -f "${TIMER_SOUND_FILE}" ] &&
   exit_script_on_failure "TIMER_SOUND_FILE ${TIMER_SOUND_FILE} does not exist"
 
-termdown "$1"
+termdown -f larry3d "$1"
 
 printf "\nPress <q> to stop..."
 mpv --audio-display=no --really-quiet --loop=inf "${TIMER_SOUND_FILE}"
