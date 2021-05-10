@@ -2,7 +2,7 @@
 #
 # Description: Removes exif data from all photos in the current directory.
 #
-# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2020 Hunter Peavey
 #

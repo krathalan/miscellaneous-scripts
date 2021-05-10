@@ -2,7 +2,7 @@
 #
 # Description: Takes a nice screenshot.
 #
-# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2019-2020 Hunter Peavey
 #

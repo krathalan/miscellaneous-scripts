@@ -2,7 +2,7 @@
 #
 # Description: Benchmark compression on a folder.
 #
-# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2020 Hunter Peavey
 #
@@ -44,7 +44,7 @@ readonly NC=$(tput sgr0) # No color/turn off all tput attributes
 readonly SCRIPT_START_TIME="$(date +%s)"
 readonly RESULTS_FILE="${PWD}/results-${SCRIPT_START_TIME}.txt"
 readonly SCRIPT_NAME="${0##*/}"
-readonly SCRIPT_URL="https://git.sr.ht/~krathalan/miscellaneous-scripts"
+readonly SCRIPT_URL="https://github.com/krathalan/miscellaneous-scripts"
 
 # ---------> Edit this! <---------
 readonly COMPRESSION_CONFIGS_TO_TEST=(

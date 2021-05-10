@@ -2,7 +2,7 @@
 #
 # Description: Script for printing character info for Mythic+ Event.
 #
-# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2020 Hunter Peavey
 #
@@ -147,7 +147,7 @@ rm -f "${OUTPUT_FILE}"
 touch "${DPS_FILE}" "${HEALER_FILE}" "${TANK_FILE}"
 
 # Add header
-printf "======================================================\n|      Collector's Anonymous Mythic Plus Ratings     |\n|              Generated on %s             |\n| https://git.sr.ht/~krathalan/miscellaneous-scripts |\n======================================================\n\nIO Score -- Character, ilvl class\n=================================\n" "$(date "+%b %d, %Y")" > "${OUTPUT_FILE}"
+printf "======================================================\n|      Collector's Anonymous Mythic Plus Ratings     |\n|              Generated on %s             |\n| https://github.com/krathalan/miscellaneous-scripts |\n======================================================\n\nIO Score -- Character, ilvl class\n=================================\n" "$(date "+%b %d, %Y")" > "${OUTPUT_FILE}"
 
 # Get IO scores
 mapfile -t characters < "${INPUT_FILE}"

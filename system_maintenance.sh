@@ -2,7 +2,7 @@
 #
 # Description: Performs regular Arch Linux system maintenance procedures.
 #
-# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2019-2020 Hunter Peavey
 #

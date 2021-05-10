@@ -2,7 +2,7 @@
 #
 # Description: Plays a sound on a loop when the timer goes off.
 #
-# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2020 Hunter Peavey
 #

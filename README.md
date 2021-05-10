@@ -62,7 +62,7 @@ $ cat ratings.txt
   ======================================================
   |      Collector's Anonymous Mythic Plus Ratings     |
   |              Generated on Jun 11, 2020             |
-  | https://git.sr.ht/~krathalan/miscellaneous-scripts |
+  | https://github.com/krathalan/miscellaneous-scripts |
   ======================================================
 
   IO Score -- Character, ilvl class

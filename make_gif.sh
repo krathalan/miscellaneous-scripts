@@ -2,7 +2,7 @@
 #
 # Description: Makes a looping .gif from a set of images.
 #
-# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2019-2020 Hunter Peavey
 #

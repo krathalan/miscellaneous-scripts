@@ -3,7 +3,7 @@
 # Description: Checks all sh and bash scripts in the current directory
 #              with shellcheck.
 #
-# Homepage: https://git.sr.ht/~krathalan/miscellaneous-scripts
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
 # Copyright (C) 2019-2020 Hunter Peavey
 #
