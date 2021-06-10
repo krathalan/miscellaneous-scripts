@@ -36,8 +36,10 @@ set -eu # (Eo pipefail) is Bash only!
 # -----------------------------------------
 
 # Colors
-readonly RED=$(tput bold && tput setaf 1)
-readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+RED=$(tput bold && tput setaf 1)
+NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly RED
+readonly NC
 
 # Other
 readonly SCRIPT_NAME="${0##*/}"
@@ -46,15 +48,17 @@ readonly SCRIPT_NAME="${0##*/}"
 # Don't use check_command() here because the script should NOT fail if
 # xdg-user-dir isn't available
 if [ -n "$(command -v xdg-user-dir)" ]; then
-  readonly SCREENSHOTS_DIR="$(xdg-user-dir PICTURES)/screenshots"
+  SCREENSHOTS_DIR="$(xdg-user-dir PICTURES)/screenshots"
 elif [ -d "${HOME}/Pictures" ]; then
-  readonly SCREENSHOTS_DIR="${HOME}/Pictures/screenshots"
+  SCREENSHOTS_DIR="${HOME}/Pictures/screenshots"
 else
-  readonly SCREENSHOTS_DIR="${HOME}/pictures/screenshots"
+  SCREENSHOTS_DIR="${HOME}/pictures/screenshots"
 fi
+readonly SCREENSHOTS_DIR
 
 # Convert output file name to lowercase for easier tab completion
-readonly OUTPUT_FILE="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date +%b-%d-%Y-%H-%M-%S).jpg" | tr '[:upper:]' '[:lower:]')"
+OUTPUT_FILE="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date -Iseconds | sed 's/:/-/g').jpg" | tr '[:upper:]' '[:lower:]')"
+readonly OUTPUT_FILE
 
 # -----------------------------------------
 # --------------- Functions ---------------
