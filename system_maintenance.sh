@@ -201,9 +201,9 @@ find /etc -name "*.pacnew" 2> /dev/null || true
 printf "%s" "${NC}"
 complete_step
 
-if check_command version-check; then
+if check_command kapvc; then
   printf "\n%s. Checking AppArmor profile versions against installed package versions...\n" "${stepWithColor}"
-  version-check -q
+  kapvc -q
   complete_step
 fi
 
