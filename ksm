@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 #
-# Description: Performs regular Arch Linux system maintenance procedures.
+# Description: Krathalan's System Maintenance script.
+#              Performs regular Arch Linux system maintenance procedures.
 #
 # Homepage: https://github.com/krathalan/miscellaneous-scripts
 #

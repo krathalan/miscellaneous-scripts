@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# Description: Takes a nice screenshot.
+# Description: Krathalan's PrintScreen. Takes a nice screenshot.
 #
 # Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
@@ -65,7 +65,7 @@ readonly OUTPUT_FILE
 # -----------------------------------------
 
 #######################################
-# Checks to see if a specified command is available and 
+# Checks to see if a specified command is available and
 # exits the script if the command is not available.
 # Globals:
 #   none
@@ -96,7 +96,7 @@ exit_script_on_failure()
 {
   printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   notify-send -i "script-error" "${SCRIPT_NAME}" "Error: $1"
-  
+
   exit 1
 }
 
