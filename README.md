@@ -1,19 +1,31 @@
 # Krathalan's Scripts
 This repository is a collection of scripts I wrote and use/update regularly. These scripts are provided without warranty in the hope that you will find them useful. Contributions are accepted, just open an issue or a pull request.
 
-Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges.
+Please don't run these scripts without reading them first. Always read a script before running it on your machine, especially if it requires sudo/root privileges (like `ksm`).
 
-Seven POSIX-compliant sh scripts, seven Bash scripts. Scripts ending in `.sh` are POSIX-complaint without "Bash-isms". Scripts that are Bash-only often are because of the use of arrays.
+Eight POSIX-compliant sh scripts, seven Bash scripts. Scripts that are Bash-only often are because of the use of arrays.
 
 ## `audio_to_opus` (bash)
-Simply specify an audio type (e.g. "mp3", "flac") and this script will convert all audio files in that directory to the opus format.
+Simply specify an audio type (e.g. "mp3", "flac") and this script will convert all audio files in the current directory of that type to the opus format.
 
 For example, if you execute `bash audio_to_opus flac`: all "\*.flac" files in the working directory will be converted to "\*.opus" files, all "\*.flac" files will be placed into a new "flac/" directory, again in the working directory.
 
-## `aur` (bash)
+## `cias` (sh)
+Runs a Command In All Subdirs (CIAS). For example, running
+
+```
+  $ cias git fetch --prune
+```
+
+In `~/git` would run `git fetch --prune` in `~/git/*`.
+
+## `compress_cp` (bash)
+Compresses and copies a directory in one step.
+
+## `kaur` (bash)
 Miniscule AUR helper.
 
-Four functions:
+Five commands:
 
 ```
 => [c]heck           - Check local package versions against those on the AUR.
@@ -24,18 +36,32 @@ Four functions:
 => [s]earch [name]   - Search for [name] on the AUR.
 ```
 
-Note that though `aur` is licensed under the GPLv3 license, the script incorporates work Copyright (C) 2016-2019 Dylan Araps originally from MIT-licensed code from [pash](https://github.com/dylanaraps/pash). See [Maintaining Permissive-Licensed Files in a GPL-Licensed Project: Guidelines for Developers](https://softwarefreedom.org/resources/2007/gpl-non-gpl-collaboration.html) by the Software Freedom Law Center for more information.
+Note that though `kaur` is licensed under the GPLv3 license, the script incorporates work Copyright (C) 2016-2019 Dylan Araps originally from MIT-licensed code from [pash](https://github.com/dylanaraps/pash). See [Maintaining Permissive-Licensed Files in a GPL-Licensed Project: Guidelines for Developers](https://softwarefreedom.org/resources/2007/gpl-non-gpl-collaboration.html) by the Software Freedom Law Center for more information.
 
-## `check_all.sh`
-Checks all shell scripts in the current directory with shellcheck.
+## `kps` (sh)
+Takes a nice screenshot after the specified seconds and saves it to `${XDG_PICTURES_DIR}/screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 or sway config. Uses `scrot` for i3/Xorg and `grim` for sway/Wayland. Provides nice errors via desktop notifications as well if you don't have the proper package installed.
 
-## `gather_time_data` (bash)
-I no longer recommend using this script. Instead I recommend using `hyperfine`: https://github.com/sharkdp/hyperfine
+On sway/Wayland, invoking `kps` with any argument, like `kps slurp`, will allow you to select an area of the screen and will copy the selected area to your clipboard as a jpeg.
+
+## `ksm` (sh)
+This script will perform system maintenance on an Arch Linux system. It will:
+
+- Clean pacman caches (if the flag `--clean` is passed)
+- Update installed packages
+- Remove unused packages
+- Remove journald entries older than 3 days
+- Update installed flatpaks
+  - This functionality requires the [flatpak](https://www.archlinux.org/packages/extra/x86_64/flatpak/) package to be installed
+- Check your pacman database for errors
+- List failed systemd units
+- List `*.pacsave` and `*.pacnew` files in `/etc`
+- Check AppArmor profile versions (if `krathalans-apparmor-profiles` installed)
+- Print root disk usage
 
 ## `list_nonfree_packages` (bash)
 Lists nonfree packages installed on Arch Linux according to Parabola's blacklist. Ignores packages that are blacklisted for "branding" or "technical" reasons; that is, they are not necessarily nonfree, but may conflict with Parabola's rebuilds of certain packages.
 
-## `make_gif.sh`
+## `make_gif` (sh)
 I made this script after the camera app I use on my phone lost its auto-gif-making functionality whenever I would take burst photos.
 
 To use it, put the photos you want to make into a gif into a directory, and then run the script in that directory.
@@ -44,8 +70,8 @@ Here's an example gif of my cat I made with make_gif:
 
 ![Example](https://i.imgur.com/V63J3UY.gif)
 
-## mythic_event
-A script I made for my World of Warcraft guild's Mythic+ dungeon event. Supply a list of characters, like so:
+## mythic_event (bash)
+A script I made for my World of Warcraft guild's Mythic+ dungeon event. Supply a list of characters with their realm, like so:
 
 ```
 $ cat example_input
@@ -79,11 +105,6 @@ $ cat ratings.txt
   1993 -- Morisong, 474 Mage
 ```
 
-## `prntscrn.sh`
-Takes a nice screenshot after the specified seconds and saves it to `${XDG_PICTURES_DIR}/screenshots`. Displays a notification when the screenshot is taken. Easily bound to a key in your i3 or sway config. Uses `scrot` for i3/Xorg and `grim` for sway/Wayland. Provides nice errors via desktop notifications as well if you don't have the proper package installed.
-
-On sway/Wayland, invoking `prntscrn.sh` with any argument, like `prntscrn.sh slurp`, will allow you to select an area of the screen and will copy the selected jpeg to your clipboard.
-
 ## `remove_from_name` (bash)
 This script will rename all files in the current working directory by removing a specified string from their file names.
 
@@ -106,60 +127,30 @@ test-5.txt
 Files renamed.
 ```
 
-## `scramble_photos.sh`
+## `scramble_photos` (sh)
 Deletes the exif data on all photos in the current directory and attempts to restore the "datetimeoriginal" (date taken) value from the photo's file name. Then moves them to `${HOME}/pictures/$(date +%Y)`, e.g. `~/pictures/2020`; creating the folder if it doesn't exist. Pass `--no-copy` to keep them in the current directory.
 
 ## `script_template.sh`
 A simple POSIX-compliant script template I use. Easy to use as a Bash script template as well.
 
-## `system_maintenance.sh`
-This script will perform system maintenance on an Arch Linux system. It will:
+## `shellcheck_all` (sh)
+Checks all shell scripts in the current directory with shellcheck.
 
-- Clean pacman caches (if the flag `--clean` is passed)
-- Update `/etc/pacman.d/mirrorlist` if it hasn't been updated in more than 3.5 days
-  - This functionality requires the [reflector](https://www.archlinux.org/packages/community/any/reflector/) package to be installed
-- Update installed packages
-- Check for AUR package updates
-  - This functionality requires the `aur` script from this repo to be in your `$PATH`
-- Remove unused packages
-- Remove journald entries older than 1 day
-- Update installed flatpaks and remove unused flatpaks
-  - This functionality requires the [flatpak](https://www.archlinux.org/packages/extra/x86_64/flatpak/) package to be installed
-- Check your pacman database for errors
-- List failed systemd units
-- List `*.pacsave` and `*.pacnew` files in `/etc`
-- Print disk usage
+## `test-compression` (bash)
+Tests a ton of compression algorithms at various compression levels on a specified folder and outputs data including final file sizes, compression ratios, elapsed time to compress, elapsed time to decompress, and recommends the best compression setting for a given use case.
+
+Tests the following algorithms and levels, though more can be added easily:
+
+```
+  "lzop -1" "lzop -3"
+  "xz -3" "xz -6" "xz -9"
+  "pigz -3" "pigz -6" "pigz -9"
+  "lz4 -1" "lz4 -3" "lz4 -5" "lz4 -9"
+  "brotli -1" "brotli -3" "brotli -5" "brotli -7" "brotli -9"
+  "pzstd -10" "pzstd -12" "pzstd -15" "pzstd -17" "pzstd -19"
+```
 
 ## `timer.sh`
-
 Requires the `termdown` and `mpv` packages to be installed.
 
 Specify a termdown timer, e.g. `timer.sh 5m`, and this script will play a sound file on repeat when the termdown timer is finished. Specify which sound file to play by setting the `$TIMER_SOUND_FILE` environment variable to a valid sound file path.
-
-## `update_git_repos` (bash)
-This script will run `git pull --prune` inside every Git repository in the current directory.
-
-## `update_wow_addons` (bash)
-I no longer recommend using this script. Instead I recommend using Cursebreaker: https://github.com/AcidWeb/CurseBreaker
-
-## `watch_add_packages` (bash)
-Watches a specified directory (`$DROPBOX_PATH` in your env) for new packages and moves them to a specified pacman repo (`$REPO_ROOT` in your env). Adds them to a specified pacman repo database file (`$REPO_DB_FILE` in your env).
-
-Comes with `watch_add_packages.service`. To add your own enviroment variables to a server environment, first create the override directory:
-
-> `$ sudo mkdir /etc/systemd/system/watch_add_packages.service.d`
-
-Then save an override file (for example `/etc/systemd/system/watch_add_packages.service.d/env-vars.conf`) with the following contents (**change the actual paths to match your own setup**):
-
-```
-[Service]
-Environment="REPO_ROOT=/var/www/builds/x86_64"
-Environment="REPO_DB_FILE=krathalan.db.tar"
-Environment="DROPBOX_PATH=/home/admin/package-dropbox"
-```
-
-Finally, reload systemd and restart the service:
-
-> `$ sudo systemctl daemon-reload && sudo systemctl restart watch_add_packages.service`
-
-Now whenever you `rsync` packages to the `$DROPBOX_PATH` on the remote, `watch_add_packages` will pick them up and move them to `$REPO_ROOT`, `chown root:root` them, and add them to the `$REPO_DB_FILE`.

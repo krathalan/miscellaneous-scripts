@@ -60,9 +60,12 @@ set -eu # (Eo pipefail) is Bash only!
 # -----------------------------------------
 
 # Colors
-readonly RED=$(tput bold && tput setaf 1)
-readonly PURPLE=$(tput bold && tput setaf 5)
-readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+RED=$(tput bold && tput setaf 1)
+PURPLE=$(tput bold && tput setaf 5)
+NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly RED
+readonly PURPLE
+readonly NC
 
 # Step variables
 stepCounter=1
@@ -105,24 +108,6 @@ exit_script_on_failure()
 {
   printf "\n%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
   exit 1
-}
-
-#######################################
-# This is a simple wrapper around a case statement to allow
-# for simple string comparisons against globs.
-# Copyright (C) 2016-2019 Dylan Araps
-# Globals:
-#   none
-# Arguments:
-#   $1: string to check against glob
-#   $2: glob
-# Returns:
-#   true or false
-#######################################
-glob() {
-  # Disable this warning as it is the intended behavior.
-  # shellcheck disable=2254
-  case $1 in $2) return 0; esac; return 1
 }
 
 #######################################
@@ -178,7 +163,7 @@ fi
 complete_step
 
 printf "\n%s. Removing system journal entries older than one day...\n" "${stepWithColor}"
-sudo journalctl --vacuum-time=1d
+sudo journalctl --vacuum-time=3d
 complete_step
 
 if check_command flatpak; then
@@ -209,10 +194,6 @@ if check_command kapvc; then
 fi
 
 printf "\n%s. Printing root disk usage...\n" "${stepWithColor}"
-
-# Get root partition info
 rootPartitionInfo="$(df -h | grep -G ".*/$")"
-
 printf "%s/%s, %s full\n" "$(printf "%s" "${rootPartitionInfo}" | awk '{printf $3}')" "$(printf "%s" "${rootPartitionInfo}" | awk '{printf $2}')" "$(printf "%s" "${rootPartitionInfo}" | awk '{printf $5}')"
-
 complete_step

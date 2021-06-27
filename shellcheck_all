@@ -37,10 +37,14 @@ set -eu # (Eo pipefail) is Bash only!
 # -----------------------------------------
 
 # Colors
-readonly RED=$(tput bold && tput setaf 1)
-readonly GREEN=$(tput bold && tput setaf 2)
-readonly WHITE=$(tput sgr0 && tput bold)
-readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+RED=$(tput bold && tput setaf 1)
+GREEN=$(tput bold && tput setaf 2)
+WHITE=$(tput sgr0 && tput bold)
+NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly RED
+readonly GREEN
+readonly WHITE
+readonly NC
 
 # Step variables
 stepCounter=1

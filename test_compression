@@ -36,12 +36,16 @@ set -Eeuo pipefail
 # -----------------------------------------
 
 # Colors
-readonly GREEN=$(tput setaf 2)
-readonly RED=$(tput bold && tput setaf 1)
-readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+GREEN=$(tput setaf 2)
+RED=$(tput bold && tput setaf 1)
+NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly GREEN
+readonly RED
+readonly NC
 
 # Other
-readonly SCRIPT_START_TIME="$(date +%s)"
+SCRIPT_START_TIME="$(date +%s)"
+readonly SCRIPT_START_TIME
 readonly RESULTS_FILE="${PWD}/results-${SCRIPT_START_TIME}.txt"
 readonly SCRIPT_NAME="${0##*/}"
 readonly SCRIPT_URL="https://github.com/krathalan/miscellaneous-scripts"
@@ -57,7 +61,8 @@ readonly COMPRESSION_CONFIGS_TO_TEST=(
 )
 
 # Also used for displaying calculations.
-readonly TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}.XXXXXXXX")"
+TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}.XXXXXXXX")"
+readonly TMP_DIR
 readonly TMP_FILE_FFS="${TMP_DIR}/finalfilesize.txt"
 readonly TMP_FILE_SPPC="${TMP_DIR}/secondsperpointofcompression.txt"
 readonly TMP_FILE_DECOMP="${TMP_DIR}/decompression.txt"
@@ -290,7 +295,8 @@ else
 fi
 
 # Get original file size so we don't have to keep recalculating it
-readonly ORIGINAL_FILE_SIZE="$(du -scb "${TAR_FILE}" | tail -n1 | awk '{printf $1}')"
+ORIGINAL_FILE_SIZE="$(du -scb "${TAR_FILE}" | tail -n1 | awk '{printf $1}')"
+readonly ORIGINAL_FILE_SIZE
 
 # Test all configs
 counter=0
@@ -310,7 +316,8 @@ originalFileSizeInMB="$(round_to_two_decimals "${originalFileSizeInMB}")"
 printf "Compression testing for %s\nOriginal file size: %s MB\nDate: %s\nCompleted by %s\n%s\n" "${TAR_FILE}" "${originalFileSizeInMB}" "$(date "+%b %d %Y %I:%M%P")" "${SCRIPT_NAME}" "${SCRIPT_URL}" > "${RESULTS_FILE}"
 
 # Print final summary
-readonly SCRIPT_END_TIME="$(date +%s)"
+SCRIPT_END_TIME="$(date +%s)"
+readonly SCRIPT_END_TIME
 readonly SCRIPT_TOTAL_TIME="$(( SCRIPT_END_TIME - SCRIPT_START_TIME ))"
 
 printf "\n-------------------------------------------"

@@ -37,10 +37,14 @@ set -Eeuo pipefail
 # -----------------------------------------
 
 # Colors
-readonly GREEN=$(tput bold && tput setaf 2)
-readonly RED=$(tput bold && tput setaf 1)
-readonly WHITE=$(tput bold)
-readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+GREEN=$(tput bold && tput setaf 2)
+RED=$(tput bold && tput setaf 1)
+WHITE=$(tput bold)
+NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly GREEN
+readonly RED
+readonly WHITE
+readonly NC
 
 # -----------------------------------------
 # --------------- Functions ---------------

@@ -41,13 +41,16 @@ trap "clean_up" EXIT
 # -----------------------------------------
 
 # Colors
-readonly RED=$(tput bold && tput setaf 1)
-readonly NC=$(tput sgr0) # No color/turn off all tput attributes
+RED=$(tput bold && tput setaf 1)
+NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly RED
+readonly NC
 
 # Other
 readonly BLACKLIST_URL="https://git.parabola.nu/blacklist.git/plain/blacklist.txt"
 readonly SCRIPT_NAME="${0##*/}"
-readonly TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
+TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
+readonly TMP_DIR
 
 # -----------------------------------------
 # --------------- Functions ---------------
