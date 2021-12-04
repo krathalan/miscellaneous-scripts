@@ -128,8 +128,13 @@ esac
 # Target output file name
 targetOutput="${directoryToCompress##*/}.tar.${compression_file_ext}"
 
-printf "\nSign and encrypt with key %s? " "${GPG_KEY_ID}"
-read -r -p "[y/N] " response
+if [[ "${GPG_KEY_ID:-}" == "" ]]; then
+  response=n
+else
+  printf "\nSign and encrypt with key %s? " "${GPG_KEY_ID}"
+  read -r -p "[y/N] " response
+fi
+
 start_time="$(date +%s)"
 case "${response}" in
   [yY][eE][sS]|[yY])
