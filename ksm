@@ -163,7 +163,7 @@ fi
 complete_step
 
 printf "\n%s. Removing system journal entries older than one day...\n" "${stepWithColor}"
-sudo journalctl --vacuum-time=3d
+sudo journalctl --vacuum-time=3w
 complete_step
 
 if check_command flatpak; then
