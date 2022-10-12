@@ -187,7 +187,7 @@ find /etc -name "*.pacnew" 2> /dev/null || true
 printf "%s" "${NC}"
 complete_step
 
-if check_command kapvc; then
+if check_command kapvc && systemctl -q is-enabled apparmor.service; then
   printf "\n%s. Checking AppArmor profile versions against installed package versions...\n" "${stepWithColor}"
   kapvc -q
   complete_step
