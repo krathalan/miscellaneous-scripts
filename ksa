@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+#
+# Description: Krathalan's Setup Assistant (KSA)
+#
+# Homepage: https://github.com/krathalan/miscellaneous-scripts
+#
+# Copyright (C) 2022 Hunter Peavey
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# -----------------------------------------
+# -------------- Guidelines ---------------
+# -----------------------------------------
+
+# This script follows the Google Shell Style Guide:
+# https://google.github.io/styleguide/shell.xml
+
+# This script uses shellcheck: https://www.shellcheck.net/
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# -----------------------------------------
+# ----------- Program variables -----------
+# -----------------------------------------
+
+# Colors
+GREEN=$(tput bold && tput setaf 2)
+RED=$(tput bold && tput setaf 1)
+WHITE=$(tput sgr0 && tput bold)
+NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly RED
+readonly NC
+readonly WHITE
+readonly GREEN
+
+# Other
+readonly SCRIPT_NAME="${0##*/}"
+
+# -----------------------------------------
+# --------------- Functions ---------------
+# -----------------------------------------
+
+exit_script_on_failure()
+{
+  printf "%sError%s: %s\n" "${RED}" "${NC}" "$1" >&2
+  exit 1
+}
+
+print_info()
+{
+  printf "%sInfo:%s %s\n" "${WHITE}" "${NC}" "$1"
+}
+
+print_header()
+{
+  printf "%s===> %s <===%s\n" "${WHITE}" "$1" "${NC}"
+}
+
+print_success()
+{
+  printf "%sCompleted successfully.%s\n" "${GREEN}" "${NC}"
+}
+
+# Copyright (C) 2016-2019 Dylan Araps
+usage() { printf "%s" "\
+${SCRIPT_NAME} - helps you set up Krathalan's system ;)
+
+=> clone_git_repos     - Clones all of Krathalan's Github repos using ssh.
+=> fstab_proc_hidepid  - Appends lines to /etc/fstab that set proc to hidepid=2.
+=> firewall_setup      - Sets up firewalld with Krathalan's base configuration.
+=> make_makepkg_chroot - Correctly initializes an Arch Linux chroot at 
+                         /var/lib/makechrootpkg for use with makechrootpkg. Adds
+                         builds.krathalan.net package repo to pacman in the chroot,
+                         and downloads the signing keys to the chroot's root/root.
+=> make_symlink_dirs   - Fixes issues with symlinks for Krathalan's dotfiles.
+=> systemd_configure   - Enables and masks specific system (non-user) systemd units.
+"
+exit 0
+}
+
+clone_git_repos()
+{
+  readonly krathalans_repos=("apparmor-profiles" "archiso" "build-alterations" "dots" "endlessh" "etc-config" "firefox-complement" "ket" "krack" "krathalan.net" "miscellaneous-scripts" "pkgbuilds" "systemd-sandboxing" "waybar-modules" "wtwitch")
+
+  if [[ "${PWD}" != "${HOME}/git" ]]; then
+    exit_script_on_failure "You are not in ~/git."
+  fi
+
+  print_header "Cloning Krathalan's repos with ssh..."
+
+  for repo in "${krathalans_repos[@]}"; do
+    printf "\n"
+
+    # shellcheck disable=SC2086
+    git clone git@github.com:krathalan/${repo}.git || true
+  done
+
+  printf "\n"
+  print_info "Cloning arkenfox's user.js"
+  git clone https://github.com/arkenfox/user.js.git || true
+
+  print_success
+}
+
+firewall_setup()
+{
+  print_header "Setting up firewall..."
+
+  print_info "Setting default zone to drop"
+  sudo firewall-cmd --set-default-zone=drop
+  print_info "Adding syncthing service"
+  sudo firewall-cmd --add-service=syncthing
+  print_info "Saving runtime settings to permanent"
+  sudo firewall-cmd --runtime-to-permanent
+
+  print_success
+}
+
+fstab_proc_hidepid()
+{
+  if grep -q hidepid /etc/fstab; then
+    exit_script_on_failure "/etc/fstab already contains \"hidepid\". Please review your /etc/fstab file."
+  fi
+
+  print_header "Configuring /proc to hidepid=2 in /etc/fstab..."
+  printf "\n# hidepid\nproc	/proc	proc	nosuid,nodev,noexec,hidepid=2,gid=proc	0 0\n" | sudo tee -a /etc/fstab > /dev/null
+
+  print_success
+}
+
+make_makepkg_chroot()
+{
+  makechrootpkg_chroot_path="/var/lib/makechrootpkg"
+  
+  if [[ -e "${makechrootpkg_chroot_path}" ]]; then
+    exit_script_on_failure "Path at /var/lib/makechrootpkg already exists."
+  fi
+
+  if ! pacman -Qi devtools &> /dev/null; then
+    exit_script_on_failure "You must install the devtools package first."
+  fi
+
+  print_info "Making ${makechrootpkg_chroot_path} directory"
+  sudo mkdir "${makechrootpkg_chroot_path}"
+
+  print_info "Disabling all NoExtract= directives in local machine /etc/pacman.conf"
+  sudo sed -i 's/^NoExtract/#NoExtract/g' /etc/pacman.conf
+
+  print_info "Installing Arch Linux into new directory..."
+  sudo mkarchroot /var/lib/makechrootpkg/root base base-devel ccache
+
+  print_info "Re-enabling all NoExtract= directives in local machine /etc/pacman.conf"
+  sudo sed -i 's/^#NoExtract/NoExtract/g' /etc/pacman.conf
+  
+  print_success
+
+  printf "\n"
+
+  print_info "Restart your terminal and the correct makechrootpkg alias will apply from ~/git/dots/bashrc (Krathalan's dots Github repo)."
+}
+
+make_symlink_dirs()
+{
+  print_header "Making symlink directories..."
+
+  mkdir -p "${HOME}/.gnupg" "${HOME}/.ssh"
+  mkdir -p "${HOME}/.config/Code - OSS/User"  "${HOME}/.config/micro"  "${HOME}/.config/transmission-daemon"  "${HOME}/.config/systemd/user"
+  mkdir -p "${HOME}/.local/share/mail/dev-krathalan" "${HOME}/.local/share/mail/hunter-krathalan" "${HOME}/.local/share/mail/school-krathalan" "${HOME}/.local/share/mail/shopping-krathalan"
+
+  print_success
+}
+
+systemd_configure()
+{
+  services_to_enable=("apparmor" "auditd" "bluetooth" "dictd" "firewalld" "NetworkManager" "rngd" "systemd-timesyncd")
+  timers_to_enable=("paccache")
+  to_mask=("systemd-ask-password-console.path" "systemd-ask-password-wall.path" "udisks2.service")
+
+  print_header "Configuring systemd system services..."
+
+  print_info "Enabling units"
+  for unit in "${services_to_enable[@]}"; do
+    if ! systemctl -q is-enabled "${unit}.service"; then
+      sudo systemctl enable "${unit}.service"
+    fi
+  done
+
+  for unit in "${timers_to_enable[@]}"; do
+    if ! systemctl -q is-enabled "${unit}.timer"; then
+      sudo systemctl enable "${unit}.timer"
+    fi
+  done
+  
+  print_info "Masking units"
+  for unit in "${to_mask[@]}"; do
+    sudo systemctl mask --now "${unit}"
+  done
+
+  print_header "Configuring systemd user services..."
+
+  services_to_enable=("foot-server" "gpg-agent" "mako" "ssh-agent" "swaybg" "swayidle" "syncthing" "waybar" "wlsunset" "wob" "wobpipe-audio-cache")
+  timers_to_enable=("cache_unread_emails" "mbsync" "vdirsyncer")
+  to_mask=("at-spi-dbus-bus.service" "gvfs-daemon.service" "gvfs-metadata.service" "gvfs-udisks2-volume-monitor.service" "gpg-agent-browser.socket" "gpg-agent-extra.socket" "gpg-agent-ssh.socket")
+
+  print_info "Enabling units"
+  for unit in "${services_to_enable[@]}"; do
+    if ! systemctl --user -q is-enabled "${unit}.service"; then
+      systemctl --user enable "${unit}.service"
+    fi
+  done
+
+  for unit in "${timers_to_enable[@]}"; do
+    if ! systemctl --user -q is-enabled "${unit}.timer"; then
+      systemctl --user enable "${unit}.timer"
+    fi
+  done
+  
+  print_info "Masking units"
+  for unit in "${to_mask[@]}"; do
+    systemctl --user mask --now "${unit}"
+  done
+
+  print_success
+
+  printf "\n"
+  print_info "Don't forget to enable tlp.service manually if you are on a laptop."
+  print_info "Don't forget to run \`vdirsyncer discover contacts\`."
+}
+
+# -----------------------------------------
+# ---------------- Script -----------------
+# -----------------------------------------
+
+[[ "$(whoami)" == "root" ]] &&
+  exit_script_on_failure "This script should NOT be run as root (or sudo)!"
+
+if [[ "${1:-}" == "" ]]; then
+  usage
+fi
+
+case "$1" in
+  "clone_git_repos") clone_git_repos ;;
+  "firewall_setup") firewall_setup ;;
+  "fstab_proc_hidepid") fstab_proc_hidepid ;;
+  "make_makepkg_chroot") make_makepkg_chroot ;;
+  "make_symlink_dirs") make_symlink_dirs ;;
+  "systemd_configure") systemd_configure ;;
+  *) usage ;;
+esac
+
+exit 0
