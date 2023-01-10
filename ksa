@@ -85,7 +85,7 @@ ${SCRIPT_NAME} - helps you set up Krathalan's system ;)
                          builds.krathalan.net package repo to pacman in the chroot,
                          and downloads the signing keys to the chroot's root/root.
 => make_symlink_dirs   - Fixes issues with symlinks for Krathalan's dotfiles.
-=> systemd_configure   - Enables and masks specific system (non-user) systemd units.
+=> systemd_configure   - Enables and masks specific system and user systemd units.
 "
 exit 0
 }
@@ -176,7 +176,7 @@ make_symlink_dirs()
   print_header "Making symlink directories..."
 
   mkdir -p "${HOME}/.gnupg" "${HOME}/.ssh"
-  mkdir -p "${HOME}/.config/Code - OSS/User"  "${HOME}/.config/micro"  "${HOME}/.config/transmission-daemon"  "${HOME}/.config/systemd/user"
+  mkdir -p "${HOME}/.config/Code - OSS/User" "${HOME}/.config/irssi" "${HOME}/.config/micro"  "${HOME}/.config/transmission-daemon" "${HOME}/.config/systemd/user"
   mkdir -p "${HOME}/.local/share/mail/dev-krathalan" "${HOME}/.local/share/mail/hunter-krathalan" "${HOME}/.local/share/mail/school-krathalan" "${HOME}/.local/share/mail/shopping-krathalan"
 
   print_success
