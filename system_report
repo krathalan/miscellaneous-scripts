@@ -109,7 +109,7 @@ fi
 
 if systemctl is-active -q firewalld; then
   printf "%s\nFirewall:\n%s" "${WHITE}" "${NC}"
-  sudo firewall-cmd --list-all
+  sudo firewall-cmd --list-all | sed -n '/rich rules/q;p'
 fi
 
 if systemctl is-enabled -q krack-build@builder.timer; then
