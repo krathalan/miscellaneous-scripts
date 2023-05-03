@@ -118,7 +118,7 @@ if systemctl is-enabled -q krack-build@builder.timer; then
     printf "krack-build@builder.service is currently running\n"
   else
     printf "Waiting for krack-build@builder.timer\n"
-    systemctl status krack-build@builder.timer | grep --color never "Trigger:"
+    systemctl status krack-build@builder.timer | grep "Trigger:"
   fi
 fi
 
