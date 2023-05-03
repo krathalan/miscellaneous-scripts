@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Description: System report script for servers
+# Description: System report script
 #
 # Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
@@ -45,9 +45,6 @@ readonly RED
 readonly WHITE
 readonly NC
 
-# Other
-readonly SCRIPT_NAME="${0##*/}"
-
 # -----------------------------------------
 # ------------- User variables ------------
 # -----------------------------------------
@@ -77,21 +74,53 @@ exit_script_on_failure()
 # ---------------- Script -----------------
 # -----------------------------------------
 
+# https://unix.stackexchange.com/questions/119269/how-to-get-ip-address-using-shell-script
+ip_address="$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')"
+printf "System report for %s@%s (%s) / %s\n\n" "${USER}" "${HOSTNAME}" "${ip_address}" "$(date)"
+
 printf "%sServices:\n%s" "${WHITE}" "${NC}"
 
-services_to_check=("cloudflared" "firewalld" "jellyfin" "lighttpd" "nginx" "pihole-FTL" "syncthing@anders.service" "transmission.service")
+services_to_check=("cloudflared" "firewalld" "jellyfin" "lighttpd" "nginx" "pihole-FTL" "syncthing@anders" "transmission")
 
 status_to_print=""
 
 for systemd_service in "${services_to_check[@]}"; do
   if systemctl is-active -q "${systemd_service}"; then
     status_to_print="${GREEN}online [✔]"
-  else
+  elif systemctl is-enabled -q "${systemd_service}"; then
     status_to_print="${RED}offline [x]"
+  else
+    continue
   fi
 
   printf "%s: %s%s\n" "${systemd_service}" "${status_to_print}" "${NC}"
 done
 
 printf "%s\nDrives:\n%s" "${WHITE}" "${NC}"
-df -h / /mnt/jellyfin/ /mnt/storage
+if pacman -Qq grc &> /dev/null; then
+  add_color="/usr/bin/grc -es"
+fi
+${add_color} df --type=ext4 --type=xfs --type=f2fs --type=zfs --type=btrfs -hT
+
+if systemctl is-active -q transmission; then
+  printf "%s\nTorrents:\n%s" "${WHITE}" "${NC}"
+  transmission-remote -l
+fi
+
+if systemctl is-active -q firewalld; then
+  printf "%s\nFirewall:\n%s" "${WHITE}" "${NC}"
+  sudo firewall-cmd --list-all
+fi
+
+if systemctl is-enabled -q krack-build@builder.timer; then
+  printf "%s\nKrack-build status:\n%s" "${WHITE}" "${NC}"
+  if systemctl is-active -q krack-build@builder.service; then
+    printf "krack-build@builder.service is currently running\n"
+  else
+    printf "Waiting for krack-build@builder.timer\n"
+    systemctl status krack-build@builder.timer | grep --color never "Trigger:"
+  fi
+fi
+
+printf "%s\nUptime:\n%s" "${WHITE}" "${NC}"
+uptime
