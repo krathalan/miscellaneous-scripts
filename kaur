@@ -414,39 +414,55 @@ search()
 {
   make_tmp
 
+  printf "Downloading data from AUR..."
+
   download_file "${AUR_RPC_URL}search&arg=$1"
+
+  printf "Parsing downloaded json..."
 
   readonly TERMINAL_WIDTH="$(( $(tput cols) - 9 ))"
   readonly OUTPUT_FILE="${TMP_DIR}/search_output"
 
+  # Sort json by votes to only display the top 150 results
+  local -r totalNumberResults="$(jq -r '.resultcount' "${AUR_JSON}")"
+  local -r sortedJson="$(jq -r '[.results[]] | sort_by(.NumVotes) | reverse' "${AUR_JSON}")"
+  printf "%s" "${sortedJson}" > "${AUR_JSON}"
+
   local whileCounter=0
   local output=""
   local parser
-  parser="$(jq -r ".results[${whileCounter}]" "${AUR_JSON}")"
+  parser="$(jq -r ".[${whileCounter}]" "${AUR_JSON}")"
 
-  while [[ "${parser}" != "null" ]]; do
+  while [[ "${parser}" != "null" ]] && [[ "${whileCounter}" != 150 ]]; do
     search_print_entry "${parser}" &
 
     # Refresh data
     whileCounter="$(( whileCounter + 1 ))"
-    parser="$(jq -r ".results[${whileCounter}]" "${AUR_JSON}")"
+    parser="$(jq -r ".[${whileCounter}]" "${AUR_JSON}")"
   done
 
   wait
+
+  printf "\n"
 
   [[ ! -f "${OUTPUT_FILE}" ]] &&
     printf "\nNo results\n" && exit 0
 
   local -r numberOfResults="$(wc -l "${OUTPUT_FILE}" | cut -d' ' -f1)"
   local pluralSuffix=""
+  local overflowSuffix=""
 
   if [[ "${numberOfResults}" -gt 1 ]]; then
     pluralSuffix="s, sorted by votes"
   fi
 
+  if [[ "${totalNumberResults}" -gt "${numberOfResults}" ]]; then
+    overflowSuffix=" (${totalNumberResults} total, truncated to ${numberOfResults})"
+  fi
+
   sort -g "${OUTPUT_FILE}"
 
-  printf "\n%s result%s\n" "${numberOfResults}" "${pluralSuffix}"
+  printf "\n%s result%s%s\n" "${numberOfResults}" "${pluralSuffix}" "${overflowSuffix}"
 }
 
 #######################################
