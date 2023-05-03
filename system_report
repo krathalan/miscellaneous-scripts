@@ -36,9 +36,13 @@ set -Eeuo pipefail
 # -----------------------------------------
 
 # Colors
+GREEN=$(tput bold && tput setaf 2)
 RED=$(tput bold && tput setaf 1)
+WHITE=$(tput bold)
 NC=$(tput sgr0) # No color/turn off all tput attributes
+readonly GREEN
 readonly RED
+readonly WHITE
 readonly NC
 
 # Other
@@ -69,58 +73,25 @@ exit_script_on_failure()
   exit 1
 }
 
-#######################################
-# Prints a nice header.
-# Globals:
-#   none
-# Arguments:
-#   $1: header to print
-# Returns:
-#   none
-#######################################
-print_header()
-{
-  local lengthOfHeader="${#1}"
-  lengthOfHeader=$(( lengthOfHeader + 4 ))
-
-  local whileCounter=0
-  while [[ "${whileCounter}" -lt "${lengthOfHeader}" ]]; do
-    printf "-"
-    whileCounter=$(( whileCounter + 1 ))
-  done
-
-  printf "\n- %s -\n" "$1"
-
-  whileCounter=0
-  while [[ "${whileCounter}" -lt "${lengthOfHeader}" ]]; do
-    printf "-"
-    whileCounter=$(( whileCounter + 1 ))
-  done
-}
-
 # -----------------------------------------
 # ---------------- Script -----------------
 # -----------------------------------------
 
-sudo true || exit
+printf "%sServices:\n%s" "${WHITE}" "${NC}"
 
-print_header "Failed units"
-systemctl --failed
+services_to_check=("cloudflared" "firewalld" "jellyfin" "lighttpd" "nginx" "pihole-FTL" "syncthing@anders.service" "transmission.service")
 
-if systemctl is-active -q firewalld.service; then
-  print_header "Firewalld"
-  sudo firewall-cmd --list-all
-  printf "\n"
-fi
+status_to_print=""
 
-if systemctl is-active -q postfix.service; then
-  print_header "pflogsumm"
-  sudo journalctl -u postfix | pflogsumm
-  printf "\n"
-fi
+for systemd_service in "${services_to_check[@]}"; do
+  if systemctl is-active -q "${systemd_service}"; then
+    status_to_print="${GREEN}online [✔]"
+  else
+    status_to_print="${RED}offline [x]"
+  fi
 
-if systemctl is-active -q postgrey.service; then
-  print_header "Postgrey report"
-  sudo journalctl -u postfix -u postgrey | sudo postgreyreport
-  printf "\n"
-fi
+  printf "%s: %s%s\n" "${systemd_service}" "${status_to_print}" "${NC}"
+done
+
+printf "%s\nDrives:\n%s" "${WHITE}" "${NC}"
+df -h / /mnt/jellyfin/ /mnt/storage
