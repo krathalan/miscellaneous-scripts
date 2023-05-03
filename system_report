@@ -75,7 +75,7 @@ exit_script_on_failure()
 # -----------------------------------------
 
 # https://unix.stackexchange.com/questions/119269/how-to-get-ip-address-using-shell-script
-ip_address="$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')"
+ip_address="$(ip addr | grep 'state UP' -A4 | grep inet | head -n1 | awk '{print $2}' | cut -f1  -d'/')"
 printf "System report for %s@%s (%s) / %s\n\n" "${USER}" "${HOSTNAME}" "${ip_address}" "$(date)"
 
 printf "%sServices:\n%s" "${WHITE}" "${NC}"
