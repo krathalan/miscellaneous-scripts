@@ -204,6 +204,8 @@ make_tmp()
 #######################################
 check()
 {
+  printf "Constructing download parameters..."
+  
   make_tmp
   readonly OUTPUTFILEBAD="${TMP_DIR}/${SCRIPT_NAME}-bad.txt"
   readonly OUTPUTFILEGOOD="${TMP_DIR}/${SCRIPT_NAME}-good.txt"
@@ -240,8 +242,12 @@ check()
     requestURL+="&arg[]=${package}"
   done
 
+  printf "Downloading data from AUR..."
+
   download_file "${requestURL}"
 
+  printf "Parsing downloaded json..."
+  
   whileCounter=0
 
   while [[ "${whileCounter}" -lt "${#packages[@]}" ]]; do
@@ -256,6 +262,8 @@ check()
   done
 
   wait
+
+  printf "\n"
 
   if [[ "${QUIET}" == "true" ]]; then
     sort "${OUTPUTFILEBAD}"
@@ -324,7 +332,11 @@ info()
 {
   make_tmp
 
+  printf "Downloading data from AUR..."
+
   download_file "${AUR_RPC_URL}info&arg[]=$1"
+
+  printf "Parsing downloaded json..."
 
   [[ -z "$(jq -r .results[] "${AUR_JSON}")" ]] &&
     printf "\n\"%s\" not found on AUR\n" "$1" && exit 0
@@ -352,7 +364,7 @@ info()
 
   wait
 
-  printf "%s" "\
+  printf "\n%s" "\
 Repository      : aur
 Name            : ${packageData[0]}
 Version         : ${packageData[1]}
