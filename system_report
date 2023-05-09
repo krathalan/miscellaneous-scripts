@@ -125,4 +125,4 @@ fi
 printf "%s\nSystem:\n%s Uptime:" "${WHITE}" "${NC}"
 uptime
 printf " "
-sensors | grep "Package id|Tdie" || true
+sensors | grep -E "Package id|Tdie"
