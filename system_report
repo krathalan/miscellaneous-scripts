@@ -124,5 +124,5 @@ fi
 
 printf "%s\nSystem:\n%s Uptime:" "${WHITE}" "${NC}"
 uptime
-printf "\n "
+printf " "
 sensors | grep Tdie
