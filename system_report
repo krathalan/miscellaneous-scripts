@@ -122,5 +122,7 @@ if systemctl is-enabled -q krack-build@builder.timer; then
   fi
 fi
 
-printf "%s\nUptime:\n%s" "${WHITE}" "${NC}"
+printf "%s\nSystem:\n%s Uptime:" "${WHITE}" "${NC}"
 uptime
+printf "\n "
+sensors | grep Tdie
