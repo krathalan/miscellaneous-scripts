@@ -85,10 +85,11 @@ services_to_check=("dnscrypt-proxy" "dovecot" "endlessh" "firewalld" "jellyfin" 
 status_to_print=""
 
 for systemd_service in "${services_to_check[@]}"; do
-  if systemctl is-active -q "${systemd_service}"; then
+  if systemctl is-enabled -q "${systemd_service}"; then
     status_to_print="${GREEN}online [✔]"
-  elif systemctl is-enabled -q "${systemd_service}"; then
-    status_to_print="${RED}offline [x]"
+    if ! systemctl is-enabled -q "${systemd_service}"; then
+      status_to_print="${RED}offline [x]"
+    fi
   else
     continue
   fi
