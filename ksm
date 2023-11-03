@@ -149,6 +149,13 @@ done
   exit_script_on_failure "This script should NOT be run as root (or sudo)!"
 
 printf "\n%s. Updating packages...\n" "${stepWithColor}"
+
+if rg -v "#" /etc/pacman.d/mirrorlist | rg -q "/192.168.|/172.16.|/10."; then
+  printf "===> Using pacman cache on LAN :D\n"
+else
+  printf "%s===> Warning: not using pacman cache on LAN%s\n" "${RED}" "${NC}"
+fi
+
 sudo pacman -Syu
 complete_step
 
