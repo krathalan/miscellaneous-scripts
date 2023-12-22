@@ -81,6 +81,6 @@ exit_script_on_failure()
 termdown -f larry3d "$1"
 
 printf "\nPress <q> to stop..."
-mpv --audio-display=no --really-quiet --loop=inf "${TIMER_SOUND_FILE}"
+mpv --audio-display=no --really-quiet --loop=inf "${TIMER_SOUND_FILE}" 2> /dev/null
 
 printf "\n"
