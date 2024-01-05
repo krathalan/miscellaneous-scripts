@@ -54,6 +54,24 @@ readonly NC
 # -----------------------------------------
 
 #######################################
+# Checks to see if a specified command is available.
+# Globals:
+#   none
+# Arguments:
+#   $1: command to test
+# Returns:
+#   none
+#######################################
+check_command()
+{
+  if [ -z "$(command -v "$1")" ]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+#######################################
 # Prints passed error message before premature exit.
 # Prints everything to >&2 (STDERR).
 # Globals:
@@ -123,7 +141,8 @@ if systemctl is-enabled -q krack-build@builder.timer; then
   fi
 fi
 
-printf "%s\nSystem:\n%s Uptime:" "${WHITE}" "${NC}"
-uptime
-printf " "
-sensors | grep -E "Package id|Tdie"
+printf "%s\nSystem:\n%s Uptime: %s\n " "${WHITE}" "${NC}" "$(uptime -p)"
+
+if check_command "sensors"; then
+  sensors | grep -E "Package id|Tdie"
+fi
