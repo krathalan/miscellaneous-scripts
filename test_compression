@@ -39,13 +39,9 @@ set -Eeuo pipefail
 GREEN=$(tput setaf 2)
 RED=$(tput bold && tput setaf 1)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly GREEN
-readonly RED
-readonly NC
 
 # Other
 SCRIPT_START_TIME="$(date +%s)"
-readonly SCRIPT_START_TIME
 readonly RESULTS_FILE="${PWD}/results-${SCRIPT_START_TIME}.txt"
 readonly SCRIPT_NAME="${0##*/}"
 readonly SCRIPT_URL="https://github.com/krathalan/miscellaneous-scripts"
@@ -62,12 +58,13 @@ readonly COMPRESSION_CONFIGS_TO_TEST=(
 
 # Also used for displaying calculations.
 TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}.XXXXXXXX")"
-readonly TMP_DIR
 readonly TMP_FILE_FFS="${TMP_DIR}/finalfilesize.txt"
 readonly TMP_FILE_SPPC="${TMP_DIR}/secondsperpointofcompression.txt"
 readonly TMP_FILE_DECOMP="${TMP_DIR}/decompression.txt"
 touch "${TMP_FILE_FFS}" "${TMP_FILE_SPPC}" "${TMP_FILE_DECOMP}"
 trap 'rm -rf "${TMP_DIR}"' EXIT SIGINT
+
+readonly SCRIPT_START_TIME TMP_DIR GREEN RED NC
 
 # -----------------------------------------
 # --------------- Functions ---------------

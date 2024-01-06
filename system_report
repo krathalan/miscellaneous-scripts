@@ -40,10 +40,7 @@ GREEN=$(tput bold && tput setaf 2)
 RED=$(tput bold && tput setaf 1)
 WHITE=$(tput bold)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly GREEN
-readonly RED
-readonly WHITE
-readonly NC
+readonly GREEN RED WHITE NC
 
 # -----------------------------------------
 # ------------- User variables ------------

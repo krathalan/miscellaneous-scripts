@@ -38,8 +38,6 @@ set -eu # (Eo pipefail) is Bash only!
 # Colors
 RED=$(tput bold && tput setaf 1)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly RED
-readonly NC
 
 # Other
 readonly SCRIPT_NAME="${0##*/}"
@@ -54,11 +52,11 @@ elif [ -d "${HOME}/Pictures" ]; then
 else
   SCREENSHOTS_DIR="${HOME}/pictures/screenshots"
 fi
-readonly SCREENSHOTS_DIR
 
 # Convert output file name to lowercase for easier tab completion
 OUTPUT_FILE="${SCREENSHOTS_DIR}/$(printf "%s" "screen-$(date -Iseconds | sed 's/:/-/g').jpg" | tr '[:upper:]' '[:lower:]')"
-readonly OUTPUT_FILE
+
+readonly OUTPUT_FILE SCREENSHOTS_DIR RED NC
 
 # -----------------------------------------
 # --------------- Functions ---------------

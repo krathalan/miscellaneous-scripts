@@ -41,12 +41,11 @@ trap 'killall background' INT
 # Colors
 RED=$(tput bold && tput setaf 1)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly RED
-readonly NC
 
 # Other
 TARGET_DIRECTORY="${HOME}/pictures/$(date +%Y)"
-readonly TARGET_DIRECTORY
+
+readonly TARGET_DIRECTORY RED NC
 
 # -----------------------------------------
 # ------------- User variables ------------

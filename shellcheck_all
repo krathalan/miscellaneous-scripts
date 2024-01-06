@@ -41,10 +41,7 @@ RED=$(tput bold && tput setaf 1)
 GREEN=$(tput bold && tput setaf 2)
 WHITE=$(tput sgr0 && tput bold)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly RED
-readonly GREEN
-readonly WHITE
-readonly NC
+readonly RED GREEN WHITE NC
 
 # Step variables
 stepCounter=1
@@ -97,7 +94,7 @@ printf "Checking scripts in working directory...\n\n"
 fileName=""
 
 for file in ./*; do
-  if [ ! -d "${file}" ] && head -n1 "${file}" | grep -q "\#\!/.*sh"; then
+  if [ ! -d "${file}" ] && head -n1 "${file}" | grep -q "#!/.*sh"; then
     fileName="$(realpath --relative-to=. "${file}")"
     print_step "${fileName}"
 

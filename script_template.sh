@@ -39,8 +39,7 @@ set -eu # (Eo pipefail) is Bash only!
 # Colors
 RED=$(tput bold && tput setaf 1)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly RED
-readonly NC
+readonly RED NC
 
 # Other
 readonly SCRIPT_NAME="${0##*/}"

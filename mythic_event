@@ -49,8 +49,6 @@ set -Eeuo pipefail
 # Colors
 RED=$(tput bold && tput setaf 1)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly RED
-readonly NC
 
 # Other
 readonly SCRIPT_NAME="${0##*/}"
@@ -58,10 +56,11 @@ readonly INPUT_FILE="${1:-}"
 readonly OUTPUT_FILE="ratings.txt"
 
 TMP_DIR="$(mktemp -d -t "${SCRIPT_NAME}_XXXXXXXX")"
-readonly TMP_DIR
 readonly DPS_FILE="${TMP_DIR}/dps.txt"
 readonly HEALER_FILE="${TMP_DIR}/healer.txt"
 readonly TANK_FILE="${TMP_DIR}/tank.txt"
+
+readonly TMP_DIR RED NC
 
 # -----------------------------------------
 # --------------- Functions ---------------

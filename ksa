@@ -40,10 +40,7 @@ GREEN=$(tput bold && tput setaf 2)
 RED=$(tput bold && tput setaf 1)
 WHITE=$(tput sgr0 && tput bold)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly RED
-readonly NC
-readonly WHITE
-readonly GREEN
+readonly RED NC WHITE GREEN
 
 # Other
 readonly SCRIPT_NAME="${0##*/}"

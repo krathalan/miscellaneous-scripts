@@ -69,12 +69,7 @@ PURPLE=$(tput bold && tput setaf 5)
 RED=$(tput bold && tput setaf 1)
 YELLOW=$(tput sgr0 && tput setaf 3)
 NC=$(tput sgr0) # No color/turn off all tput attributes
-readonly BLUE
-readonly GREEN
-readonly PURPLE
-readonly RED
-readonly YELLOW
-readonly NC
+readonly BLUE GREEN PURPLE RED YELLOW NC
 
 # Other
 readonly AUR_BASE_URL="https://aur.archlinux.org"
