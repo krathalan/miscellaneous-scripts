@@ -4,7 +4,7 @@
 #
 # Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 Hunter Peavey
+# Copyright (C) 2020-2024 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

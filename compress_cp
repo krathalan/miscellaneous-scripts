@@ -5,7 +5,7 @@
 #
 # Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 Hunter Peavey
+# Copyright (C) 2020-2024 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -88,39 +88,62 @@ targetDirectory="$2"
 directoryToCompress="$(readlink -f "${directoryToCompress}")"
 targetDirectory="$(readlink -f "${targetDirectory}")"
 
-printf "\nWhat kind of compression?"
-printf "\n [1] zstd (default)"
-printf "\n [2] lz4"
-printf "\n [3] xz"
-printf "\n [4] gzip\n\n"
-read -r -p "> " response
-case "${response}" in
-  2)
-    compression_program="lz4"
-    compression_file_ext="lz4"
-    ;;
-  3)
-    compression_program="xz"
-    compression_file_ext="xz"
-    ;;
-  4)
-    if check_command "pigz"; then
-      compression_program="pigz"
-    else
-      compression_program="gzip"
-    fi
-    compression_file_ext="gz"
-    ;;
-  *)
-    # Default
-    if check_command "pzstd"; then
-      compression_program="pzstd"
-    else
-      compression_program="zstd"
-    fi
-    compression_file_ext="zst"
-    ;;
-esac
+printf "\nSpecify a compression program and level (e.g. \'pzstd -19\'),\nor leave blank to choose a preset compression program next.\n\n"
+read -r -p " > " response
+
+compression_program="${response}"
+base_program="${compression_program%% *}"
+if [[ -n "${base_program}" ]]; then
+  case "${base_program}" in
+    lz4|xz)
+      compression_file_ext="${base_program}"
+      ;;
+    pigz|gzip)
+      compression_file_ext="gz"
+      ;;
+    zstd|pzstd)
+      compression_file_ext="zst"
+      ;;
+    *)
+      exit_script_on_failure "Unknown compression program, can't guess file extension. Submit an issue on Github please!"
+  esac
+fi
+
+if [[ -z "${response}" ]]; then
+  printf "\nWhat kind of compression? Will default to multithreaded compression\nif available. Leave blank to choose (p)zstd -10 (default).\n"
+  printf "\n [1] zstd -10 (max -19) (default)"
+  printf "\n [2] lz4 -9 (max -12)"
+  printf "\n [3] xz -T 0 -6 (max -9)"
+  printf "\n [4] gzip -6 (max -9)\n\n"
+  read -r -p " > " response
+  case "${response}" in
+    2)
+      compression_program="lz4 -9"
+      compression_file_ext="lz4"
+      ;;
+    3)
+      compression_program="xz -T 0 -6"
+      compression_file_ext="xz"
+      ;;
+    4)
+      if check_command "pigz"; then
+        compression_program="pigz -6"
+      else
+        compression_program="gzip -6"
+      fi
+      compression_file_ext="gz"
+      ;;
+    *)
+      # Default
+      if check_command "pzstd"; then
+        compression_program="pzstd -10"
+      else
+        compression_program="zstd -10"
+      fi
+      compression_file_ext="zst"
+      ;;
+  esac
+fi
 
 # Target output file name
 targetOutput="${directoryToCompress##*/}.tar.${compression_file_ext}"
@@ -136,9 +159,12 @@ start_time="$(date +%s)"
 case "${response}" in
   [yY][eE][sS]|[yY])
     targetOutput="${targetOutput}.gpg"
+
+    printf "\nRunning command:\n%s\n\n" "tar -I \"${compression_program}\" -cf - \"${directoryToCompress}\" | gpg2 -z 0 --default-key ${GPG_KEY_ID} --recipient ${GPG_KEY_ID} --sign --encrypt > \"${targetDirectory}/${targetOutput}\""
     tar -I "${compression_program}" -cf - "${directoryToCompress}" | gpg2 -z 0 --default-key "${GPG_KEY_ID}" --recipient "${GPG_KEY_ID}" --sign --encrypt > "${targetDirectory}/${targetOutput}"
     ;;
   *)
+    printf "\nRunning command:\n%s\n\n" "tar -I \"${compression_program}\" -cf \"${targetDirectory}/${targetOutput}\" \"${directoryToCompress}\""
     tar -I "${compression_program}" -cf "${targetDirectory}/${targetOutput}" "${directoryToCompress}"
     ;;
 esac

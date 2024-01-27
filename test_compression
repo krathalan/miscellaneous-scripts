@@ -4,7 +4,7 @@
 #
 # Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
-# Copyright (C) 2020 Hunter Peavey
+# Copyright (C) 2020-2024 Hunter Peavey
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -329,6 +329,6 @@ rank_results "${TMP_FILE_DECOMP}" "decompression time"
 
 bestCompressionAndDecompression="$(find_best)"
 
-printf "\nBest config for frequent compression and infrequent decompression: %s\n" "${bestCompression}" | tee -a "${RESULTS_FILE}"
+printf "\nSuggested config for frequent compression and infrequent decompression: %s\n" "${bestCompression}" | tee -a "${RESULTS_FILE}"
 
-printf "\nBest config for frequent compression and frequent decompression: %s\n" "${bestCompressionAndDecompression}" | tee -a "${RESULTS_FILE}"
+printf "\nSuggested config for frequent compression and frequent decompression: %s\n" "${bestCompressionAndDecompression}" | tee -a "${RESULTS_FILE}"
