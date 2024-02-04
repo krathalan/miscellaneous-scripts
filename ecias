@@ -38,10 +38,12 @@ set -eu # (Eo pipefail) is Bash only!
 
 for dir in ./*; do
   (
-    printf "\n=====> Executing in %s <=====\n" "${dir}"
-    cd "${dir}"
-    # Execute
-    # shellcheck disable=SC2068
-    $@
+    if [ -d "${dir}" ]; then
+      printf "\n=====> Executing in %s <=====\n" "${dir}"
+      cd "${dir}"
+      # Execute
+      # shellcheck disable=SC2068
+      $@
+    fi
   )
 done
