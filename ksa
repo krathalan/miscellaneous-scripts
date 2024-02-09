@@ -190,19 +190,19 @@ systemd_configure()
   print_info "Enabling units"
   for unit in "${services_to_enable[@]}"; do
     if ! systemctl -q is-enabled "${unit}.service"; then
-      sudo systemctl enable "${unit}.service"
+      sudo systemctl enable "${unit}.service" || printf "Error enabling %s.service\n" "${unit}"
     fi
   done
 
   for unit in "${timers_to_enable[@]}"; do
     if ! systemctl -q is-enabled "${unit}.timer"; then
-      sudo systemctl enable "${unit}.timer"
+      sudo systemctl enable "${unit}.timer" || printf "Error enabling %s.timer\n" "${unit}"
     fi
   done
   
   print_info "Masking units"
   for unit in "${to_mask[@]}"; do
-    sudo systemctl mask --now "${unit}"
+    sudo systemctl mask --now "${unit}" || printf "Error masking %s\n" "${unit}"
   done
 
   print_header "Configuring systemd user services..."
@@ -214,19 +214,19 @@ systemd_configure()
   print_info "Enabling units"
   for unit in "${services_to_enable[@]}"; do
     if ! systemctl --user -q is-enabled "${unit}.service"; then
-      systemctl --user enable "${unit}.service"
+      systemctl --user enable "${unit}.service" || printf "Error enabling %s.service\n" "${unit}"
     fi
   done
 
   for unit in "${timers_to_enable[@]}"; do
     if ! systemctl --user -q is-enabled "${unit}.timer"; then
-      systemctl --user enable "${unit}.timer"
+      systemctl --user enable "${unit}.timer" || printf "Error enabling %s.timer\n" "${unit}"
     fi
   done
   
   print_info "Masking units"
   for unit in "${to_mask[@]}"; do
-    systemctl --user mask --now "${unit}"
+    systemctl --user mask --now "${unit}" || printf "Error masking %s\n" "${unit}"
   done
 
   print_success
