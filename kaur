@@ -395,9 +395,19 @@ Last Modified   : $(date -d "@${packageData[7]}" "+%a %d %B %Y %r %Z")
 #######################################
 info_helper()
 {
+  # Always ensure file is written
+  touch "$2"
+
   local whileCounter=0
   local output=""
   local parser
+
+  # Limitation of JAQ vs. JQ:
+  # If the root element in the json isn't present, attempting to access indexed elements
+  # owned by the root element will result in an error.
+  if [[ "$(jaq -r ".results[].$1" "${AUR_JSON}")" == "null" ]]; then
+    return
+  fi
   parser="$(jaq -r ".results[].$1[${whileCounter}]" "${AUR_JSON}")"
 
   while [[ "${parser}" != "null" ]]; do
