@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 #
-# Description: Checks for package updates from the AUR.
+# Description: Simple AUR browser: check for package updates, search for packages,
+#              clone packages, show info for packages, or simply download to
+#              show any PKGBUILD from a package. Does not build or manage packages,
+#              and is not a pacman/paru/yay clone.
 #
 # Homepage: https://github.com/krathalan/miscellaneous-scripts
 #
@@ -125,8 +128,8 @@ download_file()
     exit 0
   fi
 
-  if [[ "$(jq -r .type "${AUR_JSON}")" == "error" ]]; then
-    exit_script_on_failure "$(jq -r .error "${AUR_JSON}")"
+  if [[ "$(jaq -r .type "${AUR_JSON}")" == "error" ]]; then
+    exit_script_on_failure "$(jaq -r .error "${AUR_JSON}")"
   fi
 }
 
@@ -285,7 +288,7 @@ check_print_entry()
 {
   # Extract version from AUR json
 
-  local -r aurVersion="$(jq -r ".results[] | select(.Name == \"$1\").Version" "${AUR_JSON}")"
+  local -r aurVersion="$(jaq -r ".results[] | select(.Name == \"$1\").Version" "${AUR_JSON}")"
 
   if [[ "${aurVersion}" == "" ]]; then
     printf "%s%s not on AUR%s\n" "${PURPLE}" "$1" "${NC}" >> "${OUTPUTFILEGOOD}"
@@ -333,11 +336,11 @@ info()
 
   printf "Parsing downloaded json..."
 
-  [[ -z "$(jq -r .results[] "${AUR_JSON}")" ]] &&
+  [[ -z "$(jaq -r .results[] "${AUR_JSON}")" ]] &&
     printf "\n\"%s\" not found on AUR\n" "$1" && exit 0
 
   # Map simple json values to an array
-  mapfile -t packageData <<< "$(jq -r ".results[].Name, .results[].Version, .results[].Description, .results[].URL, .results[].NumVotes, .results[].Maintainer, .results[].FirstSubmitted, .results[].LastModified" "${AUR_JSON}")"
+  mapfile -t packageData <<< "$(jaq -r ".results[].Name, .results[].Version, .results[].Description, .results[].URL, .results[].NumVotes, .results[].Maintainer, .results[].FirstSubmitted, .results[].LastModified" "${AUR_JSON}")"
 
   # Use a bunch of subprocesses to process each array in the json
   # that can't be mapped easily
@@ -385,7 +388,7 @@ Last Modified   : $(date -d "@${packageData[7]}" "+%a %d %B %Y %r %Z")
 # Globals:
 #   AUR_JSON
 # Arguments:
-#   $1: jq value to parse
+#   $1: jaq value to parse
 #   $2: file to output to
 # Returns:
 #   none
@@ -395,14 +398,14 @@ info_helper()
   local whileCounter=0
   local output=""
   local parser
-  parser="$(jq -r ".results[].$1[${whileCounter}]" "${AUR_JSON}")"
+  parser="$(jaq -r ".results[].$1[${whileCounter}]" "${AUR_JSON}")"
 
   while [[ "${parser}" != "null" ]]; do
     output+=" ${parser}"
 
     # Refresh data
     whileCounter="$(( whileCounter + 1 ))"
-    parser="$(jq -r ".results[].$1[${whileCounter}]" "${AUR_JSON}")"
+    parser="$(jaq -r ".results[].$1[${whileCounter}]" "${AUR_JSON}")"
   done
 
   printf "%s" "${output:- None}" > "$2"
@@ -431,21 +434,21 @@ search()
   readonly OUTPUT_FILE="${TMP_DIR}/search_output"
 
   # Sort json by votes to only display the top 150 results
-  local -r totalNumberResults="$(jq -r '.resultcount' "${AUR_JSON}")"
-  local -r sortedJson="$(jq -r '[.results[]] | sort_by(.NumVotes) | reverse' "${AUR_JSON}")"
+  local -r totalNumberResults="$(jaq -r '.resultcount' "${AUR_JSON}")"
+  local -r sortedJson="$(jaq -r '[.results[]] | sort_by(.NumVotes) | reverse' "${AUR_JSON}")"
   printf "%s" "${sortedJson}" > "${AUR_JSON}"
 
   local whileCounter=0
   local output=""
   local parser
-  parser="$(jq -r ".[${whileCounter}]" "${AUR_JSON}")"
+  parser="$(jaq -r ".[${whileCounter}]" "${AUR_JSON}")"
 
   while [[ "${parser}" != "null" ]] && [[ "${whileCounter}" != 150 ]]; do
     search_print_entry "${parser}" &
 
     # Refresh data
     whileCounter="$(( whileCounter + 1 ))"
-    parser="$(jq -r ".[${whileCounter}]" "${AUR_JSON}")"
+    parser="$(jaq -r ".[${whileCounter}]" "${AUR_JSON}")"
   done
 
   wait
@@ -485,7 +488,7 @@ search()
 #######################################
 search_print_entry()
 {
-  mapfile -t packageData <<< "$(jq -r ".Name, .Version, .NumVotes, .Description" <<< "$1")"
+  mapfile -t packageData <<< "$(jaq -r ".Name, .Version, .NumVotes, .Description" <<< "$1")"
 
   local packageVotes="${packageData[2]}"
 
