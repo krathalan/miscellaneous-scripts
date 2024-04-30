@@ -80,6 +80,7 @@ readonly AUR_RPC_URL="${AUR_BASE_URL}/rpc/?v=5&type="
 readonly AUR_PKGBUILD_URL="${AUR_BASE_URL}/cgit/aur.git/plain/PKGBUILD?h="
 readonly SCRIPT_NAME="${0##*/}"
 readonly DANGEROUS_COMMANDS=("rm" "mount" "mkfs")
+DANGEROUS_COMMAND_FOUND="false"
 
 # -----------------------------------------
 # ------------- User variables ------------
@@ -261,7 +262,7 @@ check()
 
   wait
 
-  printf "\n"
+  printf "\r\033[K"
 
   if [[ "${QUIET}" == "true" ]]; then
     sort "${OUTPUTFILEBAD}"
@@ -361,6 +362,8 @@ info()
   info_helper "Replaces" "${REPLACES_FILE}" &
 
   wait
+
+  printf "\r\033[K"
 
   printf "\n%s" "\
 Repository      : aur
@@ -463,8 +466,6 @@ search()
 
   wait
 
-  printf "\n"
-
   [[ ! -f "${OUTPUT_FILE}" ]] &&
     printf "\nNo results\n" && exit 0
 
@@ -479,6 +480,8 @@ search()
   if [[ "${totalNumberResults}" -gt "${numberOfResults}" ]]; then
     overflowSuffix=" (${totalNumberResults} total, truncated to ${numberOfResults})"
   fi
+
+  printf "\r\033[K"
 
   sort -g "${OUTPUT_FILE}"
 
@@ -538,7 +541,7 @@ print_pkgbuild()
   make_tmp
   local -r pkgbuild_file="${TMP_DIR}/PKGBUILD"
 
-  printf "Downloading PKGBUILD...\n"
+  printf "Downloading PKGBUILD..."
   curl --silent -o "${pkgbuild_file}" "${AUR_PKGBUILD_URL}$1"
 
   # Use bat if present for line numbering and syntax highlighting
@@ -547,6 +550,8 @@ print_pkgbuild()
   else
     local -r print_file_cmd="cat"
   fi
+
+  printf "\r\033[K"
 
   ${print_file_cmd} "${pkgbuild_file}"
 
@@ -570,6 +575,8 @@ grep_command()
   if grep -Pq "(^| +)$1 +" "$2"; then
     printf "\n%s===> Warning! %s potentially contains \`%s\` command:\n%s" "${YELLOW}" "${2##*/}" "$1" "${NC}"
     grep -Pn --color=always "(^| +)$1 +" "$2"
+
+    DANGEROUS_COMMAND_FOUND="true"
   fi
 }
 
@@ -602,7 +609,9 @@ analyze()
     done
   fi
 
-  printf "\nPlease make sure to read through the whole PKGBUILD anyways.\nThis is just a supplementary tool to help you identify areas\nto look at more closely.\n"
+  if [[ "${DANGEROUS_COMMAND_FOUND}" == "true" ]]; then
+    printf "\nPlease make sure to read through the whole PKGBUILD anyways.\nThis is just a supplementary tool to help you identify areas\nto look at more closely.\n"
+  fi
 }
 
 #######################################
@@ -642,6 +651,10 @@ exit 0
 if [[ $# -gt 0 ]]; then
   if [[ "$*" == *"--quiet"* ]] || [[ "$*" == *"-q"* ]]; then
     QUIET="true"
+  fi
+
+  if [[ "$1" == "--quiet" ]] || [[ "$1" == "-q" ]]; then
+    shift
   fi
 fi
 
