@@ -95,7 +95,7 @@ printf "System report for %s@%s (%s) / %s\n\n" "${USER}" "${HOSTNAME}" "${ip_add
 
 printf "%sServices (enabled only):\n%s" "${WHITE}" "${NC}"
 
-services_to_check=("dnscrypt-proxy" "dovecot" "endlessh" "firewalld" "jellyfin" "krack-receive" "libreddit" "lighttpd" "nginx" "nitter" "opendkim" "opendmarc" "pihole-FTL" "postfix" "postgrey" "radicale" "redis" "spamassassin" "syncthing@anders" "transmission")
+services_to_check=("avahi-daemon" "dnscrypt-proxy" "dovecot" "endlessh" "firewalld" "jellyfin" "krack-receive" "libreddit" "lighttpd" "nginx" "nitter" "opendkim" "opendmarc" "pihole-FTL" "postfix" "postgrey" "radicale" "redis" "smb" "spamassassin" "syncthing@anders" "transmission")
 
 status_to_print=""
 

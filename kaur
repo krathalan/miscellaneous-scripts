@@ -80,6 +80,7 @@ readonly AUR_RPC_URL="${AUR_BASE_URL}/rpc/?v=5&type="
 readonly AUR_PKGBUILD_URL="${AUR_BASE_URL}/cgit/aur.git/plain/PKGBUILD?h="
 readonly SCRIPT_NAME="${0##*/}"
 readonly DANGEROUS_COMMANDS=("rm" "mount" "mkfs")
+DANGEROUS_COMMAND_FOUND="false"
 
 # -----------------------------------------
 # ------------- User variables ------------
@@ -261,7 +262,7 @@ check()
 
   wait
 
-  printf "\n"
+  printf "\r\033[K"
 
   if [[ "${QUIET}" == "true" ]]; then
     sort "${OUTPUTFILEBAD}"
@@ -362,6 +363,8 @@ info()
 
   wait
 
+  printf "\r\033[K"
+
   printf "\n%s" "\
 Repository      : aur
 Name            : ${packageData[0]}
@@ -395,9 +398,19 @@ Last Modified   : $(date -d "@${packageData[7]}" "+%a %d %B %Y %r %Z")
 #######################################
 info_helper()
 {
+  # Always ensure file is written
+  touch "$2"
+
   local whileCounter=0
   local output=""
   local parser
+
+  # Limitation of JAQ vs. JQ:
+  # If the root element in the json isn't present, attempting to access indexed elements
+  # owned by the root element will result in an error.
+  if [[ "$(jaq -r ".results[].$1" "${AUR_JSON}")" == "null" ]]; then
+    return
+  fi
   parser="$(jaq -r ".results[].$1[${whileCounter}]" "${AUR_JSON}")"
 
   while [[ "${parser}" != "null" ]]; do
@@ -453,8 +466,6 @@ search()
 
   wait
 
-  printf "\n"
-
   [[ ! -f "${OUTPUT_FILE}" ]] &&
     printf "\nNo results\n" && exit 0
 
@@ -469,6 +480,8 @@ search()
   if [[ "${totalNumberResults}" -gt "${numberOfResults}" ]]; then
     overflowSuffix=" (${totalNumberResults} total, truncated to ${numberOfResults})"
   fi
+
+  printf "\r\033[K"
 
   sort -g "${OUTPUT_FILE}"
 
@@ -528,7 +541,7 @@ print_pkgbuild()
   make_tmp
   local -r pkgbuild_file="${TMP_DIR}/PKGBUILD"
 
-  printf "Downloading PKGBUILD...\n"
+  printf "Downloading PKGBUILD..."
   curl --silent -o "${pkgbuild_file}" "${AUR_PKGBUILD_URL}$1"
 
   # Use bat if present for line numbering and syntax highlighting
@@ -537,6 +550,8 @@ print_pkgbuild()
   else
     local -r print_file_cmd="cat"
   fi
+
+  printf "\r\033[K"
 
   ${print_file_cmd} "${pkgbuild_file}"
 
@@ -560,6 +575,8 @@ grep_command()
   if grep -Pq "(^| +)$1 +" "$2"; then
     printf "\n%s===> Warning! %s potentially contains \`%s\` command:\n%s" "${YELLOW}" "${2##*/}" "$1" "${NC}"
     grep -Pn --color=always "(^| +)$1 +" "$2"
+
+    DANGEROUS_COMMAND_FOUND="true"
   fi
 }
 
@@ -592,7 +609,9 @@ analyze()
     done
   fi
 
-  printf "\nPlease make sure to read through the whole PKGBUILD anyways.\nThis is just a supplementary tool to help you identify areas\nto look at more closely.\n"
+  if [[ "${DANGEROUS_COMMAND_FOUND}" == "true" ]]; then
+    printf "\nPlease make sure to read through the whole PKGBUILD anyways.\nThis is just a supplementary tool to help you identify areas\nto look at more closely.\n"
+  fi
 }
 
 #######################################
@@ -632,6 +651,10 @@ exit 0
 if [[ $# -gt 0 ]]; then
   if [[ "$*" == *"--quiet"* ]] || [[ "$*" == *"-q"* ]]; then
     QUIET="true"
+  fi
+
+  if [[ "$1" == "--quiet" ]] || [[ "$1" == "-q" ]]; then
+    shift
   fi
 fi
 
