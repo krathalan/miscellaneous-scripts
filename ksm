@@ -160,6 +160,11 @@ if check_command flatpak; then
   printf "\n%s. Updating Flatpaks...\n" "${stepWithColor}"
   sudo flatpak update -y
   complete_step
+  
+  
+  printf "\n%s. Removing unused Flatpaks...\n" "${stepWithColor}"
+  sudo flatpak uninstall --unused
+  complete_step
 fi
 
 readonly dxvk_path="${HOME}/git/dxvk-tools"
